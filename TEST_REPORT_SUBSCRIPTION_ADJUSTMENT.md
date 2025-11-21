@@ -10,19 +10,20 @@
 ## 📊 测试概览
 
 **总场景数**: 9
-**通过数**: 3 ✅
+**通过数**: 4 ✅
 **失败数**: 0
 **阻塞数**: 0 ✅ (已解除)
-**跳过数**: 6
+**跳过数**: 5
 
-**已完成场景**：
+**已完成场景**（降级场景全部完成）：
 - ✅ 场景2.1: 降级Immediate（Max→Basic）- 通过
 - ✅ 场景2.2: 降级Scheduled（Max→Pro）- 通过
+- ✅ 场景2.3: 降级Immediate（Pro Yearly→Basic Monthly）- 通过
 - ✅ 场景2.4: 降级Scheduled（Max→Basic）- 通过
 
 ---
 
-## ✅ 当前状态：数据库修复完成，3个降级场景测试通过
+## ✅ 当前状态：数据库修复完成，4个降级场景全部通过
 
 **修复完成**：
 1. ✅ RPC函数已更新（添加降级字段）
@@ -33,7 +34,7 @@
    - immediate模式完成后未清除降级标记
 
 **下一步**：
-- 继续完成剩余6个测试场景（1个降级场景 + 4个升级场景 + 1个边界情况）
+- 继续完成剩余5个测试场景（4个升级场景 + 1个边界情况）
 
 ---
 
@@ -427,20 +428,110 @@ WHERE user_id = 'bfb8182a-6865-4c66-a89e-05711796e2b2'
 
 ---
 
-### 场景 2.3: 降级 - Immediate 模式（年付 → 月付）
+### 场景 2.3: 降级 - Immediate 模式（Pro Yearly → Basic Monthly）
 
-**执行时间**: [填写时间]
+**执行时间**: 2025-11-21 07:06
 
 **前置数据**:
+- 用户ID: bfb8182a-6865-4c66-a89e-05711796e2b2
+- 订阅ID: 757e96be-66c7-4e2b-97e5-6965e1814713
 - 当前订阅: Pro Yearly
-- 剩余天数: 200
+- 剩余天数: 21天（从2025-11-21到原到期时间2025-12-11）
+- 当前过期时间: 2025-12-11T16:00:00+00:00
 
-**时间计算验证**:
-```javascript
-// 预期天数: 30 + 200 = 230
+**执行操作**:
+1. ✅ 浏览器控制台执行降级API：
+   ```javascript
+   const response = await fetch('/api/subscription/downgrade', {
+     method: 'POST',
+     headers: { 'Content-Type': 'application/json' },
+     body: JSON.stringify({
+       targetPlan: 'basic',
+       billingPeriod: 'monthly',
+       adjustmentMode: 'immediate'
+     })
+   })
+   const data = await response.json()
+   console.log('API响应:', data)
+   ```
+
+**降级API响应**:
+```json
+{
+  "success": true,
+  "currentPlan": "pro",
+  "targetPlan": "basic",
+  "currentBillingCycle": "yearly",
+  "targetBillingCycle": "monthly",
+  "adjustmentMode": "immediate",
+  "message": "降级立即生效"
+}
 ```
 
-**结论**: ⬜ 通过 / ⬜ 失败
+**时间计算验证**（后端日志）:
+```
+原套餐: pro yearly
+新套餐: basic monthly
+新月度积分: 150
+原到期时间: 2025-12-11T16:00:00+00:00
+新到期时间: 2026-01-11T07:06:51.652Z
+实际剩余天数: 21
+```
+
+**计算公式验证**:
+- 剩余天数 = (原到期 - 现在) = (2025-12-11 - 2025-11-21) = 21天 ✅
+- 新到期时间 = 现在 + 剩余天数 + 新周期天数 = 2025-11-21 + 21 + 30 = 2026-01-11 ✅
+
+**数据库验证** - immediate模式立即生效:
+```json
+{
+  "plan_tier": "basic",              // ✅ 立即改为basic
+  "billing_cycle": "monthly",         // ✅ 立即改为monthly
+  "monthly_credits": 150,             // ✅ 新套餐积分（Basic月付）
+  "expires_at": "2026-01-11T07:06:51.652+00:00",  // ✅ 新到期时间
+  "original_plan_expires_at": "2025-12-11T16:00:00+00:00",  // ✅ 记录原到期时间
+  "downgrade_to_plan": null,          // ✅ 标记已清除
+  "downgrade_to_billing_cycle": null, // ✅ 标记已清除
+  "adjustment_mode": null             // ✅ 标记已清除
+}
+```
+
+**积分冻结验证**（后端日志）:
+```
+🔍 [降级API] 冻结原套餐积分
+订阅ID: 757e96be-66c7-4e2b-97e5-6965e1814713
+冻结至: 2026-01-11T07:06:51.652Z
+实际剩余天数: 21
+🔍 [降级API] 积分冻结结果: 1 条积分被冻结
+```
+
+**新积分充值验证**（后端日志）:
+```
+🔍 [降级API] 充值新套餐积分
+新套餐月度积分: 150
+当前可用积分: 2040
+✅ [降级API] 充值新套餐积分成功: 150
+```
+
+**降级标记清除验证**（后端日志）:
+```
+🔍 [降级API] 清除immediate模式的降级标记（已生效）
+✅ [降级API] 降级标记已清除（immediate模式已生效）
+```
+
+**验证点汇总**:
+- ✅ API返回状态200，success=true
+- ✅ 套餐立即改变（plan_tier: pro → basic）
+- ✅ 计费周期立即改变（billing_cycle: yearly → monthly）
+- ✅ 剩余天数计算正确（21天）
+- ✅ 新到期时间正确（原到期 + 剩余21天 + 新周期30天 = 51天后）
+- ✅ 月度积分正确（150，符合Basic Monthly标准）
+- ✅ 原套餐积分冻结成功（1条记录）
+- ✅ 新套餐积分充值成功（150积分）
+- ✅ 降级标记已清除（downgrade_to_plan, adjustment_mode全部null）
+- ✅ 原到期时间记录正确（original_plan_expires_at）
+
+**结论**: ✅ **通过**（所有验证点全绿，immediate模式完整功能正常）
 
 ---
 
