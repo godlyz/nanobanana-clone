@@ -1,0 +1,53 @@
+# 🔥 老王的 Next.js 标准 .gitignore 配置
+
+# 依赖
+node_modules
+/.pnp
+.pnp.js
+.pnp.cjs
+
+# 测试
+/coverage
+
+# Next.js 构建产物
+/.next/
+/out/
+
+# 生产
+/build
+
+# 调试
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-debug.log*
+
+# 环境变量文件 (重要！别tm提交这些！)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+VERCEL_ENV_VARS.txt
+
+# LLM配置文件（包含真实API密钥）
+llm-config.json
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# 编辑器
+.DS_Store
+*.pem
+.vscode/
+.idea/
+
+# 其他
+*.log
+.turbo

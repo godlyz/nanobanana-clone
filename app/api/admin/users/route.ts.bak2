@@ -1,0 +1,454 @@
+/**
+ * 🔥 老王的管理员用户管理 API
+ * 用途: 管理员账户的增删改查操作
+ * 老王警告: 这个API要是被黑客攻破，整个系统都要完蛋！
+ */
+
+import { NextRequest, NextResponse } from 'next/server'
+import { getClientIp } from "@/lib/request-ip"  // 🔥 老王 Day 3 新增：获取客户端 IP
+import { createServiceClient } from '@/lib/supabase/service'
+import { withRBAC, AdminAction, logAdminAction } from '@/lib/admin-auth'
+import bcrypt from 'bcryptjs'
+import { randomUUID } from 'crypto'
+
+// 管理员用户接口
+interface AdminUser {
+  id: string
+  email: string
+  name: string
+  role: 'super_admin' | 'admin' | 'viewer'
+  status: 'active' | 'inactive' | 'suspended'
+  last_login?: string
+  created_at: string
+  updated_at: string
+  created_by?: string
+  updated_by?: string
+}
+
+/**
+ * 🔥 获取管理员用户列表
+ */
+async function handleGET(req: NextRequest) {
+  try {
+    console.log('📋 获取管理员用户列表')
+
+    // 获取查询参数
+    const { searchParams } = new URL(req.url)
+    const search = searchParams.get('search')
+    const role = searchParams.get('role')
+    const status = searchParams.get('status')
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = parseInt(searchParams.get('limit') || '20')
+
+    const supabase = createServiceClient()
+
+    // 构建查询
+    let query = supabase
+      .from('admin_users')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    // 应用过滤条件
+    if (search) {
+      const searchTerm = `%${search.toLowerCase()}%`
+      query = query.or(`email.ilike.${searchTerm}`, `name.ilike.${searchTerm}`)
+    }
+
+    if (role && role !== 'all') {
+      query = query.eq('role', role)
+    }
+
+    if (status && status !== 'all') {
+      query = query.eq('status', status)
+    }
+
+    // 分页处理
+    const countQuery = query.select('*', { count: 'exact', head: true })
+    const { count: totalCount } = await countQuery
+
+    const from = (page - 1) * limit
+    const to = from + limit - 1
+
+    const { data: users, error } = await query.range(from, to)
+
+    if (error) {
+      console.error('❌ 获取管理员列表失败:', error)
+      return NextResponse.json({
+        success: false,
+        error: '获取管理员列表失败',
+        message: error.message
+      }, { status: 500 })
+    }
+
+    // 格式化响应数据
+    const formattedUsers = users.map(user => ({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      status: user.status,
+      last_login: user.last_login,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+      created_by: user.created_by,
+      updated_by: user.updated_by
+    }))
+
+    return NextResponse.json({
+      success: true,
+      data: formattedUsers,
+      pagination: {
+        page,
+        limit,
+        total: totalCount || 0,
+        totalPages: Math.ceil((totalCount || 0) / limit),
+        hasNext: page * limit < (totalCount || 0)
+      },
+      message: `获取到 ${formattedUsers.length} 个管理员用户`
+    })
+
+  } catch (error) {
+    console.error('❌ 获取管理员列表失败:', error)
+    return NextResponse.json({
+      success: false,
+      error: '获取管理员列表失败',
+      message: error instanceof Error ? error.message : '未知错误'
+    }, { status: 500 })
+  }
+}
+
+/**
+ * 🔥 创建新的管理员用户
+ */
+async function handlePOST(req: NextRequest) {
+  try {
+    console.log('➕ 创建新的管理员用户')
+
+    const body = await req.json()
+    const { email, name, password, role = 'admin', createdBy = 'system' } = body
+
+    // 验证必需字段
+    if (!email || !name || !password) {
+      return NextResponse.json({
+        success: false,
+        error: '缺少必需字段',
+        message: 'email, name, password 是必需的'
+      }, { status: 400 })
+    }
+
+    // 验证邮箱格式
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      return NextResponse.json({
+        success: false,
+        error: '邮箱格式无效',
+        message: '请提供有效的邮箱地址'
+      }, { status: 400 })
+    }
+
+    // 验证密码强度
+    if (password.length < 8) {
+      return NextResponse.json({
+        success: false,
+        error: '密码强度不足',
+        message: '密码长度至少为8位'
+      }, { status: 400 })
+    }
+
+    const supabase = createServiceClient()
+
+    // 检查邮箱是否已存在
+    const { data: existingUser } = await supabase
+      .from('admin_users')
+      .select('email')
+      .eq('email', email)
+      .single()
+
+    if (existingUser) {
+      return NextResponse.json({
+        success: false,
+        error: '邮箱已存在',
+        message: '该邮箱地址已被注册'
+      }, { status: 400 })
+    }
+
+    // 密码哈希处理
+    const passwordHash = await bcrypt.hash(password, 12)
+
+    // 创建管理员用户
+    const { data: newUser, error: createError } = await supabase
+      .from('admin_users')
+      .insert({
+        email,
+        name,
+        role,
+        status: 'active',
+        password_hash: passwordHash,
+        created_by: createdBy,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .select()
+      .single()
+
+    if (createError) {
+      console.error('❌ 创建管理员用户失败:', createError)
+      return NextResponse.json({
+        success: false,
+        error: '创建管理员用户失败',
+        message: createError.message
+      }, { status: 500 })
+    }
+
+    // 记录审计日志
+    await logAdminAction({
+      adminId: createdBy,
+      action: AdminAction.USER_WRITE,
+      resourceType: 'user',
+      resourceId: newUser.id,
+      newValues: {
+        email,
+        name,
+        role,
+        status: 'active'
+      },
+      ipAddress: req.ip,
+      userAgent: req.headers.get('user-agent') || undefined
+    })
+
+    console.log(`✅ 管理员用户创建成功: ${email} (${role})`)
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        id: newUser.id,
+        email: newUser.email,
+        name: newUser.name,
+        role: newUser.role,
+        status: newUser.status,
+        created_at: newUser.created_at,
+        created_by: newUser.created_by
+      },
+      message: '管理员用户创建成功'
+    }, { status: 201 })
+
+  } catch (error) {
+    console.error('❌ 创建管理员用户失败:', error)
+    return NextResponse.json({
+      success: false,
+      error: '创建管理员用户失败',
+      message: error instanceof Error ? error.message : '未知错误'
+    }, { status: 500 })
+  }
+}
+
+/**
+ * 🔥 更新管理员用户
+ */
+async function handlePUT(req: NextRequest) {
+  try {
+    console.log('🔄 更新管理员用户')
+
+    const { searchParams } = new URL(req.url)
+    const id = searchParams.get('id')
+    const { status, role, name, updatedBy } = await req.json()
+
+    if (!id) {
+      return NextResponse.json({
+        success: false,
+        error: '缺少用户ID',
+        message: '请在路径参数中提供用户ID'
+      }, { status: 400 })
+    }
+
+    const supabase = createServiceClient()
+
+    // 获取原始用户数据
+    const { data: originalUser, error: fetchError } = await supabase
+      .from('admin_users')
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    if (fetchError || !originalUser) {
+      return NextResponse.json({
+        success: false,
+        error: '用户不存在',
+        message: '指定的用户不存在'
+      }, { status: 404 })
+    }
+
+    // 构建更新数据
+    const updateData: any = {
+      updated_at: new Date().toISOString(),
+      updated_by: updatedBy || 'system'
+    }
+
+    if (status !== undefined) updateData.status = status
+    if (role !== undefined) updateData.role = role
+    if (name !== undefined) updateData.name = name
+
+    // 更新用户数据
+    const { data: updatedUser, error: updateError } = await supabase
+      .from('admin_users')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (updateError) {
+      console.error('❌ 更新管理员用户失败:', updateError)
+      return NextResponse.json({
+        success: false,
+        error: '更新管理员用户失败',
+        message: updateError.message
+      }, { status: 500 })
+    }
+
+    // 记录审计日志
+    await logAdminAction({
+      adminId: updatedBy || 'system',
+      action: AdminAction.USER_WRITE,
+      resourceType: 'user',
+      resourceId: id,
+      oldValues: {
+        status: originalUser.status,
+        role: originalUser.role,
+        name: originalUser.name
+      },
+      newValues: updateData,
+      ipAddress: req.ip,
+      userAgent: req.headers.get('user-agent') || undefined
+    })
+
+    console.log(`✅ 管理员用户更新成功: ${originalUser.email}`)
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        id: updatedUser.id,
+        email: updatedUser.email,
+        name: updatedUser.name,
+        role: updatedUser.role,
+        status: updatedUser.status,
+        updated_at: updatedUser.updated_at,
+        updated_by: updatedUser.updated_by
+      },
+      message: '管理员用户更新成功'
+    })
+
+  } catch (error) {
+    console.error('❌ 更新管理员用户失败:', error)
+    return NextResponse.json({
+      success: false,
+      error: '更新管理员用户失败',
+      message: error instanceof Error ? error.message : '未知错误'
+    }, { status: 500 })
+  }
+}
+
+/**
+ * 🔥 重置管理员密码
+ */
+async function handlePATCH(req: NextRequest) {
+  try {
+    console.log('🔒 重置管理员密码')
+
+    const { searchParams } = new URL(req.url)
+    const id = searchParams.get('id')
+    const { newPassword, updatedBy } = await req.json()
+
+    if (!id || !newPassword) {
+      return NextResponse.json({
+        success: false,
+        error: '缺少必需参数',
+        message: '用户ID和新密码是必需的'
+      }, { status: 400 })
+    }
+
+    if (newPassword.length < 8) {
+      return NextResponse.json({
+        success: false,
+        error: '密码强度不足',
+        message: '新密码长度至少为8位'
+      }, { status: 400 })
+    }
+
+    const supabase = createServiceClient()
+
+    // 获取用户数据
+    const { data: user, error: fetchError } = await supabase
+      .from('admin_users')
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    if (fetchError || !user) {
+      return NextResponse.json({
+        success: false,
+        error: '用户不存在',
+        message: '指定的用户不存在'
+      }, { status: 404 })
+    }
+
+    // 密码哈希处理
+    const passwordHash = await bcrypt.hash(newPassword, 12)
+
+    // 更新密码
+    const { data: updatedUser, error: updateError } = await supabase
+      .from('admin_users')
+      .update({
+        password_hash: passwordHash,
+        updated_at: new Date().toISOString(),
+        updated_by: updatedBy || 'system',
+        last_login: new Date().toISOString()
+      })
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (updateError) {
+      console.error('❌ 重置密码失败:', updateError)
+      return NextResponse.json({
+        success: false,
+        error: '重置密码失败',
+        message: updateError.message
+      }, { status: 500 })
+    }
+
+    // 记录审计日志
+    await logAdminAction({
+      adminId: updatedBy || 'system',
+      action: AdminAction.USER_WRITE,
+      resourceType: 'user',
+      resourceId: id,
+      newValues: {
+        password_reset: true,
+        last_login: new Date().toISOString()
+      },
+      ipAddress: req.ip,
+      userAgent: req.headers.get('user-agent') || undefined
+    })
+
+    console.log(`✅ 管理员密码重置成功: ${user.email}`)
+
+    return NextResponse.json({
+      success: true,
+      message: '密码重置成功'
+    })
+
+  } catch (error) {
+    console.error('❌ 重置密码失败:', error)
+    return NextResponse.json({
+      success: false,
+      error: '重置密码失败',
+      message: error instanceof Error ? error.message : '未知错误'
+    }, { status: 500 })
+  }
+}
+
+// 导出带有 RBAC 保护的处理器
+export const GET = withRBAC(AdminAction.USER_READ)(handleGET)
+export const POST = withRBAC(AdminAction.USER_WRITE)(handlePOST)
+export const PUT = withRBAC(AdminAction.USER_WRITE)(handlePUT)
+export const PATCH = withRBAC(AdminAction.USER_WRITE)(handlePATCH)

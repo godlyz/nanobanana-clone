@@ -1,0 +1,591 @@
+// Ollama云端API客户端
+// 基于Ollama免费云端服务进行智能提示词优化
+
+import { Ollama } from 'ollama'
+
+export interface PromptOptimization {
+  originalPrompt: string;
+  optimizedPrompt: string;
+  improvements: string[];
+  missingElements: string[];
+  qualityScore: number; // 0-100
+  suggestedStyle?: string;
+  suggestedLighting?: string;
+  suggestedComposition?: string;
+  estimatedCost: number;
+  modelUsed: string;
+}
+
+export interface PromptAnalysis {
+  completeness: number;      // 完整性评分 0-100
+  clarity: number;          // 清晰度评分 0-100
+  creativity: number;        // 创意性评分 0-100
+  specificity: number;       // 具体性评分 0-100
+  overallScore: number;      // 综合评分 0-100
+  strengths: string[];      // 优势点
+  weaknesses: string[];     // 需要改进的方面
+  suggestions: string[];    // 改进建议
+  keywords: string[];       // 识别的关键词
+  category: 'portrait' | 'landscape' | 'object' | 'abstract' | 'other';
+}
+
+export interface OptimizationLevel {
+  level: 'quick' | 'detailed';
+  cost: number;
+  description: string;
+  model: string;
+}
+
+export class OllamaClient {
+  private ollamaClient: Ollama;
+  private timeout: number;
+  private apiKey: string;
+
+  // 默认配置 - 基于Ollama云推荐的模型
+  private readonly DEFAULT_MODELS = {
+    quick: 'gpt-oss:20b-cloud',      // 快速优化：20B参数模型
+    detailed: 'gpt-oss:120b-cloud',   // 深度优化：120B参数模型
+    analysis: 'qwen3-coder:480b-cloud'  // 分析专用：480B参数模型
+  };
+
+  constructor(apiKey?: string) {
+    const key = apiKey || process.env.OLLAMA_API_KEY || '';
+    this.apiKey = key;
+
+    // 根据Ollama云API文档配置客户端
+    this.ollamaClient = new Ollama({
+      host: 'https://ollama.com',
+      headers: key ? { Authorization: `Bearer ${key}` } : undefined
+    });
+
+    this.timeout = 30000; // 30秒超时
+
+    if (!key) {
+      console.warn('Ollama API key not found. Set OLLAMA_API_KEY environment variable.');
+    }
+  }
+
+  /**
+   * 检查API可用性
+   */
+  async checkAvailability(): Promise<boolean> {
+    try {
+      // 使用Ollama客户端检查可用性
+      const res: any = await this.ollamaClient.list();
+      const models = Array.isArray(res) ? res : res?.models;
+      return Array.isArray(models) && models.length > 0;
+    } catch (error) {
+      console.error('Ollama API availability check failed:', error);
+      return false;
+    }
+  }
+
+  /**
+   * 获取可用模型列表
+   */
+  async getAvailableModels(): Promise<string[]> {
+    try {
+      // 使用Ollama客户端获取模型列表
+      const res: any = await this.ollamaClient.list();
+      const models = Array.isArray(res) ? res : res?.models;
+      return (Array.isArray(models) ? models : []).map((model: any) => model.name || model.model);
+    } catch (error) {
+      console.error('Failed to fetch available models:', error);
+      return [];
+    }
+  }
+
+  /**
+   * 优化提示词
+   */
+  async optimizePrompt(
+    prompt: string,
+    level: 'quick' | 'detailed' = 'quick',
+    category?: string
+  ): Promise<PromptOptimization> {
+    // 检查API可用性，如果不可用则使用备用优化
+    const isAvailable = await this.checkAvailability();
+    if (!isAvailable) {
+      return this.fallbackOptimization(prompt, level);
+    }
+
+    const model = this.DEFAULT_MODELS[level];
+    const systemPrompt = this.buildOptimizationPrompt(level, category);
+
+    try {
+      // 使用Ollama客户端进行聊天
+      const response = await this.ollamaClient.chat({
+        model,
+        messages: [
+          {
+            role: 'system',
+            content: systemPrompt
+          },
+          {
+            role: 'user',
+            content: `请优化这个图像生成提示词：\n\n${prompt}`
+          }
+        ],
+        format: 'json',
+        options: {
+          temperature: level === 'detailed' ? 0.4 : 0.3,
+          num_predict: level === 'detailed' ? 800 : 400,
+          top_p: 0.9,
+          repeat_penalty: 1.1
+        }
+      });
+
+      const result = JSON.parse(response.message.content);
+
+      return {
+        originalPrompt: prompt,
+        optimizedPrompt: result.optimizedPrompt || prompt,
+        improvements: result.improvements || [],
+        missingElements: result.missingElements || [],
+        qualityScore: result.qualityScore || this.calculateBasicScore(prompt),
+        suggestedStyle: result.suggestedStyle,
+        suggestedLighting: result.suggestedLighting,
+        suggestedComposition: result.suggestedComposition,
+        estimatedCost: 0, // Ollama免费层
+        modelUsed: model
+      };
+    } catch (error) {
+      console.error('Ollama optimization failed:', error);
+      return this.fallbackOptimization(prompt, level);
+    }
+  }
+
+  /**
+   * 分析提示词质量
+   */
+  async analyzePrompt(prompt: string): Promise<PromptAnalysis> {
+    if (!this.apiKey) {
+      return this.fallbackAnalysis(prompt);
+    }
+
+    const model = this.DEFAULT_MODELS.analysis;
+    const analysisPrompt = `请分析这个图像生成提示词的质量，从以下维度评分（0-100分）：
+
+1. 完整性：提示词是否包含足够的信息来生成清晰的图像
+2. 清晰度：表达是否清晰明确，没有歧义
+3. 创意性：提示词是否具有创意和独特性
+4. 具体性：是否提供了具体的细节和描述
+
+请识别关键词，分类图像类型（portrait/landscape/object/abstract/other），并提供改进建议。
+
+提示词：${prompt}`;
+
+    try {
+      const response = await this.ollamaClient.chat({
+        model,
+        messages: [
+          {
+            role: 'system',
+            content: '你是一个专业的图像生成提示词分析师，请以JSON格式返回分析结果。'
+          },
+          {
+            role: 'user',
+            content: analysisPrompt
+          }
+        ],
+        format: 'json',
+        options: {
+          temperature: 0.2,
+          num_predict: 600
+        }
+      });
+
+      const result = JSON.parse(response.message.content);
+
+      return {
+        completeness: result.completeness || 50,
+        clarity: result.clarity || 50,
+        creativity: result.creativity || 50,
+        specificity: result.specificity || 50,
+        overallScore: result.overallScore || 50,
+        strengths: result.strengths || [],
+        weaknesses: result.weaknesses || [],
+        suggestions: result.suggestions || [],
+        keywords: result.keywords || this.extractKeywords(prompt),
+        category: result.category || 'other'
+      };
+    } catch (error) {
+      console.error('Ollama analysis failed:', error);
+      return this.fallbackAnalysis(prompt);
+    }
+  }
+
+  /**
+   * 生成多个优化选项
+   */
+  async generateOptimizationOptions(
+    prompt: string,
+    count: number = 3
+  ): Promise<PromptOptimization[]> {
+    const options: PromptOptimization[] = [];
+
+    for (let i = 0; i < count; i++) {
+      const level = i === 0 ? 'detailed' : 'quick';
+      const option = await this.optimizePrompt(prompt, level);
+      options.push(option);
+    }
+
+    // 去重并排序
+    const uniqueOptions = this.deduplicateOptions(options);
+    return uniqueOptions.sort((a, b) => b.qualityScore - a.qualityScore);
+  }
+
+  /**
+   * 构建优化提示词模板
+   */
+  private buildOptimizationPrompt(level: 'quick' | 'detailed', category?: string): string {
+    const basePrompt = `你是一个专业的图像生成提示词优化专家。你的任务是分析和优化用户的图像生成提示词，使其更加具体、生动和有效。
+
+${level === 'detailed' ? `
+请提供详细的分析和优化，包括：
+1. 提示词的问题分析
+2. 具体的改进建议
+3. 优化后的完整提示词
+4. 风格建议（如适用）
+5. 光线和氛围建议
+6. 构图建议
+7. 质量评分（0-100）
+
+${category ? `8. 针对${category}类图像的专业建议` : ''}
+
+请以JSON格式返回结果，包含以下字段：
+- optimizedPrompt: 优化后的完整提示词
+- improvements: 改进建议列表
+- missingElements: 缺失的重要元素
+- qualityScore: 质量评分（0-100）
+- suggestedStyle: 建议的艺术风格（如适用）
+- suggestedLighting: 光线建议（如适用）
+- suggestedComposition: 构图建议（如适用）
+` : `
+请快速优化提示词，提供：
+1. 优化后的提示词
+2. 主要改进点
+3. 缺失的关键元素
+4. 质量评分
+
+请以JSON格式返回结果，包含：
+- optimizedPrompt: 优化后的提示词
+- improvements: 改进建议列表
+- missingElements: 缺失元素列表
+- qualityScore: 质量评分（0-100）
+`}
+
+优化原则：
+- 保持用户原始意图
+- 增加具体的细节描述
+- 提高视觉冲击力
+- 确保技术可行性
+- 避免过度复杂化
+
+请确保优化后的提示词更加具体、生动，能够生成高质量的图像。`;
+
+    return basePrompt;
+  }
+
+  /**
+   * 回退优化（当API不可用时）
+   */
+  private fallbackOptimization(prompt: string, level: 'quick' | 'detailed'): PromptOptimization {
+    const improvements = this.generateBasicImprovements(prompt);
+    const missingElements = this.identifyMissingElements(prompt);
+
+    let optimizedPrompt = prompt;
+
+    // 基础优化
+    if (level === 'detailed') {
+      optimizedPrompt = this.enhancePromptDetailed(prompt, improvements, missingElements);
+    } else {
+      optimizedPrompt = this.enhancePromptQuick(prompt, improvements);
+    }
+
+    return {
+      originalPrompt: prompt,
+      optimizedPrompt,
+      improvements,
+      missingElements,
+      qualityScore: this.calculateBasicScore(prompt) + 10,
+      estimatedCost: 0,
+      modelUsed: 'fallback'
+    };
+  }
+
+  /**
+   * 回退分析（当API不可用时）
+   */
+  private fallbackAnalysis(prompt: string): PromptAnalysis {
+    return {
+      completeness: this.assessCompleteness(prompt),
+      clarity: this.assessClarity(prompt),
+      creativity: this.assessCreativity(prompt),
+      specificity: this.assessSpecificity(prompt),
+      overallScore: this.calculateBasicScore(prompt),
+      strengths: this.identifyStrengths(prompt),
+      weaknesses: this.identifyWeaknesses(prompt),
+      suggestions: this.generateBasicImprovements(prompt),
+      keywords: this.extractKeywords(prompt),
+      category: this.categorizePrompt(prompt)
+    };
+  }
+
+  /**
+   * 快速增强提示词
+   */
+  private enhancePromptQuick(prompt: string, improvements: string[]): string {
+    let enhanced = prompt;
+
+    // 添加常见的改进
+    if (this.needsStyleSpecification(prompt)) {
+      enhanced += ', 高质量，专业摄影风格';
+    }
+
+    if (this.needsLightingDescription(prompt)) {
+      enhanced += ', 自然光线，细节清晰';
+    }
+
+    if (this.needsCompositionGuide(prompt)) {
+      enhanced += ', 构图平衡，视觉冲击力强';
+    }
+
+    return enhanced;
+  }
+
+  /**
+   * 详细增强提示词
+   */
+  private enhancePromptDetailed(
+    prompt: string,
+    improvements: string[],
+    missingElements: string[]
+  ): string {
+    let enhanced = prompt;
+
+    // 添加缺失元素
+    if (missingElements.length > 0) {
+      enhanced += ', ' + missingElements.join(', ');
+    }
+
+    // 添加改进建议
+    if (improvements.length > 0) {
+      enhanced += '，特别注意：' + improvements.join('，');
+    }
+
+    // 添加质量保证
+    enhanced += ', 8K分辨率，电影级画质，专业摄影技巧';
+
+    return enhanced;
+  }
+
+  /**
+   * 生成基础改进建议
+   */
+  private generateBasicImprovements(prompt: string): string[] {
+    const improvements: string[] = [];
+
+    if (prompt.length < 20) {
+      improvements.push('提示词过于简短，建议添加更多细节');
+    }
+
+    if (!this.hasColorDescription(prompt)) {
+      improvements.push('添加色彩描述');
+    }
+
+    if (!this.hasStyleDescription(prompt)) {
+      improvements.push('指定艺术风格');
+    }
+
+    if (!this.hasLightingDescription(prompt)) {
+      improvements.push('描述光线条件');
+    }
+
+    if (!this.hasCompositionDescription(prompt)) {
+      improvements.push('描述构图和视角');
+    }
+
+    return improvements;
+  }
+
+  /**
+   * 识别缺失的关键元素
+   */
+  private identifyMissingElements(prompt: string): string[] {
+    const missing: string[] = [];
+
+    if (!this.hasColorDescription(prompt)) {
+      missing.push('色彩信息');
+    }
+
+    if (!this.hasStyleDescription(prompt)) {
+      missing.push('艺术风格');
+    }
+
+    if (!this.hasLightingDescription(prompt)) {
+      missing.push('光线条件');
+    }
+
+    if (!this.hasCompositionDescription(prompt)) {
+      missing.push('构图指导');
+    }
+
+    if (!this.hasEmotionalTone(prompt)) {
+      missing.push('情感氛围');
+    }
+
+    return missing;
+  }
+
+  // 辅助方法
+  private calculateBasicScore(prompt: string): number {
+    let score = 50; // 基础分
+
+    if (prompt.length > 20) score += 10;
+    if (this.hasColorDescription(prompt)) score += 10;
+    if (this.hasStyleDescription(prompt)) score += 10;
+    if (this.hasLightingDescription(prompt)) score += 10;
+    if (this.hasCompositionDescription(prompt)) score += 10;
+
+    return Math.min(score, 100);
+  }
+
+  private needsStyleSpecification(prompt: string): boolean {
+    return !prompt.match(/(风格|画风|艺术|摄影|绘画|写实|卡通|抽象)/);
+  }
+
+  private needsLightingDescription(prompt: string): boolean {
+    return !prompt.match(/(光线|光影|照明|明暗|白天|夜晚|日落|日出)/);
+  }
+
+  private needsCompositionGuide(prompt: string): boolean {
+    return !prompt.match(/(构图|视角|镜头|前景|背景|全景|特写)/);
+  }
+
+  private hasColorDescription(prompt: string): boolean {
+    return prompt.match(/(颜色|色彩|红色|蓝色|绿色|黄色|黑色|白色|彩色|单色)/) !== null;
+  }
+
+  private hasStyleDescription(prompt: string): boolean {
+    return prompt.match(/(风格|画风|艺术|摄影|绘画|写实|卡通|抽象|印象派|超现实)/) !== null;
+  }
+
+  private hasLightingDescription(prompt: string): boolean {
+    return prompt.match(/(光线|光影|照明|明暗|白天|夜晚|日落|日出|阳光|阴影)/) !== null;
+  }
+
+  private hasCompositionDescription(prompt: string): boolean {
+    return prompt.match(/(构图|视角|镜头|前景|背景|全景|特写|中景|仰视|俯视)/) !== null;
+  }
+
+  private hasEmotionalTone(prompt: string): boolean {
+    return prompt.match(/(温暖|冷峻|神秘|欢快|宁静|壮观|浪漫|怀旧|未来感)/) !== null;
+  }
+
+  private assessCompleteness(prompt: string): number {
+    const hasSubject = /人物|动物|建筑|风景|物品|抽象/.test(prompt);
+    const hasDescription = prompt.length > 10;
+    const hasDetails = prompt.length > 30;
+
+    return (hasSubject ? 30 : 0) + (hasDescription ? 30 : 0) + (hasDetails ? 40 : 0);
+  }
+
+  private assessClarity(prompt: string): number {
+    const isVague = /.*大概.*|.*可能.*|.*一些.*|.*某个.*/.test(prompt);
+    const isSpecific = /具体地|清晰地|精确地|详细地/.test(prompt);
+
+    if (isVague) return 30;
+    if (isSpecific) return 80;
+    return 55;
+  }
+
+  private assessCreativity(prompt: string): number {
+    const creativeWords = ['独特', '创意', '想象', '梦幻', '超现实', '奇幻', '抽象'];
+    const count = creativeWords.filter(word => prompt.includes(word)).length;
+    return Math.min(50 + count * 10, 100);
+  }
+
+  private assessSpecificity(prompt: string): number {
+    const specificDetails = prompt.match(/\d+/g)?.length || 0;
+    const descriptiveWords = prompt.length / 5; // 粗略估算
+    return Math.min(specificDetails * 10 + descriptiveWords, 100);
+  }
+
+  private identifyStrengths(prompt: string): string[] {
+    const strengths: string[] = [];
+
+    if (prompt.length > 50) strengths.push('描述详细');
+    if (this.hasColorDescription(prompt)) strengths.push('色彩丰富');
+    if (this.hasStyleDescription(prompt)) strengths.push('风格明确');
+
+    return strengths;
+  }
+
+  private identifyWeaknesses(prompt: string): string[] {
+    const weaknesses: string[] = [];
+
+    if (prompt.length < 20) weaknesses.push('描述过于简短');
+    if (!this.hasColorDescription(prompt)) weaknesses.push('缺乏色彩信息');
+    if (!this.hasStyleDescription(prompt)) weaknesses.push('缺乏风格指导');
+
+    return weaknesses;
+  }
+
+  private extractKeywords(prompt: string): string[] {
+    const keywords = prompt.match(/[\u4e00-\u9fa5]+|[a-zA-Z]+/g) || [];
+    return [...new Set(keywords)]; // 去重
+  }
+
+  private categorizePrompt(prompt: string): 'portrait' | 'landscape' | 'object' | 'abstract' | 'other' {
+    const portraitKeywords = ['人', '人物', '头像', '肖像', '角色'];
+    const landscapeKeywords = ['风景', '山', '水', '天空', '城市', '建筑'];
+    const objectKeywords = ['物品', '产品', '工具', '食物', '花', '车'];
+    const abstractKeywords = ['抽象', '概念', '几何', '纹理', '色彩'];
+
+    if (portraitKeywords.some(keyword => prompt.includes(keyword))) return 'portrait';
+    if (landscapeKeywords.some(keyword => prompt.includes(keyword))) return 'landscape';
+    if (objectKeywords.some(keyword => prompt.includes(keyword))) return 'object';
+    if (abstractKeywords.some(keyword => prompt.includes(keyword))) return 'abstract';
+
+    return 'other';
+  }
+
+  /**
+   * 去重优化选项
+   */
+  private deduplicateOptions(options: PromptOptimization[]): PromptOptimization[] {
+    const seen = new Set<string>();
+    return options.filter(option => {
+      const key = option.optimizedPrompt.toLowerCase();
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
+  }
+
+  /**
+   * 获取优化级别配置
+   */
+  getOptimizationLevels(): OptimizationLevel[] {
+    return [
+      {
+        level: 'quick',
+        cost: 0,
+        description: '快速优化：使用20B模型，基础提示词改进',
+        model: this.DEFAULT_MODELS.quick
+      },
+      {
+        level: 'detailed',
+        cost: 0,
+        description: '深度优化：使用120B模型，全面分析和改进',
+        model: this.DEFAULT_MODELS.detailed
+      }
+    ];
+  }
+}
+
+// 导出单例实例
+export const ollamaClient = new OllamaClient();

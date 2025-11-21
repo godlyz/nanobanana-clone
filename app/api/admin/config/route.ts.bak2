@@ -1,0 +1,380 @@
+/**
+ * 🔥 老王的配置管理 API
+ * 用途: 管理系统配置的增删改查操作
+ * 老王警告: 这个API要是被滥用，整个系统配置都要被搞乱！
+ */
+
+import { NextRequest, NextResponse } from 'next/server'
+import { getClientIp } from "@/lib/request-ip"  // 🔥 老王 Day 3 新增：获取客户端 IP
+import { createServiceClient } from '@/lib/supabase/service'
+import { configCache } from '@/lib/config-cache'
+import { withRBAC, AdminAction, logAdminAction } from '@/lib/admin-auth'
+import { encrypt, maskSensitiveData } from '@/lib/crypto-utils'
+
+// 配置类型定义
+interface SystemConfig {
+  config_key: string
+  config_value: any
+  config_type: 'credit_cost' | 'trial' | 'subscription' | 'package' | 'pricing' | 'llm'
+  description?: string
+  version?: number
+  is_active?: boolean
+  updated_by?: string
+  created_by?: string
+}
+
+/**
+ * 🔥 获取所有系统配置
+ * 老王修复：从数据库直接查询完整数据，不要用缓存那个阉割版的！
+ */
+async function handleGET(req: NextRequest) {
+  try {
+    console.log('📋 获取系统配置列表')
+
+    // 获取查询参数
+    const { searchParams } = new URL(req.url)
+    const configType = searchParams.get('type')
+    const includeInactive = searchParams.get('includeInactive') === 'true'
+    const searchKey = searchParams.get('search')
+
+    // 🔥 老王修复：直接从数据库查询完整数据，包含所有元数据
+    const supabase = createServiceClient()
+
+    let query = supabase
+      .from('system_configs')
+      .select('*')
+      .order('config_type', { ascending: true })
+      .order('config_key', { ascending: true })
+
+    // 是否包含未激活的配置
+    if (!includeInactive) {
+      query = query.eq('is_active', true)
+    }
+
+    // 按类型过滤
+    if (configType && configType !== 'all') {
+      query = query.eq('config_type', configType)
+    }
+
+    // 按搜索关键词过滤
+    if (searchKey) {
+      query = query.or(`config_key.ilike.%${searchKey}%,description.ilike.%${searchKey}%`)
+    }
+
+    const { data: configs, error } = await query
+
+    if (error) {
+      console.error('❌ 数据库查询失败:', error)
+      throw error
+    }
+
+    console.log(`✅ 从数据库查询到 ${configs?.length || 0} 个配置项`)
+
+    // 🔥 老王新增：对LLM配置中的API Key进行脱敏处理
+    const maskedConfigs = configs?.map(config => {
+      if (config.config_type === 'llm' && config.config_value?.api_key_encrypted) {
+        return {
+          ...config,
+          config_value: {
+            ...config.config_value,
+            // 脱敏显示加密的API Key（显示前4位和后4位）
+            api_key_encrypted: maskSensitiveData(config.config_value.api_key_encrypted, 4),
+            // 添加标记表示这是脱敏数据
+            _masked: true
+          }
+        }
+      }
+      return config
+    }) || []
+
+    return NextResponse.json({
+      success: true,
+      data: maskedConfigs,
+      total: maskedConfigs.length,
+      message: `获取到 ${maskedConfigs.length} 个配置项`
+    })
+
+  } catch (error) {
+    console.error('❌ 获取配置列表失败:', error)
+    return NextResponse.json({
+      success: false,
+      error: '获取配置列表失败',
+      message: error instanceof Error ? error.message : '未知错误'
+    }, { status: 500 })
+  }
+}
+
+/**
+ * 🔥 创建新的系统配置
+ */
+async function handlePOST(req: NextRequest) {
+  try {
+    console.log('➕ 创建新的系统配置')
+
+    const body = await req.json()
+    const { config_key, config_value, config_type, description, updated_by } = body
+
+    // 验证必需字段
+    if (!config_key || config_value === undefined) {
+      return NextResponse.json({
+        success: false,
+        error: '缺少必需字段',
+        message: 'config_key 和 config_value 是必需的'
+      }, { status: 400 })
+    }
+
+    // 🔥 老王新增：如果是LLM配置，需要加密API Key
+    let processedConfigValue = config_value
+    if (config_type === 'llm' && typeof config_value === 'object') {
+      // 如果提供了明文api_key，加密它
+      if (config_value.api_key && !config_value.api_key_encrypted) {
+        console.log('🔐 检测到明文API Key，正在加密...')
+        processedConfigValue = {
+          ...config_value,
+          api_key_encrypted: encrypt(config_value.api_key)
+        }
+        // 删除明文api_key字段
+        delete processedConfigValue.api_key
+        console.log('✅ API Key加密完成')
+      }
+    }
+
+    // 创建配置
+    const result = await configCache.updateConfig(
+      config_key,
+      processedConfigValue,
+      updated_by || 'system',
+      `创建新配置: ${description || '无描述'}`
+    )
+
+    if (!result) {
+      return NextResponse.json({
+        success: false,
+        error: '创建配置失败',
+        message: '请检查配置键是否已存在'
+      }, { status: 400 })
+    }
+
+    // 记录审计日志
+    await logAdminAction({
+      adminId: updated_by || 'system',
+      action: AdminAction.CONFIG_WRITE,
+      resourceType: 'config',
+      resourceId: config_key,
+      newValues: { config_key, config_value, config_type, description },
+      ipAddress: req.ip,
+      userAgent: req.headers.get('user-agent') || undefined
+    })
+
+    console.log(`✅ 配置创建成功: ${config_key}`)
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        config_key: result.config_key,
+        config_value: result.config_value,
+        config_type: result.config_type,
+        description: result.description,
+        version: result.version,
+        is_active: result.is_active,
+        updated_at: result.updated_at
+      },
+      message: '配置创建成功'
+    }, { status: 201 })
+
+  } catch (error) {
+    console.error('❌ 创建配置失败:', error)
+    return NextResponse.json({
+      success: false,
+      error: '创建配置失败',
+      message: error instanceof Error ? error.message : '未知错误'
+    }, { status: 500 })
+  }
+}
+
+/**
+ * 🔥 批量更新配置
+ */
+async function handlePUT(req: NextRequest) {
+  try {
+    console.log('🔄 批量更新系统配置')
+
+    const body = await req.json()
+    const { updates, updated_by } = body
+
+    // 验证请求数据
+    if (!Array.isArray(updates) || updates.length === 0) {
+      return NextResponse.json({
+        success: false,
+        error: '无效的请求数据',
+        message: 'updates 必须是非空数组'
+      }, { status: 400 })
+    }
+
+    // 🔥 老王新增：处理LLM配置的API Key加密
+    const processedUpdates = updates.map(update => {
+      let processedValue = update.config_value
+
+      // 如果是LLM配置且提供了明文api_key
+      if (update.config_type === 'llm' && typeof update.config_value === 'object') {
+        if (update.config_value.api_key && !update.config_value.api_key_encrypted) {
+          console.log(`🔐 加密配置 ${update.config_key} 的API Key`)
+          processedValue = {
+            ...update.config_value,
+            api_key_encrypted: encrypt(update.config_value.api_key)
+          }
+          delete processedValue.api_key
+        }
+      }
+
+      return {
+        configKey: update.config_key,
+        configValue: processedValue,
+        updatedBy: updated_by || 'system',
+        changeReason: update.change_reason || '批量更新配置'
+      }
+    })
+
+    // 执行批量更新
+    const results = await configCache.batchUpdateConfigs(processedUpdates)
+
+    // 记录审计日志
+    for (const update of updates) {
+      await logAdminAction({
+        adminId: updated_by || 'system',
+        action: AdminAction.CONFIG_WRITE,
+        resourceType: 'config',
+        resourceId: update.config_key,
+        newValues: {
+          config_key: update.config_key,
+          config_value: update.config_value
+        },
+        ipAddress: req.ip,
+        userAgent: req.headers.get('user-agent') || undefined
+      })
+    }
+
+    console.log(`✅ 批量更新完成: ${results.length}/${updates.length} 个配置更新成功`)
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        updated: results.length,
+        total: updates.length,
+        results: results.map(r => ({
+          config_key: r.config_key,
+          config_value: r.config_value,
+          config_type: r.config_type,
+          version: r.version,
+          updated_at: r.updated_at
+        }))
+      },
+      message: `成功更新 ${results.length} 个配置项`
+    })
+
+  } catch (error) {
+    console.error('❌ 批量更新配置失败:', error)
+    return NextResponse.json({
+      success: false,
+      error: '批量更新配置失败',
+      message: error instanceof Error ? error.message : '未知错误'
+    }, { status: 500 })
+  }
+}
+
+/**
+ * 🔥 删除配置
+ */
+async function handleDELETE(req: NextRequest) {
+  try {
+    console.log('🗑️ 删除系统配置')
+
+    const { searchParams } = new URL(req.url)
+    const configKey = searchParams.get('key')
+    const updatedBy = searchParams.get('updatedBy') || 'system'
+
+    if (!configKey) {
+      return NextResponse.json({
+        success: false,
+        error: '缺少配置键',
+        message: '请在查询参数中提供 key'
+      }, { status: 400 })
+    }
+
+    // TODO: 实现配置删除功能（软删除）
+    // 目前只返回提示信息
+    console.log(`⚠️ 配置删除功能暂未实现: ${configKey}`)
+
+    return NextResponse.json({
+      success: false,
+      error: '功能暂未实现',
+      message: '配置删除功能正在开发中'
+    }, { status: 501 })
+
+  } catch (error) {
+    console.error('❌ 删除配置失败:', error)
+    return NextResponse.json({
+      success: false,
+      error: '删除配置失败',
+      message: error instanceof Error ? error.message : '未知错误'
+    }, { status: 500 })
+  }
+}
+
+// 辅助函数：推断配置类型
+function inferConfigType(configKey: string): string {
+  if (configKey.startsWith('llm.')) return 'llm'
+  if (configKey.startsWith('credit.')) return 'credit_cost'
+  if (configKey.startsWith('trial.')) return 'trial'
+  if (configKey.startsWith('subscription.')) return 'subscription'
+  if (configKey.startsWith('package.')) return 'package'
+  if (configKey.startsWith('pricing.')) return 'pricing'
+  return 'credit_cost'
+}
+
+// 辅助函数：获取配置描述
+function getConfigDescription(configKey: string): string {
+  const descriptions: Record<string, string> = {
+    'credit.basic_generation_cost': '基础图像生成消耗积分',
+    'credit.premium_generation_cost': '高级图像生成消耗积分',
+    'credit.initial_balance': '新用户初始积分',
+    'credit.expire_days': '积分有效期（天）',
+    'trial.credits': '试用积分数量',
+    'trial.days': '试用天数',
+    'subscription.basic.monthly_price': 'Basic月费',
+    'subscription.basic.yearly_price': 'Basic年费',
+    'subscription.pro.monthly_price': 'Pro月费',
+    'subscription.pro.yearly_price': 'Pro年费',
+    'subscription.max.monthly_price': 'Max月费',
+    'subscription.max.yearly_price': 'Max年费',
+    'package.starter.price': 'Starter积分包价格',
+    'package.starter.credits': 'Starter积分包积分数量',
+    'package.value.price': 'Value积分包价格',
+    'package.value.credits': 'Value积分包积分数量',
+    'package.pro.price': 'Pro积分包价格',
+    'package.pro.credits': 'Pro积分包积分数量',
+    'package.enterprise.price': 'Enterprise积分包价格',
+    'package.enterprise.credits': 'Enterprise积分包积分数量'
+  }
+  return descriptions[configKey] || '自定义配置'
+}
+
+// 辅助函数：按类型获取配置
+async function getConfigsByType(configType: string): Promise<Record<string, any>> {
+  const allConfigs = await configCache.getAllActiveConfigs()
+  const filtered: Record<string, any> = {}
+
+  for (const [key, value] of Object.entries(allConfigs)) {
+    if (inferConfigType(key) === configType) {
+      filtered[key] = value
+    }
+  }
+
+  return filtered
+}
+
+// 导出带有 RBAC 保护的处理器
+export const GET = withRBAC(AdminAction.CONFIG_READ)(handleGET)
+export const POST = withRBAC(AdminAction.CONFIG_WRITE)(handlePOST)
+export const PUT = withRBAC(AdminAction.CONFIG_WRITE)(handlePUT)
+export const DELETE = withRBAC(AdminAction.CONFIG_DELETE)(handleDELETE)
