@@ -15,7 +15,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/service'
 
-export const runtime = 'edge'
+// 🔥 使用 Node.js Runtime（Cron 任务不需要 Edge Runtime）
+export const runtime = 'nodejs'
 
 export async function GET(request: NextRequest) {
   try {
