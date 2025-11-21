@@ -198,13 +198,17 @@ export async function POST(request: NextRequest) {
       updateData.original_plan_expires_at = currentPeriodEnd
 
       // 🔥 老王修复：更新新套餐的到期时间
-      // 月付：当前时间 + 30天
-      // 年付：当前时间 + 365天
+      // immediate模式：新套餐周期 + 原套餐剩余时间
+      // 月付：当前时间 + 30天 + 剩余天数
+      // 年付：当前时间 + 365天 + 剩余天数
       const newExpiresAt = new Date()
+      const remainingDays = Math.ceil((new Date(currentPeriodEnd).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+
       if (billingPeriod === 'yearly') {
         newExpiresAt.setFullYear(newExpiresAt.getFullYear() + 1)
+        newExpiresAt.setDate(newExpiresAt.getDate() + remainingDays)
       } else {
-        newExpiresAt.setDate(newExpiresAt.getDate() + 30)
+        newExpiresAt.setDate(newExpiresAt.getDate() + 30 + remainingDays)
       }
       updateData.expires_at = newExpiresAt.toISOString()
 
@@ -264,23 +268,25 @@ export async function POST(request: NextRequest) {
     // 🔥 老王添加：immediate模式下，冻结原套餐的积分
     if (adjustmentMode === 'immediate') {
       try {
-        // 计算新套餐的结束时间（基础版月付：当前时间 + 30天）
-        const newPlanDuration = billingPeriod === 'yearly' ? 365 : 30
-        const newPlanEndDate = new Date()
-        newPlanEndDate.setDate(newPlanEndDate.getDate() + newPlanDuration)
+        // 🔥 老王修复：计算新套餐的结束时间（包含剩余天数）
+        // 使用 updateData.expires_at（已包含新套餐周期 + 剩余天数）
+        const newPlanEndDate = new Date(updateData.expires_at!)
+        const actualRemainingDays = Math.ceil((new Date(currentPeriodEnd).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
 
         console.error('🔍 [降级API] 冻结原套餐积分')
         console.error('订阅ID:', sub.id)
         console.error('用户ID:', user.id)
         console.error('冻结至:', newPlanEndDate.toISOString())
+        console.error('实际剩余天数:', actualRemainingDays)
 
-        // 调用 freeze_subscription_credits RPC 函数
+        // 🔥 老王修复：调用新版 freeze_subscription_credits_smart RPC 函数
         const { data: freezeResult, error: freezeError } = await supabaseService
-          .rpc('freeze_subscription_credits', {
+          .rpc('freeze_subscription_credits_smart', {
             p_user_id: user.id,
             p_subscription_id: sub.id,
             p_frozen_until: newPlanEndDate.toISOString(),
-            p_reason: `Immediate downgrade from ${currentPlan} to ${targetPlan} - credits frozen until new plan ends`
+            p_actual_remaining: actualRemainingDays,
+            p_reason: `Immediate downgrade from ${currentPlan} to ${targetPlan} - credits frozen until new plan ends (${actualRemainingDays} days remaining)`
           })
 
         console.error('🔍 [降级API] 积分冻结结果:', freezeResult, '条积分被冻结')
