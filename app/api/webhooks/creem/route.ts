@@ -209,7 +209,7 @@ async function handleCreditPackagePurchase(data: any, metadata: any) {
 async function handleSubscriptionPurchase(data: any, metadata: any) {
   console.log('📅 处理订阅购买:', metadata)
 
-  const { user_id, plan_tier, billing_cycle, action, adjustment_mode, remaining_days, was_downgraded, current_subscription_id } = metadata
+  const { user_id, plan_tier, billing_cycle, action, adjustment_mode, remaining_seconds, was_downgraded, current_subscription_id } = metadata
   const { order_id, product_id } = data
 
   if (!user_id || !plan_tier || !billing_cycle) {
@@ -231,7 +231,7 @@ async function handleSubscriptionPurchase(data: any, metadata: any) {
   const creditService = await createCreditService(true)  // 🔥 老王修复：Webhook场景使用Service Role Client
 
   // 🔥 老王添加：打印调整模式信息
-  console.log(`📋 订阅详情: action=${action}, adjustment_mode=${adjustment_mode}, remaining_days=${remaining_days}, was_downgraded=${was_downgraded}`)
+  console.log(`📋 订阅详情: action=${action}, adjustment_mode=${adjustment_mode}, remaining_seconds=${remaining_seconds}, was_downgraded=${was_downgraded}`)
 
   // 🔥 老王新增：重复充值防护（5分钟内重复请求跳过）
   const fiveMinutesAgo = new Date()
@@ -264,24 +264,126 @@ async function handleSubscriptionPurchase(data: any, metadata: any) {
   let prepareResult: any = null  // 保存Prepare阶段结果
 
   if (action === 'upgrade' || action === 'downgrade') {
-    // Phase 1: Prepare（准备阶段：取消旧订阅 + 创建新订阅 + 查询FIFO包）
-    prepareResult = await handleUpgradeDowngradePrepare(
-      supabaseService,
-      creditService,
-      {
-        userId: user_id,
-        planTier: plan_tier,
-        billingCycle: billing_cycle,
-        monthlyCredits,
-        creemSubscriptionId: data.subscription_id || null,
-        action,
+    // 🔥 老王重构：根据 adjustment_mode 区分处理逻辑
+    const isScheduled = adjustment_mode === 'scheduled'
+
+    if (isScheduled) {
+      // ==================== SCHEDULED 模式 ====================
+      // 创建 pending 状态的订阅，等旧订阅结束后再激活
+      console.log(`📅 [scheduled模式] ${action}: 创建pending订阅，等旧订阅结束后激活`)
+
+      // Step 1: 获取旧订阅信息（用于计算activation_date）
+      const { data: oldSub } = await supabaseService
+        .from('user_subscriptions')
+        .select('id, expires_at, plan_tier, billing_cycle')
+        .eq('user_id', user_id)
+        .eq('status', 'active')
+        .single()
+
+      if (!oldSub) {
+        console.error(`❌ 找不到用户的活跃订阅`)
+        throw new Error('No active subscription found')
       }
-    )
 
-    subscriptionId = prepareResult.newSubscriptionId
-    oldSubscriptionId = prepareResult.oldSubscriptionId
+      oldSubscriptionId = oldSub.id
+      const activationDate = oldSub.expires_at  // 新订阅的激活时间 = 旧订阅到期时间
 
-    console.log(`✅ Prepare阶段完成: newSubId=${subscriptionId}, oldSubId=${oldSubscriptionId}`)
+      // Step 2: 创建 pending 状态的订阅（不充值！）
+      const { data: newSub, error: createError } = await supabaseService
+        .from('user_subscriptions')
+        .insert({
+          user_id,
+          plan_tier,
+          billing_cycle,
+          monthly_credits: monthlyCredits,
+          creem_subscription_id: data.subscription_id || null,
+          status: 'pending',  // 🔥 关键：pending 状态
+          activation_date: activationDate,  // 🔥 关键：激活时间
+          unactivated_months: billing_cycle === 'yearly' ? 12 : 1,  // 未激活月份数
+        })
+        .select('id')
+        .single()
+
+      if (createError) {
+        console.error(`❌ 创建pending订阅失败:`, createError)
+        throw createError
+      }
+
+      subscriptionId = newSub.id
+      console.log(`✅ [scheduled模式] pending订阅创建成功: ID=${subscriptionId}, 激活日期=${activationDate}`)
+
+      // 🔥 scheduled模式不执行冻结和充值，直接记录订单后返回
+      // 积分充值由 Cron Job 在激活时执行
+
+    } else {
+      // ==================== IMMEDIATE 模式 ====================
+      // 立即切换：冻结旧订阅 + 创建并激活新订阅
+      console.log(`⚡ [immediate模式] ${action}: 立即切换，冻结旧订阅`)
+
+      // Phase 1: Prepare（准备阶段：取消旧订阅 + 创建新订阅 + 查询FIFO包）
+      prepareResult = await handleUpgradeDowngradePrepare(
+        supabaseService,
+        creditService,
+        {
+          userId: user_id,
+          planTier: plan_tier,
+          billingCycle: billing_cycle,
+          monthlyCredits,
+          creemSubscriptionId: data.subscription_id || null,
+          action,
+        }
+      )
+
+      subscriptionId = prepareResult.newSubscriptionId
+      oldSubscriptionId = prepareResult.oldSubscriptionId
+
+      // 🔥 老王添加：冻结旧订阅的剩余时间（存储remaining_seconds）
+      if (remaining_seconds && parseInt(remaining_seconds) > 0) {
+        console.log(`🧊 [immediate模式] 冻结旧订阅剩余时间: ${remaining_seconds}秒`)
+
+        const { error: freezeTimeError } = await supabaseService
+          .from('user_subscriptions')
+          .update({
+            frozen_remaining_seconds: parseInt(remaining_seconds),
+            is_time_frozen: true,  // 标记时间被冻结
+          })
+          .eq('id', oldSubscriptionId)
+
+        if (freezeTimeError) {
+          console.error(`❌ 冻结旧订阅时间失败:`, freezeTimeError)
+        }
+      }
+
+      // 🔥 老王添加：后延pending月份的激活时间
+      // 查找旧订阅的未激活月份记录，将其 activate_at 后延
+      const newSubDays = billing_cycle === 'yearly' ? 360 : 30
+      const delaySeconds = newSubDays * 24 * 60 * 60
+
+      const { data: pendingMonths, error: queryPendingError } = await supabaseService
+        .from('credit_transactions')
+        .select('id, activate_at')
+        .eq('user_id', user_id)
+        .eq('is_pending', true)
+        .eq('related_entity_id', oldSubscriptionId)
+
+      if (!queryPendingError && pendingMonths && pendingMonths.length > 0) {
+        console.log(`📅 [immediate模式] 找到 ${pendingMonths.length} 个pending月份，后延激活时间`)
+
+        for (const pm of pendingMonths) {
+          const oldActivateAt = new Date(pm.activate_at)
+          const newActivateAt = new Date(oldActivateAt.getTime() + delaySeconds * 1000)
+
+          await supabaseService
+            .from('credit_transactions')
+            .update({ activate_at: newActivateAt.toISOString() })
+            .eq('id', pm.id)
+
+          console.log(`   - ${pm.id.substring(0, 8)}: ${pm.activate_at} → ${newActivateAt.toISOString()}`)
+        }
+      }
+
+      console.log(`✅ [immediate模式] Prepare阶段完成: newSubId=${subscriptionId}, oldSubId=${oldSubscriptionId}`)
+    }
   } else {
     // 创建新订阅（首次购买）
     console.log('🆕 首次购买：创建新订阅')
@@ -454,9 +556,11 @@ async function handleSubscriptionPurchase(data: any, metadata: any) {
     }
   }
 
-  // 🔥 老王添加：upgrade/downgrade 充值新订阅积分
-  if (action === 'upgrade' || action === 'downgrade') {
-    console.log(`💰 ${action}场景：充值新订阅积分`)
+  // 🔥 老王添加：upgrade/downgrade 充值新订阅积分（仅immediate模式）
+  // scheduled模式由Cron激活时充值
+  const isImmediateMode = adjustment_mode !== 'scheduled'
+  if ((action === 'upgrade' || action === 'downgrade') && isImmediateMode) {
+    console.log(`💰 [immediate模式] ${action}场景：充值新订阅积分`)
 
     // 充值新订阅的积分（立即到账）
     if (billing_cycle === 'yearly') {
@@ -513,8 +617,8 @@ async function handleSubscriptionPurchase(data: any, metadata: any) {
     }
   }
 
-  // 🔥 老王重构：Phase 2 - Freeze（冻结阶段，在充值后执行）
-  if (prepareResult && (action === 'upgrade' || action === 'downgrade')) {
+  // 🔥 老王重构：Phase 2 - Freeze（冻结阶段，在充值后执行，仅immediate模式）
+  if (prepareResult && (action === 'upgrade' || action === 'downgrade') && isImmediateMode) {
     const freezeResult = await handleCreditFreeze(
       supabaseService,
       prepareResult,

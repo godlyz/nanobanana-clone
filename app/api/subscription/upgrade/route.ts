@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     // 2. 解析请求参数
     const body = await request.json()
-    const { targetPlan, billingPeriod, adjustmentMode = 'immediate', remainingDays = 0 } = body
+    const { targetPlan, billingPeriod, adjustmentMode = 'immediate' } = body
 
     // 3. 参数验证
     if (!targetPlan || !billingPeriod) {
@@ -103,25 +103,29 @@ export async function POST(request: NextRequest) {
     // 🔥 老王注意：这里需要检查subscription是否为数组且有数据
     let currentPlan: string | null = null
     let currentBillingCycle: string | null = null
+    let currentExpiresAt: string | null = null
+    let remainingSeconds: number = 0
 
     if (!subError && subscription && Array.isArray(subscription) && subscription.length > 0) {
       const sub = subscription[0]
       currentPlan = sub.plan_tier
       currentBillingCycle = sub.billing_cycle
+      currentExpiresAt = sub.expires_at
 
-      // 🔥 老王添加：检查订阅是否被冻结
-      if (sub.status === 'frozen' && sub.frozen_until) {
-        const frozenUntil = new Date(sub.frozen_until)
-        const now = new Date()
-        if (frozenUntil > now) {
-          // 订阅仍在冻结期内
-          return NextResponse.json({
-            success: false,
-            error: '订阅已冻结',
-            message: `您的订阅已被冻结至 ${frozenUntil.toLocaleDateString('zh-CN')}，暂时无法升级。冻结期间积分将被保留，解冻后自动恢复。`,
-            frozenUntil: sub.frozen_until,
-          }, { status: 403 })
-        }
+      // 🔥 老王重构：检查是否存在两个套餐队列（禁止引入第三个套餐）
+      const { data: pendingSubs } = await supabase
+        .from('user_subscriptions')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('status', 'pending')
+        .limit(1)
+
+      if (pendingSubs && pendingSubs.length > 0) {
+        return NextResponse.json({
+          success: false,
+          error: '操作受限',
+          message: '您已有待执行的套餐，在当前套餐结束前只能续费现有套餐，不能再次升降级',
+        }, { status: 403 })
       }
 
       // 检查订阅是否过期
@@ -131,6 +135,9 @@ export async function POST(request: NextRequest) {
 
       if (isExpired) {
         currentPlan = null // 已过期视为无订阅
+      } else {
+        // 计算剩余秒数（用于冻结）
+        remainingSeconds = Math.max(0, Math.floor((expiresAt.getTime() - now.getTime()) / 1000))
       }
     }
 
@@ -209,9 +216,11 @@ export async function POST(request: NextRequest) {
           plan_tier: targetPlan,
           billing_cycle: billingPeriod,
           previous_plan: currentPlan || 'none',
+          previous_billing_cycle: currentBillingCycle || 'none', // 🔥 老王添加：原计费周期
+          previous_expires_at: currentExpiresAt || 'none', // 🔥 老王添加：原过期时间
           action: 'upgrade', // 🔥 老王标记：这是升级操作
           adjustment_mode: adjustmentMode, // 🔥 老王添加：调整模式（immediate/scheduled）
-          remaining_days: remainingDays.toString(), // 🔥 老王添加：剩余天数（需要转为字符串）
+          remaining_seconds: remainingSeconds.toString(), // 🔥 老王修正：剩余秒数（不是天数！）
         }
       }),
     })
@@ -234,10 +243,11 @@ export async function POST(request: NextRequest) {
       checkoutUrl: data.url || data.checkout_url,
       sessionId: data.id,
       currentPlan: currentPlan || 'none',
+      currentBillingCycle: currentBillingCycle || 'none',
       targetPlan,
       billingPeriod,
       adjustmentMode, // 🔥 老王添加：返回调整模式
-      remainingDays, // 🔥 老王添加：返回剩余天数
+      remainingSeconds, // 🔥 老王修正：返回剩余秒数
     })
 
   } catch (error) {
