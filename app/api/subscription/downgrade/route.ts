@@ -358,10 +358,11 @@ export async function POST(request: NextRequest) {
       targetBillingCycle: billingPeriod,
       currentPeriodEnd,
       effectiveDate: currentPeriodEnd, // 降级在当前周期结束时生效
+      newExpiresAt: adjustmentMode === 'immediate' ? updateData.expires_at : null, // 🔥 老王添加：immediate模式返回新到期时间
       adjustmentMode, // 🔥 老王添加：返回调整模式
       originalPlanExpiresAt: adjustmentMode === 'immediate' ? currentPeriodEnd : null, // 🔥 老王修改：使用时间戳
       message: adjustmentMode === 'immediate'
-        ? '降级已安排，将立即生效，当前套餐剩余时间将在新套餐结束后继续'
+        ? '降级已立即生效'
         : '降级已安排，将在当前订阅周期结束后生效',
     })
 
