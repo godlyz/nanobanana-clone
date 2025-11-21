@@ -347,6 +347,29 @@ export async function POST(request: NextRequest) {
         console.error('❌ [降级API] 充值新套餐积分异常:', refillErr)
         // 不中断流程
       }
+
+      // 🔥 老王添加：immediate模式完成后，清除降级标记（因为已经生效了）
+      try {
+        console.error('🔍 [降级API] 清除immediate模式的降级标记（已生效）')
+        const { error: clearError } = await supabaseService
+          .from('user_subscriptions')
+          .update({
+            downgrade_to_plan: null,
+            downgrade_to_billing_cycle: null,
+            adjustment_mode: null,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', sub.id)
+          .eq('user_id', user.id)
+
+        if (clearError) {
+          console.error('❌ [降级API] 清除降级标记失败:', clearError)
+        } else {
+          console.error('✅ [降级API] 降级标记已清除（immediate模式已生效）')
+        }
+      } catch (clearErr) {
+        console.error('❌ [降级API] 清除降级标记异常:', clearErr)
+      }
     }
 
     // 7. 返回降级确认信息
