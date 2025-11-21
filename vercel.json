@@ -10,7 +10,7 @@
     },
     {
       "path": "/api/cron/poll-video-status",
-      "schedule": "* * * * *"
+      "schedule": "0 * * * *"
     }
   ]
 }
