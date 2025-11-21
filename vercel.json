@@ -7,10 +7,6 @@
     {
       "path": "/api/cron/activate-monthly-credits",
       "schedule": "0 0 * * *"
-    },
-    {
-      "path": "/api/cron/poll-video-status",
-      "schedule": "0 * * * *"
     }
   ]
 }
