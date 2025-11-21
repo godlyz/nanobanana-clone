@@ -1,35 +1,37 @@
 # 订阅调整模式时间计算测试报告
 
-**测试日期**: 2025-11-09
+**测试日期**: 2025-11-21（更新）
 **测试人员**: AI Assistant + User (kn197884@gmail.com)
 **测试环境**: Creem 测试环境 (creem_test_xxx)
-**项目版本**: Git commit 8f3e756
+**项目版本**: Git commit 18d8acb (修复3个关键BUG后)
 
 ---
 
 ## 📊 测试概览
 
 **总场景数**: 9
-**通过数**: 0
+**通过数**: 2 ✅
 **失败数**: 0
-**阻塞数**: 1 (场景 2.4 - 待数据库修复后验证)
-**跳过数**: 8
+**阻塞数**: 0 ✅ (已解除)
+**跳过数**: 7
+
+**已完成场景**：
+- ✅ 场景2.1: 降级Immediate（Max→Basic）- 通过
+- ✅ 场景2.4: 降级Scheduled（Max→Basic）- 通过
 
 ---
 
-## ⚠️ 当前状态：测试阻塞
+## ✅ 当前状态：数据库修复完成，2个场景测试通过
 
-**阻塞原因**：Supabase RPC 函数缺少降级字段
+**修复完成**：
+1. ✅ RPC函数已更新（添加降级字段）
+2. ✅ 修复3个关键BUG：
+   - 时间计算错误（immediate模式未加剩余天数）
+   - 积分冻结API废弃（使用新API `freeze_subscription_credits_smart`）
+   - API响应缺少 `newExpiresAt` 字段
 
-**问题描述**：
-- 降级API调用成功，但降级标记未写入数据库
-- 根本原因：`get_user_active_subscription` RPC函数未返回降级相关字段
-- 已创建修复迁移：`supabase/migrations/20251109000002_update_rpc_add_downgrade_fields.sql`
-
-**待执行操作**：
-1. 在 Supabase Dashboard 执行 RPC 更新迁移SQL
-2. 验证降级数据能否正确返回
-3. 继续完成剩余8个测试场景
+**下一步**：
+- 继续完成剩余7个测试场景（升级场景 + 边界情况）
 
 ---
 
@@ -252,80 +254,85 @@ console.log(`实际: ${diffDays}, 预期: 465, 正确: ${diffDays === 465 ? '✅
 
 ## ✅ 第二组：降级场景（4个）
 
-### 场景 2.1: 降级 - Immediate 模式（Pro → Basic）
+### 场景 2.1: 降级 - Immediate 模式（Max → Basic）
 
 **测试目标**: 验证降级时立即切换，剩余时间延续
 
-**执行时间**: [填写时间]
+**执行时间**: 2025-11-21 06:00
 
 **前置数据**:
-- 当前订阅: Pro Monthly
-- 剩余天数: 12
+- 用户ID: bfb8182a-6865-4c66-a89e-05711796e2b2
+- 订阅ID: 757e96be-66c7-4e2b-97e5-6965e1814713
+- 当前订阅: Max Monthly
+- 剩余天数: 21
+- 当前过期时间: 2025-12-11T16:00:00+00:00
 
 **执行操作**:
-1. 点击"降级套餐"
-2. 选择 Basic Monthly
-3. 选择"即时调整"
-4. **重要**: 完成降级支付流程
+1. ✅ 浏览器Console执行降级API
+2. ✅ 目标套餐: Basic Monthly
+3. ✅ 调整模式: immediate
 
 **降级 API 响应验证**:
 ```json
 {
   "success": true,
-  "currentPlan": "pro",
+  "currentPlan": "max",
   "targetPlan": "basic",
+  "currentBillingCycle": "monthly",
+  "targetBillingCycle": "monthly",
+  "currentPeriodEnd": "2025-12-11T16:00:00+00:00",
+  "effectiveDate": "2025-12-11T16:00:00+00:00",
+  "newExpiresAt": "2026-01-11T05:59:48.840Z",  // ✅ 新增字段
   "adjustmentMode": "immediate",
-  "remainingDays": 12
+  "originalPlanExpiresAt": "2025-12-11T16:00:00+00:00",
+  "message": "降级已立即生效"
 }
 ```
 
-**数据库验证（降级设置后）**:
+**数据库验证（immediate模式直接修改）**:
 ```sql
--- 检查旧订阅的降级标记
-SELECT
-  plan_tier,
-  downgrade_to_plan,
-  downgrade_to_billing_cycle,
-  adjustment_mode,
-  remaining_days
-FROM user_subscriptions
-WHERE id = '[旧订阅ID]';
-
--- 预期结果:
--- plan_tier: 'pro'
--- downgrade_to_plan: 'basic'
--- adjustment_mode: 'immediate'
--- remaining_days: 12
-```
-
-**数据库验证（支付完成后）**:
-```sql
--- 检查新订阅
+-- 检查订阅（immediate模式直接修改，无需支付）
 SELECT
   plan_tier,
   billing_cycle,
-  created_at,
+  monthly_credits,
   expires_at,
   adjustment_mode,
-  remaining_days
+  original_plan_expires_at
 FROM user_subscriptions
-WHERE user_id = '[你的用户ID]'
-ORDER BY created_at DESC
-LIMIT 1;
+WHERE id = '757e96be-66c7-4e2b-97e5-6965e1814713';
 
--- 预期结果:
--- plan_tier: 'basic'
--- expires_at: 创建时间 + 30 + 12 = 42天
--- adjustment_mode: NULL
--- remaining_days: NULL
+-- 实际结果 ✅:
+-- plan_tier: 'basic'  ✅
+-- billing_cycle: 'monthly'  ✅
+-- monthly_credits: 150  ✅
+-- expires_at: '2026-01-11T05:59:48.84+00:00'  ✅ (51天后)
+-- adjustment_mode: 'immediate'  ✅
+-- original_plan_expires_at: '2025-12-11T16:00:00+00:00'  ✅
 ```
 
 **时间计算验证**:
 ```javascript
-// 预期天数: 30 + 12 = 42
+// 预期天数: 30 (新套餐月付) + 21 (剩余) = 51
+// 实际天数: 51 ✅
+// 新到期时间: 2026-01-11 ✅
+// 计算正确: ✅ 通过
 ```
 
-**结论**: ⬜ 通过 / ⬜ 失败
+**积分冻结验证**（后台日志）:
+```
+🔍 [降级API] 冻结原套餐积分
+实际剩余天数: 21  ✅
+🔍 [降级API] 积分冻结结果: 1 条积分被冻结  ✅
+✅ [降级API] 充值新套餐积分成功: 150  ✅
+```
+
+**修复的BUG**:
+1. ✅ 时间计算错误：修复前只加30天，修复后正确加30+21=51天
+2. ✅ 积分冻结API废弃：从 `freeze_subscription_credits` 改为 `freeze_subscription_credits_smart`
+3. ✅ API响应缺少字段：增加 `newExpiresAt` 字段
+
+**结论**: ✅ **通过**（所有验证点全绿）
 
 ---
 
@@ -381,64 +388,109 @@ WHERE id = '[订阅ID]';
 
 ---
 
-### 场景 2.4: 降级 - Scheduled 模式（Pro Yearly → Basic Monthly）
+### 场景 2.4: 降级 - Scheduled 模式（Max Monthly → Basic Monthly）
 
-**执行时间**: 2025-11-09 11:30
+**执行时间**: 2025-11-21 05:40（首次阻塞），2025-11-21 05:50（验证通过）
 
 **前置数据**:
 - 用户ID: bfb8182a-6865-4c66-a89e-05711796e2b2
-- 当前订阅: Pro Yearly
-- 剩余天数: 352
-- 当前过期时间: 2026-10-26
+- 订阅ID: 757e96be-66c7-4e2b-97e5-6965e1814713
+- 当前订阅: Max Monthly
+- 剩余天数: 21
+- 当前过期时间: 2025-12-11T16:00:00+00:00
 
 **执行操作**:
-1. ✅ 访问 `/profile` 页面
-2. ✅ 点击"降级套餐"按钮
-3. ✅ 选择 Basic Monthly
-4. ✅ 选择"后续调整（Scheduled）"模式
-5. ✅ 点击确认
+1. ✅ 浏览器控制台执行降级API：
+   ```javascript
+   const response = await fetch('/api/subscription/downgrade', {
+     method: 'POST',
+     headers: { 'Content-Type': 'application/json' },
+     body: JSON.stringify({
+       targetPlan: 'basic',
+       billingPeriod: 'monthly',
+       adjustmentMode: 'scheduled'
+     })
+   })
+   const result = await response.json()
+   console.log('API响应:', result)
+   ```
 
 **降级API响应**:
-- HTTP状态: 200 OK
-- 降级操作成功（API层面）
+```json
+{
+  "success": true,
+  "currentPlan": "max",
+  "targetPlan": "basic",
+  "currentBillingCycle": "monthly",
+  "targetBillingCycle": "monthly",
+  "currentPeriodEnd": "2025-12-11T16:00:00+00:00",
+  "effectiveDate": "2025-12-11T16:00:00+00:00",
+  "adjustmentMode": "scheduled",
+  "originalPlanExpiresAt": null,
+  "message": "降级已安排，将在当前订阅周期结束后生效"
+}
+```
 
-**问题发现**:
-❌ **阻塞问题**：降级标记未写入数据库
+**数据库验证** - 降级标记正确写入:
+```sql
+SELECT
+  id, user_id, plan_tier, billing_cycle,
+  adjustment_mode, remaining_days,
+  downgrade_to_plan, downgrade_to_billing_cycle,
+  expires_at, current_period_end
+FROM user_subscriptions
+WHERE user_id = 'bfb8182a-6865-4c66-a89e-05711796e2b2'
 
-**问题分析**:
-1. 前端查询 `/api/subscription/status` 返回降级字段全为 `null`
-2. 服务端日志显示 Supabase RPC 函数只返回8个字段：
-   - `id`, `plan_tier`, `billing_cycle`, `status`, `started_at`, `expires_at`, `next_refill_at`, `monthly_credits`
-3. **缺少降级字段**：
-   - `adjustment_mode`
-   - `remaining_days`
-   - `downgrade_to_plan`
-   - `downgrade_to_billing_cycle`
+-- ✅ 验证结果：
+-- downgrade_to_plan: basic
+-- downgrade_to_billing_cycle: monthly
+-- adjustment_mode: scheduled
+-- remaining_days: 21
+```
 
-**根本原因**:
-- RPC函数 `get_user_active_subscription` 的 `RETURNS TABLE` 定义中缺少降级字段
-- 虽然数据库表已添加字段，但RPC函数未更新
+**RPC 函数验证** - `get_user_active_subscription` 正确返回降级字段:
+```javascript
+const response = await fetch('/api/subscription/status')
+const data = await response.json()
+console.log('降级目标套餐:', data.subscription?.downgrade_to_plan) // ✅ "basic"
+console.log('降级计费周期:', data.subscription?.downgrade_to_billing_cycle) // ✅ "monthly"
+console.log('调整模式:', data.subscription?.adjustment_mode) // ✅ "scheduled"
+console.log('剩余天数:', data.subscription?.remaining_days) // ✅ 21
+```
 
-**已采取修复措施**:
-1. ✅ 修复数据库迁移文件（补全降级字段）
-2. ✅ 修复 `/api/subscription/status` 返回对象
-3. ✅ 创建 RPC 函数更新迁移：`supabase/migrations/20251109000002_update_rpc_add_downgrade_fields.sql`
-4. ⏳ **待执行**：在 Supabase Dashboard 执行 RPC 更新迁移
+**后端日志验证**:
+```
+🔥 老王查降级套餐开始...
+✅ 活跃订阅数据: {
+  id: "757e96be-66c7-4e2b-97e5-6965e1814713",
+  plan_tier: "max",
+  billing_cycle: "monthly",
+  downgrade_to_plan: "basic",          // ✅ 正确
+  downgrade_to_billing_cycle: "monthly", // ✅ 正确
+  adjustment_mode: "scheduled",         // ✅ 正确
+  remaining_days: 21,                   // ✅ 正确
+  current_period_end: "2025-12-11T16:00:00+00:00"
+}
+✅ 降级标记设置成功: { count: 1 }
+```
 
-**结论**: 🟡 **阻塞 - 待数据库修复后重新验证**
+**问题发现与修复** (2025-11-09阻塞问题):
+❌ **原始阻塞问题**：RPC函数 `get_user_active_subscription` 只返回8个字段，缺少降级字段
+✅ **修复措施**：
+1. 执行数据库迁移 `supabase/migrations/20251109000002_update_rpc_add_downgrade_fields.sql`
+2. 更新RPC函数 `RETURNS TABLE` 定义，添加降级字段
+3. 验证通过（2025-11-21 05:50）
 
-**下次继续步骤**:
-1. 执行 RPC 更新迁移SQL
-2. 刷新页面
-3. 验证降级标记是否正确设置：
-   ```javascript
-   const response = await fetch('/api/subscription/status')
-   const data = await response.json()
-   console.log('降级目标套餐:', data.subscription?.downgrade_to_plan) // 应为 "basic"
-   console.log('降级计费周期:', data.subscription?.downgrade_to_billing_cycle) // 应为 "monthly"
-   console.log('调整模式:', data.subscription?.adjustment_mode) // 应为 "scheduled"
-   console.log('剩余天数:', data.subscription?.remaining_days) // 应为 352
-   ```
+**验证点汇总**:
+- ✅ API返回状态200
+- ✅ API响应包含正确的降级参数
+- ✅ 数据库字段正确写入（downgrade_to_plan, downgrade_to_billing_cycle）
+- ✅ RPC函数正确返回降级字段
+- ✅ adjustment_mode = "scheduled"（后续调整模式）
+- ✅ 原订阅到期时间未改变（scheduled模式不立即生效）
+- ✅ 剩余天数计算正确（21天）
+
+**结论**: ✅ **通过**（RPC修复完成，所有验证点全绿）
 
 ---
 
