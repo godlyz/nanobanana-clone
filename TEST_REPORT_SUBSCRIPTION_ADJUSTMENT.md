@@ -3,35 +3,37 @@
 **测试日期**: 2025-11-21（更新）
 **测试人员**: AI Assistant + User (kn197884@gmail.com)
 **测试环境**: Creem 测试环境 (creem_test_xxx)
-**项目版本**: Git commit 18d8acb (修复3个关键BUG后)
+**项目版本**: Git commit 010896e (修复4个关键BUG后)
 
 ---
 
 ## 📊 测试概览
 
 **总场景数**: 9
-**通过数**: 2 ✅
+**通过数**: 3 ✅
 **失败数**: 0
 **阻塞数**: 0 ✅ (已解除)
-**跳过数**: 7
+**跳过数**: 6
 
 **已完成场景**：
 - ✅ 场景2.1: 降级Immediate（Max→Basic）- 通过
+- ✅ 场景2.2: 降级Scheduled（Max→Pro）- 通过
 - ✅ 场景2.4: 降级Scheduled（Max→Basic）- 通过
 
 ---
 
-## ✅ 当前状态：数据库修复完成，2个场景测试通过
+## ✅ 当前状态：数据库修复完成，3个降级场景测试通过
 
 **修复完成**：
 1. ✅ RPC函数已更新（添加降级字段）
-2. ✅ 修复3个关键BUG：
+2. ✅ 修复4个关键BUG：
    - 时间计算错误（immediate模式未加剩余天数）
    - 积分冻结API废弃（使用新API `freeze_subscription_credits_smart`）
    - API响应缺少 `newExpiresAt` 字段
+   - immediate模式完成后未清除降级标记
 
 **下一步**：
-- 继续完成剩余7个测试场景（升级场景 + 边界情况）
+- 继续完成剩余6个测试场景（1个降级场景 + 4个升级场景 + 1个边界情况）
 
 ---
 
@@ -336,38 +338,92 @@ WHERE id = '757e96be-66c7-4e2b-97e5-6965e1814713';
 
 ---
 
-### 场景 2.2: 降级 - Scheduled 模式（Max → Pro）
+### 场景 2.2: 降级 - Scheduled 模式（Max Monthly → Pro Monthly）
 
-**执行时间**: [填写时间]
+**执行时间**: 2025-11-21 06:45
 
 **前置数据**:
-- 当前订阅: Max Yearly
-- 剩余天数: 90
+- 用户ID: bfb8182a-6865-4c66-a89e-05711796e2b2
+- 订阅ID: 757e96be-66c7-4e2b-97e5-6965e1814713
+- 当前订阅: Max Monthly
+- 剩余天数: 21
+- 当前过期时间: 2025-12-11T16:00:00+00:00
 
 **执行操作**:
-1. 降级到 Pro Yearly
-2. 选择"后续调整"
-3. **注意**: Scheduled 模式不需要立即支付
+1. ✅ 浏览器控制台执行降级API：
+   ```javascript
+   const response = await fetch('/api/subscription/downgrade', {
+     method: 'POST',
+     headers: { 'Content-Type': 'application/json' },
+     body: JSON.stringify({
+       targetPlan: 'pro',
+       billingPeriod: 'monthly',
+       adjustmentMode: 'scheduled'
+     })
+   })
+   ```
 
-**数据库验证**:
-```sql
-SELECT
-  plan_tier,
-  downgrade_to_plan,
-  adjustment_mode,
-  remaining_days,
-  expires_at
-FROM user_subscriptions
-WHERE id = '[订阅ID]';
-
--- 预期结果:
--- downgrade_to_plan: 'pro'
--- adjustment_mode: 'scheduled'
--- remaining_days: 90
--- expires_at: 不变
+**降级API响应**:
+```json
+{
+  "success": true,
+  "currentPlan": "max",
+  "targetPlan": "pro",
+  "currentBillingCycle": "monthly",
+  "targetBillingCycle": "monthly",
+  "currentPeriodEnd": "2025-12-11T16:00:00+00:00",
+  "effectiveDate": "2025-12-11T16:00:00+00:00",
+  "newExpiresAt": null,
+  "adjustmentMode": "scheduled",
+  "originalPlanExpiresAt": null,
+  "message": "降级已安排，将在当前订阅周期结束后生效"
+}
 ```
 
-**结论**: ⬜ 通过 / ⬜ 失败
+**数据库验证** - 降级标记正确写入:
+```sql
+SELECT
+  id, user_id, plan_tier, billing_cycle,
+  adjustment_mode, remaining_days,
+  downgrade_to_plan, downgrade_to_billing_cycle,
+  expires_at, current_period_end
+FROM user_subscriptions
+WHERE user_id = 'bfb8182a-6865-4c66-a89e-05711796e2b2'
+
+-- ✅ 验证结果：
+-- plan_tier: max (未改变)
+-- billing_cycle: monthly (未改变)
+-- downgrade_to_plan: pro
+-- downgrade_to_billing_cycle: monthly
+-- adjustment_mode: scheduled
+-- expires_at: 2025-12-11T16:00:00+00:00 (未改变)
+```
+
+**后端日志验证**:
+```
+🔥 [降级API] scheduled模式：只记录降级计划，不立即修改
+✅ [降级API] 数据库更新结果:
+影响行数: 1
+更新后数据: {
+  plan_tier: "max",               // ✅ 未改变
+  billing_cycle: "monthly",       // ✅ 未改变
+  downgrade_to_plan: "pro",       // ✅ 正确
+  downgrade_to_billing_cycle: "monthly", // ✅ 正确
+  adjustment_mode: "scheduled",   // ✅ 正确
+  expires_at: "2025-12-11T16:00:00+00:00" // ✅ 未改变
+}
+```
+
+**验证点汇总**:
+- ✅ API返回状态200
+- ✅ API响应包含正确的降级参数
+- ✅ 数据库字段正确写入（downgrade_to_plan: pro, downgrade_to_billing_cycle: monthly）
+- ✅ adjustment_mode = "scheduled"（后续调整模式）
+- ✅ 当前套餐未改变（plan_tier: max）
+- ✅ 到期时间未改变（expires_at: 2025-12-11T16:00:00+00:00）
+- ✅ scheduled模式不立即生效，仅记录降级计划
+
+**结论**: ✅ **通过**（所有验证点全绿）
 
 ---
 
