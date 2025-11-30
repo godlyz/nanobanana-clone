@@ -1,0 +1,116 @@
+# 🔥 老王的Python SDK自动发布工作流
+# 艹！这个workflow会自动把Python SDK发布到PyPI，绝对tm稳！
+
+name: Publish Python SDK to PyPI
+
+on:
+  # 当创建新的release时触发（标签以py-v开头）
+  release:
+    types: [published]
+
+  # 也可以手动触发
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Python SDK version (e.g., 0.1.1, 0.2.0)'
+        required: true
+        type: string
+
+jobs:
+  publish:
+    name: Build and Publish Python SDK
+    runs-on: ubuntu-latest
+
+    # 仅在release标签以py-v开头时执行（或手动触发）
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'py-v')
+
+    # 🔒 安全权限设置
+    permissions:
+      contents: read
+      id-token: write  # 用于PyPI trusted publishing
+
+    steps:
+      # 1. 检出代码
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      # 2. 配置Python环境
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # 3. 安装构建工具
+      - name: 📦 Install build tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
+
+      # 4. 更新版本号（仅workflow_dispatch）
+      - name: 🔢 Update version
+        if: github.event_name == 'workflow_dispatch'
+        working-directory: ./lib/graphql/sdk-python
+        run: |
+          # 更新setup.py中的版本号
+          sed -i "s/version='[^']*'/version='${{ github.event.inputs.version }}'/" setup.py
+          echo "Updated version to ${{ github.event.inputs.version }}"
+
+      # 5. 构建Python包
+      - name: 🔨 Build package
+        working-directory: ./lib/graphql/sdk-python
+        run: |
+          python -m build
+
+      # 6. 检查包完整性
+      - name: ✅ Check package
+        working-directory: ./lib/graphql/sdk-python
+        run: |
+          twine check dist/*
+
+      # 7. 发布到PyPI（使用Trusted Publishing）
+      - name: 🚀 Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: lib/graphql/sdk-python/dist/
+          skip-existing: false
+          verbose: true
+          print-hash: true
+
+      # 8. 发布到TestPyPI（可选，用于测试）
+      # - name: 🧪 Publish to TestPyPI
+      #   uses: pypa/gh-action-pypi-publish@release/v1
+      #   with:
+      #     repository-url: https://test.pypi.org/legacy/
+      #     packages-dir: lib/graphql/sdk-python/dist/
+      #     skip-existing: true
+
+      # 9. 清理构建产物
+      - name: 🧹 Clean up
+        if: always()
+        working-directory: ./lib/graphql/sdk-python
+        run: |
+          rm -rf build dist *.egg-info
+
+# 🎯 使用说明
+#
+# 方式1：手动触发
+# 1. GitHub Actions → Publish Python SDK to PyPI → Run workflow
+# 2. 输入版本号（例如：0.1.1）
+#
+# 方式2：自动发布
+# 1. 创建GitHub Release
+# 2. 标签格式：py-v0.1.1（必须以py-v开头）
+# 3. 发布Release后自动触发workflow
+#
+# 🔑 配置PyPI Trusted Publishing：
+# 1. 访问 https://pypi.org/manage/account/publishing/
+# 2. 添加新的publisher：
+#    - PyPI Project Name: nanobanana-graphql-sdk（或你的包名）
+#    - Owner: nanobanana（或你的GitHub组织/用户名）
+#    - Repository name: nanobanana（或你的仓库名）
+#    - Workflow name: pypi-publish.yml
+#    - Environment name: （留空）
+# 3. 保存后即可使用Trusted Publishing（无需PYPI_API_TOKEN）
+#
+# 📦 安装
+# pip install nanobanana-graphql-sdk

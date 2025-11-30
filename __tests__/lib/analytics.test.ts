@@ -1,0 +1,302 @@
+// 🔥 老王创建：Analytics 测试
+// 用途: 验证tour追踪功能是否正常工作
+
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+import {
+  trackTourStart,
+  trackTourComplete,
+  trackTourSkip,
+  trackTourStepView,
+  trackTourStepNext,
+  trackTourStepBack,
+  trackTourError,
+  getLocalTourStats,
+  updateLocalTourStats,
+  type TourType,
+  type TourEventType,
+} from '@/lib/analytics'
+
+// Mock Vercel Analytics
+vi.mock('@vercel/analytics', () => ({
+  track: vi.fn(),
+}))
+
+// Mock fetch
+global.fetch = vi.fn() as any
+
+describe('Analytics - Tour Tracking', () => {
+  beforeEach(() => {
+    // 清理localStorage
+    localStorage.clear()
+    // 清理所有mock
+    vi.clearAllMocks()
+  })
+
+  describe('trackTourStart', () => {
+    it('应该正确追踪tour开始事件', () => {
+      const { track } = require('@vercel/analytics')
+
+      trackTourStart('home', 10)
+
+      // 验证Vercel Analytics被调用
+      expect(track).toHaveBeenCalledWith('tour_started', expect.objectContaining({
+        tourType: 'home',
+        totalSteps: 10,
+        step: 0,
+        sessionId: expect.any(String),
+      }))
+
+      // 验证API调用
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/api/analytics/tour',
+        expect.objectContaining({
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: expect.any(String),
+        })
+      )
+    })
+  })
+
+  describe('trackTourComplete', () => {
+    it('应该正确追踪tour完成事件', () => {
+      const { track } = require('@vercel/analytics')
+
+      trackTourComplete('editor', 5)
+
+      expect(track).toHaveBeenCalledWith('tour_completed', expect.objectContaining({
+        tourType: 'editor',
+        totalSteps: 5,
+        step: 5,
+        completionRate: 100,
+        timeSpent: expect.any(Number),
+      }))
+    })
+  })
+
+  describe('trackTourSkip', () => {
+    it('应该正确追踪tour跳过事件', () => {
+      const { track } = require('@vercel/analytics')
+
+      trackTourSkip('pricing', 3, 10)
+
+      expect(track).toHaveBeenCalledWith('tour_skipped', expect.objectContaining({
+        tourType: 'pricing',
+        step: 3,
+        totalSteps: 10,
+        completionRate: 30, // 3/10 * 100 = 30
+      }))
+    })
+  })
+
+  describe('trackTourStepView', () => {
+    it('应该正确追踪步骤查看事件', () => {
+      const { track } = require('@vercel/analytics')
+
+      trackTourStepView('api-docs', 2, 5)
+
+      expect(track).toHaveBeenCalledWith('tour_step_view', expect.objectContaining({
+        tourType: 'api-docs',
+        step: 2,
+        totalSteps: 5,
+        completionRate: 40, // 2/5 * 100 = 40
+      }))
+    })
+  })
+
+  describe('trackTourStepNext', () => {
+    it('应该正确追踪下一步事件', () => {
+      const { track } = require('@vercel/analytics')
+
+      trackTourStepNext('tools', 1, 3)
+
+      expect(track).toHaveBeenCalledWith('tour_step_next', expect.objectContaining({
+        tourType: 'tools',
+        step: 1,
+        totalSteps: 3,
+        timeSpent: expect.any(Number),
+      }))
+    })
+  })
+
+  describe('trackTourStepBack', () => {
+    it('应该正确追踪返回步骤事件', () => {
+      const { track } = require('@vercel/analytics')
+
+      trackTourStepBack('home', 2, 10)
+
+      expect(track).toHaveBeenCalledWith('tour_step_back', expect.objectContaining({
+        tourType: 'home',
+        step: 2,
+        totalSteps: 10,
+        timeSpent: expect.any(Number),
+      }))
+    })
+  })
+
+  describe('trackTourError', () => {
+    it('应该正确追踪错误事件', () => {
+      const { track } = require('@vercel/analytics')
+
+      trackTourError('editor', 'Element not found')
+
+      expect(track).toHaveBeenCalledWith('tour_error', expect.objectContaining({
+        tourType: 'editor',
+        error: 'Element not found',
+        timeSpent: expect.any(Number),
+      }))
+    })
+  })
+
+  describe('getLocalTourStats', () => {
+    it('应该返回初始空统计', () => {
+      const stats = getLocalTourStats('home')
+
+      expect(stats).toEqual({
+        totalStarts: 0,
+        totalCompletions: 0,
+        totalSkips: 0,
+        completionRate: 0,
+        averageTime: 0,
+        averageSteps: 0,
+      })
+    })
+
+    it('应该正确读取localStorage中的统计数据', () => {
+      const mockStats = {
+        totalStarts: 100,
+        totalCompletions: 80,
+        totalSkips: 20,
+        completionRate: 80,
+        averageTime: 120,
+        averageSteps: 8,
+      }
+
+      localStorage.setItem('tour-stats-home', JSON.stringify(mockStats))
+
+      const stats = getLocalTourStats('home')
+
+      expect(stats).toEqual(mockStats)
+    })
+  })
+
+  describe('updateLocalTourStats', () => {
+    it('应该正确更新统计数据', () => {
+      updateLocalTourStats('home', {
+        totalStarts: 1,
+        totalCompletions: 1,
+      })
+
+      const stats = getLocalTourStats('home')
+
+      expect(stats.totalStarts).toBe(1)
+      expect(stats.totalCompletions).toBe(1)
+      expect(stats.completionRate).toBe(100) // 自动计算
+    })
+
+    it('应该正确计算完成率', () => {
+      updateLocalTourStats('editor', {
+        totalStarts: 10,
+        totalCompletions: 8,
+        totalSkips: 2,
+      })
+
+      const stats = getLocalTourStats('editor')
+
+      expect(stats.completionRate).toBe(80) // 8/10 * 100 = 80
+    })
+  })
+
+  describe('Session Management', () => {
+    it('应该为每个tour创建唯一session ID', () => {
+      const { track } = require('@vercel/analytics')
+
+      trackTourStart('home', 10)
+      const call1 = track.mock.calls[0][1]
+
+      trackTourStart('editor', 5)
+      const call2 = track.mock.calls[1][1]
+
+      // 不同tour应该有不同的session ID
+      expect(call1.sessionId).not.toBe(call2.sessionId)
+    })
+
+    it('应该正确追踪时间消耗', async () => {
+      const { track } = require('@vercel/analytics')
+
+      trackTourStart('home', 10)
+
+      // 等待100ms
+      await new Promise(resolve => setTimeout(resolve, 100))
+
+      trackTourComplete('home', 10)
+
+      const completionCall = track.mock.calls.find(
+        (call: any[]) => call[0] === 'tour_completed'
+      )
+
+      // 时间应该大于0
+      expect(completionCall[1].timeSpent).toBeGreaterThan(0)
+    })
+  })
+
+  describe('API Integration', () => {
+    it('应该向API发送正确格式的数据', () => {
+      trackTourStart('home', 10)
+
+      const fetchCall = (global.fetch as any).mock.calls[0]
+      const body = JSON.parse(fetchCall[1].body)
+
+      expect(body).toMatchObject({
+        event: 'tour_started',
+        data: expect.objectContaining({
+          tourType: 'home',
+          totalSteps: 10,
+          sessionId: expect.any(String),
+        }),
+        timestamp: expect.any(String),
+      })
+    })
+
+    it('应该静默处理API错误', async () => {
+      // Mock fetch抛出错误
+      (global.fetch as any).mockRejectedValueOnce(new Error('Network error'))
+
+      // 不应该抛出错误
+      expect(() => {
+        trackTourStart('home', 10)
+      }).not.toThrow()
+    })
+  })
+
+  describe('Multi-Tour Support', () => {
+    it('应该支持追踪多种tour类型', () => {
+      const { track } = require('@vercel/analytics')
+
+      const tourTypes: TourType[] = ['home', 'editor', 'api-docs', 'pricing', 'tools']
+
+      tourTypes.forEach(type => {
+        trackTourStart(type, 5)
+      })
+
+      expect(track).toHaveBeenCalledTimes(tourTypes.length)
+
+      // 验证每个类型都被正确追踪
+      tourTypes.forEach((type, index) => {
+        expect(track.mock.calls[index][1].tourType).toBe(type)
+      })
+    })
+  })
+})
+
+// 🔥 老王备注：
+// 1. 覆盖了所有核心追踪函数
+// 2. 测试了Vercel Analytics集成
+// 3. 测试了API调用
+// 4. 测试了Session管理
+// 5. 测试了时间追踪
+// 6. 测试了本地统计存储
+// 7. 测试了错误处理
+// 8. 测试了多tour类型支持

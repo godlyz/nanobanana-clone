@@ -1,0 +1,297 @@
+/**
+ * GraphQL ForumThread Type
+ *
+ * 艹！这是老王我用 Pothos 定义的 ForumThread 类型！
+ * 论坛主题帖系统，对应数据库的 forum_threads 表！
+ */
+
+import { builder } from '../builder'
+import type { GraphQLContext } from '../context'
+
+/**
+ * ForumThread 状态枚举
+ */
+export const ForumThreadStatusEnum = builder.enumType('ForumThreadStatus', {
+  values: {
+    OPEN: { value: 'open', description: '开放中' },
+    CLOSED: { value: 'closed', description: '已关闭' },
+    ARCHIVED: { value: 'archived', description: '已归档' }
+  } as const
+})
+
+/**
+ * ForumThread 对象类型
+ *
+ * 艹！这个类型管理论坛的主题帖子！
+ */
+export const ForumThreadType = builder.objectRef<{
+  id: string
+  category_id: string
+  user_id: string
+  title: string
+  slug: string
+  content: string
+  status: string
+  is_locked: boolean
+  is_pinned: boolean
+  is_featured: boolean
+  view_count: number
+  reply_count: number
+  upvote_count: number
+  downvote_count: number
+  last_reply_at?: string | null
+  last_reply_user_id?: string | null
+  is_reported: boolean
+  report_count: number
+  created_at: string
+  updated_at: string
+  deleted_at?: string | null
+}>('ForumThread').implement({
+  description: '论坛主题类型（论坛帖子）',
+  fields: (t) => ({
+    // 基础字段
+    id: t.exposeID('id', {
+      description: '主题唯一标识符（UUID）'
+    }),
+
+    categoryId: t.exposeID('category_id', {
+      description: '所属分类ID'
+    }),
+
+    userId: t.exposeID('user_id', {
+      description: '作者用户ID'
+    }),
+
+    // 内容字段
+    title: t.exposeString('title', {
+      description: '主题标题（3-200字符）'
+    }),
+
+    slug: t.exposeString('slug', {
+      description: '主题URL slug'
+    }),
+
+    content: t.exposeString('content', {
+      description: '主题内容（≥10字符）'
+    }),
+
+    // 状态字段
+    status: t.field({
+      type: ForumThreadStatusEnum,
+      description: '主题状态（open/closed/archived）',
+      resolve: (parent) => parent.status as any
+    }),
+
+    isLocked: t.exposeBoolean('is_locked', {
+      description: '是否锁定（禁止回复）'
+    }),
+
+    isPinned: t.exposeBoolean('is_pinned', {
+      description: '是否置顶'
+    }),
+
+    isFeatured: t.exposeBoolean('is_featured', {
+      description: '是否精华帖'
+    }),
+
+    // 统计字段
+    viewCount: t.exposeInt('view_count', {
+      description: '浏览次数'
+    }),
+
+    replyCount: t.exposeInt('reply_count', {
+      description: '回复数量'
+    }),
+
+    upvoteCount: t.exposeInt('upvote_count', {
+      description: '点赞数'
+    }),
+
+    downvoteCount: t.exposeInt('downvote_count', {
+      description: '点踩数'
+    }),
+
+    // 最新回复信息
+    lastReplyAt: t.string({
+      description: '最后回复时间（ISO 8601格式）',
+      nullable: true,
+      resolve: (parent) => parent.last_reply_at ?? null
+    }),
+
+    lastReplyUserId: t.string({
+      description: '最后回复用户ID',
+      nullable: true,
+      resolve: (parent) => parent.last_reply_user_id ?? null
+    }),
+
+    // 审核字段
+    isReported: t.exposeBoolean('is_reported', {
+      description: '是否被举报'
+    }),
+
+    reportCount: t.exposeInt('report_count', {
+      description: '举报次数'
+    }),
+
+    // 时间戳
+    createdAt: t.exposeString('created_at', {
+      description: '创建时间（ISO 8601格式）'
+    }),
+
+    updatedAt: t.exposeString('updated_at', {
+      description: '更新时间（ISO 8601格式）'
+    }),
+
+    deletedAt: t.string({
+      description: '删除时间（软删除，ISO 8601格式）',
+      nullable: true,
+      resolve: (parent) => parent.deleted_at ?? null
+    }),
+
+    // 艹！关联字段：分类信息
+    category: t.field({
+      type: 'ForumCategory',
+      description: '所属论坛分类',
+      nullable: true,
+      resolve: async (parent, _args, ctx: GraphQLContext) => {
+        const { data } = await ctx.supabase
+          .from('forum_categories')
+          .select('*')
+          .eq('id', parent.category_id)
+          .single()
+
+        return data
+      }
+    }),
+
+    // 艹！关联字段：作者信息
+    author: t.field({
+      type: 'User',
+      description: '帖子作者',
+      nullable: true,
+      resolve: async (parent, _args, ctx: GraphQLContext) => {
+        const { data: authUser } = await ctx.supabase.auth.admin.getUserById(parent.user_id)
+        if (!authUser.user) return null
+
+        const { data: profile } = await ctx.supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('user_id', parent.user_id)
+          .single()
+
+        return {
+          id: authUser.user.id,
+          email: authUser.user.email ?? null,
+          user_profile: profile
+        }
+      }
+    }),
+
+    // 艹！关联字段：最后回复用户
+    lastReplyUser: t.field({
+      type: 'User',
+      description: '最后回复用户',
+      nullable: true,
+      resolve: async (parent, _args, ctx: GraphQLContext) => {
+        if (!parent.last_reply_user_id) return null
+
+        const { data: authUser } = await ctx.supabase.auth.admin.getUserById(parent.last_reply_user_id)
+        if (!authUser.user) return null
+
+        const { data: profile } = await ctx.supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('user_id', parent.last_reply_user_id)
+          .single()
+
+        return {
+          id: authUser.user.id,
+          email: authUser.user.email ?? null,
+          user_profile: profile
+        }
+      }
+    }),
+
+    // 艹！关联字段：回复列表（分页）
+    replies: t.field({
+      type: ['ForumReply'],
+      description: '回复列表',
+      args: {
+        limit: t.arg.int({
+          required: false,
+          description: '每页数量（默认20，最大100）'
+        }),
+        offset: t.arg.int({
+          required: false,
+          description: '偏移量（用于分页）'
+        })
+      },
+      resolve: async (parent, args, ctx: GraphQLContext) => {
+        const limit = Math.min(args.limit ?? 20, 100)
+        const offset = args.offset ?? 0
+
+        const { data } = await ctx.supabase
+          .from('forum_replies')
+          .select('*')
+          .eq('thread_id', parent.id)
+          .is('deleted_at', null)
+          .order('created_at', { ascending: true })
+          .range(offset, offset + limit - 1)
+
+        return data ?? []
+      }
+    }),
+
+    // 艹！计算字段：是否被删除
+    isDeleted: t.boolean({
+      description: '是否被软删除',
+      resolve: (parent) => !!parent.deleted_at
+    }),
+
+    // 艹！计算字段：是否可以回复
+    canReply: t.boolean({
+      description: '是否可以回复（未锁定且状态为open）',
+      resolve: (parent) => !parent.is_locked && parent.status === 'open'
+    }),
+
+    // 艹！计算字段：投票分数（upvote - downvote）
+    voteScore: t.int({
+      description: '投票分数（upvote - downvote）',
+      resolve: (parent) => parent.upvote_count - parent.downvote_count
+    }),
+
+    // 艹！计算字段：活跃度（回复数 + 浏览数*0.1）
+    activityScore: t.float({
+      description: '活跃度分数（回复数 + 浏览数*0.1）',
+      resolve: (parent) => parent.reply_count + parent.view_count * 0.1
+    }),
+
+    // 艹！计算字段：是否是新帖（3天内）
+    isRecent: t.boolean({
+      description: '是否是新帖（3天内）',
+      resolve: (parent) => {
+        const createdDate = new Date(parent.created_at)
+        const now = new Date()
+        const diffTime = Math.abs(now.getTime() - createdDate.getTime())
+        const diffDays = diffTime / (1000 * 60 * 60 * 24)
+
+        return diffDays <= 3
+      }
+    }),
+
+    // 艹！计算字段：是否有最新回复（24小时内）
+    hasRecentReply: t.boolean({
+      description: '是否有最新回复（24小时内）',
+      resolve: (parent) => {
+        if (!parent.last_reply_at) return false
+
+        const lastReplyDate = new Date(parent.last_reply_at)
+        const now = new Date()
+        const diffTime = Math.abs(now.getTime() - lastReplyDate.getTime())
+        const diffHours = diffTime / (1000 * 60 * 60)
+
+        return diffHours <= 24
+      }
+    })
+  })
+})

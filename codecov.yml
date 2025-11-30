@@ -1,0 +1,125 @@
+# Codecov 配置文件
+# 用于配置代码覆盖率报告和检查
+
+# 覆盖率目标配置
+coverage:
+  # 精度设置（小数点后位数）
+  precision: 2
+  # 舍入方式（down=向下，up=向上，nearest=四舍五入）
+  round: down
+  # 覆盖率范围（用于颜色显示）
+  range: "50...100"
+
+  # 状态检查配置
+  status:
+    # 项目级别覆盖率检查
+    project:
+      default:
+        # 覆盖率目标（与 vitest.config.ts 保持一致）
+        target: 70%
+        # 允许覆盖率下降的阈值
+        threshold: 2%
+        # 基准分支
+        base: auto
+        # 仅在覆盖率下降时失败
+        if_ci_failed: error
+
+    # Patch 级别覆盖率检查（仅检查 PR 中新增/修改的代码）
+    patch:
+      default:
+        target: 70%
+        threshold: 2%
+        base: auto
+        if_ci_failed: error
+
+    # 变更级别覆盖率检查
+    changes:
+      default:
+        # 仅在覆盖率下降超过阈值时失败
+        if_ci_failed: error
+
+# PR 评论配置
+comment:
+  # 启用 PR 评论
+  require_ci_to_pass: yes
+  # 评论行为（default=每次更新，once=仅首次，off=关闭）
+  behavior: default
+  # 评论布局
+  layout: "reach,diff,flags,tree,reach"
+  # 仅在覆盖率变化时评论
+  require_changes: no
+  # 仅在有 PR 时评论
+  require_base: no
+  # 仅在有头部报告时评论
+  require_head: yes
+
+# 忽略文件配置
+ignore:
+  # 配置文件
+  - "*.config.*"
+  - "*.config.ts"
+  - "*.config.js"
+  - "*.config.mjs"
+  # 测试文件
+  - "**/__tests__/**"
+  - "**/*.test.ts"
+  - "**/*.test.tsx"
+  - "**/*.spec.ts"
+  - "**/*.spec.tsx"
+  # 类型定义
+  - "**/*.d.ts"
+  # Next.js 特殊文件
+  - "app/**/layout.tsx"
+  - "app/**/loading.tsx"
+  - "app/**/error.tsx"
+  - "app/**/not-found.tsx"
+  - "middleware.ts"
+  # 构建和依赖
+  - ".next/**"
+  - "node_modules/**"
+  - "dist/**"
+  - "build/**"
+  # 文档
+  - "**/*.md"
+  - "docs/**"
+
+# 通知配置
+# （可根据需要启用 Slack、Email 等通知）
+# slack:
+#   url: "secret:SLACK_WEBHOOK_URL"
+#   threshold: 1%
+#   message: "Coverage changed by {{changed}} for {{owner}}/{{repo}}"
+
+# Codecov 行为配置
+codecov:
+  # 需要 CI 通过才上传覆盖率
+  require_ci_to_pass: yes
+  # 最大报告年龄（天）
+  max_report_age: off
+  # 允许的 CI 提供商
+  ci:
+    - "github.actions"
+  # 通知配置
+  notify:
+    # 等待构建完成的最长时间（秒）
+    wait_for_ci: yes
+
+# Flags 配置（可用于区分不同类型的测试）
+# flags:
+#   unit:
+#     paths:
+#       - "**/*.test.ts"
+#       - "**/*.test.tsx"
+#   integration:
+#     paths:
+#       - "**/*.spec.ts"
+#       - "**/*.spec.tsx"
+
+# 解析器配置
+parsers:
+  gcov:
+    branch_detection:
+      conditional: yes
+      loop: yes
+      method: no
+      macro: no

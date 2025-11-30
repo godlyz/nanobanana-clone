@@ -1,0 +1,90 @@
+# GraphQL Code Generator 配置文件
+# 艹！这个文件自动生成 TypeScript 类型定义，让你写代码时享受完美的类型提示
+
+# Schema 来源（使用导出的本地 schema 文件，避免依赖运行中的服务器）
+schema: lib/graphql/schema.graphql
+
+# 查询文件来源（所有 .graphql 示例查询文件）
+documents:
+  - 'lib/graphql/queries/**/*.graphql'
+  - 'lib/graphql/mutations/**/*.graphql'
+  - 'lib/graphql/fragments/**/*.graphql'
+
+# 生成配置
+generates:
+  # 1. 基础类型定义 + 查询操作类型
+  lib/graphql/generated/types.ts:
+    plugins:
+      - typescript                        # 基础 GraphQL Schema 类型
+      - typescript-operations             # Query/Mutation 操作类型
+      - typescript-graphql-request        # graphql-request 客户端类型
+    config:
+      # 类型生成选项
+      skipTypename: false                 # 保留 __typename 字段
+      useTypeImports: true                # 使用 import type 语法
+      enumsAsTypes: true                  # 枚举类型用 union type 而非 enum
+      scalars:
+        DateTime: string                  # DateTime scalar 映射为 string
+        JSON: Record<string, any>         # JSON scalar 映射为对象
+      # 命名约定（使用内置转换，避免模块依赖问题）
+      namingConvention: keep               # 保持原始命名
+      # 类型安全选项
+      maybeValue: T | null                # Maybe<T> 映射为 T | null
+      inputMaybeValue: T | null | undefined  # Input Maybe<T> 允许 undefined
+      # 添加有用的类型
+      addDocBlocks: true                  # 添加 JSDoc 注释
+      declarationKind: interface          # 使用 interface 而非 type
+      avoidOptionals:
+        field: false                      # 可选字段保留为 T | undefined
+        inputValue: false                 # 输入可选值保留为 T | undefined
+        object: false                     # 对象字段不强制为可选
+        defaultValue: false               # 默认值不影响可选性
+
+  # 2. Typed Document Nodes（为 Apollo Client / Urql 使用）
+  lib/graphql/generated/documents.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typed-document-node               # 生成类型化的查询文档节点
+    config:
+      skipTypename: false
+      useTypeImports: true
+      enumsAsTypes: true
+      addDocBlocks: true
+      flattenGeneratedTypes: false        # 保留嵌套类型结构
+
+  # 3. React Hooks（如果项目使用 Apollo Client）
+  # lib/graphql/generated/hooks.ts:
+  #   plugins:
+  #     - typescript
+  #     - typescript-operations
+  #     - typescript-react-apollo
+  #   config:
+  #     withHooks: true
+  #     withComponent: false
+  #     withHOC: false
+
+# 全局配置
+config:
+  # 覆盖现有文件（每次生成都会重新生成）
+  overwrite: true
+
+  # Watch 模式（开发时自动重新生成）
+  watch: false
+
+  # 静默模式（减少输出日志）
+  silent: false
+
+  # 错误提示
+  errorsOnly: false
+
+  # 跳过验证（某些场景可能需要）
+  skipDocumentsValidation:
+    skipValidationAgainstSchema: false
+    ignoreNoDocuments: true             # 如果没有 .graphql 文件不报错
+
+# 钩子脚本（可选）
+hooks:
+  # 生成后提示
+  afterAllFileWrite:
+    - echo "✅ 老王提醒：TypeScript 类型已生成完毕，享受类型安全的快感吧！"

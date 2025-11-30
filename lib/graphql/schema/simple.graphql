@@ -1,0 +1,16 @@
+# 简化的GraphQL Schema，先让基础功能跑起来
+type Query {
+  me: User
+  hello(name: String): String
+}
+
+type Mutation {
+  test(message: String!): String
+}
+
+type User {
+  id: ID!
+  email: String!
+  createdAt: String!
+  updatedAt: String!
+}

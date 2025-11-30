@@ -1,0 +1,899 @@
+# ============================================
+# Scalar Types
+# ============================================
+scalar DateTime
+scalar JSON
+
+# ============================================
+# User & Profile
+# ============================================
+type User {
+  id: ID!
+  email: String!
+  profile: UserProfile
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type UserProfile {
+  userId: ID!
+  username: String
+  displayName: String
+  bio: String
+  avatarUrl: String
+  website: String
+  location: String
+  role: UserRole!
+  credits: Int!
+  subscriptionPlan: SubscriptionPlan
+  stats: UserStats
+  artworks: [Artwork!]!
+  followers: [User!]!
+  following: [User!]!
+  achievements: [Achievement!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum UserRole {
+  USER
+  MODERATOR
+  ADMIN
+}
+
+enum SubscriptionPlan {
+  FREE
+  BASIC_MONTHLY
+  BASIC_YEARLY
+  PRO_MONTHLY
+  PRO_YEARLY
+  MAX_MONTHLY
+  MAX_YEARLY
+}
+
+type UserStats {
+  artworkCount: Int!
+  videoCount: Int!
+  followerCount: Int!
+  followingCount: Int!
+  totalLikes: Int!
+  totalViews: Int!
+}
+
+# ============================================
+# Artwork & Generation
+# ============================================
+type Artwork {
+  id: ID!
+  user: User!
+  title: String
+  description: String
+  imageUrl: String!
+  thumbnailUrl: String
+  prompt: String
+  negativePrompt: String
+  metadata: ArtworkMetadata
+  privacy: PrivacyLevel!
+  likes: [Like!]!
+  likeCount: Int!
+  views: Int!
+  comments: [Comment!]!
+  tags: [Tag!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type ArtworkMetadata {
+  width: Int
+  height: Int
+  model: String
+  seed: Int
+  steps: Int
+  cfgScale: Float
+  sampler: String
+}
+
+enum PrivacyLevel {
+  PUBLIC
+  PRIVATE
+  UNLISTED
+}
+
+# ============================================
+# Video Generation
+# ============================================
+type Video {
+  id: ID!
+  user: User!
+  title: String
+  description: String
+  videoUrl: String!
+  thumbnailUrl: String
+  prompt: String
+  duration: Int
+  status: VideoStatus!
+  progress: Int
+  metadata: VideoMetadata
+  privacy: PrivacyLevel!
+  likes: [Like!]!
+  likeCount: Int!
+  views: Int!
+  comments: [Comment!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum VideoStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+type VideoMetadata {
+  width: Int
+  height: Int
+  fps: Int
+  model: String
+}
+
+# ============================================
+# Social Features
+# ============================================
+type Comment {
+  id: ID!
+  user: User!
+  content: String!
+  targetType: CommentTargetType!
+  targetId: ID!
+  parentComment: Comment
+  replies: [Comment!]!
+  likes: [Like!]!
+  likeCount: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum CommentTargetType {
+  ARTWORK
+  VIDEO
+  BLOG_POST
+  FORUM_THREAD
+}
+
+type Like {
+  id: ID!
+  user: User!
+  targetType: LikeTargetType!
+  targetId: ID!
+  createdAt: DateTime!
+}
+
+enum LikeTargetType {
+  ARTWORK
+  VIDEO
+  COMMENT
+  BLOG_POST
+  FORUM_THREAD
+}
+
+type Follow {
+  id: ID!
+  follower: User!
+  following: User!
+  createdAt: DateTime!
+}
+
+# ============================================
+# Blog System
+# ============================================
+type BlogPost {
+  id: ID!
+  author: User!
+  title: String!
+  slug: String!
+  content: String!
+  excerpt: String
+  featuredImage: String
+  category: BlogCategory
+  tags: [Tag!]!
+  status: PostStatus!
+  likes: [Like!]!
+  likeCount: Int!
+  views: Int!
+  comments: [Comment!]!
+  publishedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type BlogCategory {
+  id: ID!
+  name: String!
+  slug: String!
+  posts: [BlogPost!]!
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+type Tag {
+  id: ID!
+  name: String!
+  slug: String!
+  usageCount: Int!
+}
+
+# ============================================
+# Forum System
+# ============================================
+type ForumThread {
+  id: ID!
+  author: User!
+  category: ForumCategory!
+  title: String!
+  content: String!
+  isPinned: Boolean!
+  isFeatured: Boolean!
+  isLocked: Boolean!
+  tags: [Tag!]!
+  replies: [ForumReply!]!
+  replyCount: Int!
+  viewCount: Int!
+  upvoteCount: Int!
+  downvoteCount: Int!
+  lastReplyAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type ForumCategory {
+  id: ID!
+  name: String!
+  nameEn: String
+  slug: String!
+  description: String
+  threads: [ForumThread!]!
+  threadCount: Int!
+}
+
+type ForumReply {
+  id: ID!
+  thread: ForumThread!
+  author: User!
+  content: String!
+  parentReply: ForumReply
+  replies: [ForumReply!]!
+  upvoteCount: Int!
+  downvoteCount: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+# ============================================
+# Challenge System
+# ============================================
+type Challenge {
+  id: ID!
+  title: String!
+  description: String!
+  type: ChallengeType!
+  startDate: DateTime!
+  endDate: DateTime!
+  votingEndDate: DateTime!
+  status: ChallengeStatus!
+  bannerImageUrl: String
+  rules: String
+  prizeCredits: Int
+  prizeFeatures: JSON
+  submissions: [ChallengeSubmission!]!
+  submissionCount: Int!
+  participantCount: Int!
+  winners: [ChallengeSubmission!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum ChallengeType {
+  CREATIVE
+  TECHNICAL
+  THEMED
+  SPEED
+}
+
+enum ChallengeStatus {
+  DRAFT
+  ACTIVE
+  VOTING
+  JUDGING
+  COMPLETED
+  CANCELLED
+}
+
+type ChallengeSubmission {
+  id: ID!
+  challenge: Challenge!
+  user: User!
+  title: String!
+  description: String
+  imageUrl: String
+  videoUrl: String
+  voteCount: Int!
+  rank: Int
+  isWinner: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+# ============================================
+# Leaderboard & Achievements
+# ============================================
+type LeaderboardEntry {
+  user: User!
+  rank: Int!
+  score: Int!
+  period: LeaderboardPeriod!
+}
+
+enum LeaderboardPeriod {
+  DAILY
+  WEEKLY
+  MONTHLY
+  ALL_TIME
+}
+
+type Achievement {
+  id: ID!
+  name: String!
+  description: String!
+  icon: String!
+  rarity: AchievementRarity!
+  unlockedBy: [User!]!
+  unlockedCount: Int!
+}
+
+enum AchievementRarity {
+  COMMON
+  RARE
+  EPIC
+  LEGENDARY
+}
+
+# ============================================
+# Notification System
+# ============================================
+type Notification {
+  id: ID!
+  user: User!
+  type: NotificationType!
+  title: String!
+  message: String!
+  actionUrl: String
+  isRead: Boolean!
+  createdAt: DateTime!
+}
+
+enum NotificationType {
+  NEW_FOLLOWER
+  NEW_COMMENT
+  NEW_LIKE
+  CHALLENGE_RESULT
+  ACHIEVEMENT_UNLOCKED
+  SYSTEM_ANNOUNCEMENT
+}
+
+# ============================================
+# Subscription & Credits
+# ============================================
+type Subscription {
+  id: ID!
+  user: User!
+  plan: SubscriptionPlan!
+  status: SubscriptionStatus!
+  currentPeriodStart: DateTime!
+  currentPeriodEnd: DateTime!
+  cancelAtPeriodEnd: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  EXPIRED
+}
+
+type CreditTransaction {
+  id: ID!
+  user: User!
+  amount: Int!
+  type: CreditTransactionType!
+  description: String
+  relatedId: String
+  createdAt: DateTime!
+}
+
+enum CreditTransactionType {
+  PURCHASE
+  REWARD
+  USAGE
+  REFUND
+  ADMIN_ADJUSTMENT
+}
+
+# ============================================
+# Query Type
+# ============================================
+type Query {
+  # ============================================
+  # User Queries
+  # ============================================
+  me: User
+  user(id: ID!): User
+  users(
+    limit: Int = 20
+    offset: Int = 0
+    role: UserRole
+    searchQuery: String
+  ): UserConnection!
+
+  # ============================================
+  # Artwork Queries
+  # ============================================
+  artwork(id: ID!): Artwork
+  artworks(
+    limit: Int = 20
+    offset: Int = 0
+    userId: ID
+    privacy: PrivacyLevel
+    tags: [String!]
+    sortBy: ArtworkSortBy = CREATED_AT
+  ): ArtworkConnection!
+
+  # ============================================
+  # Video Queries
+  # ============================================
+  video(id: ID!): Video
+  videos(
+    limit: Int = 20
+    offset: Int = 0
+    userId: ID
+    status: VideoStatus
+    sortBy: VideoSortBy = CREATED_AT
+  ): VideoConnection!
+
+  # ============================================
+  # Blog Queries
+  # ============================================
+  blogPost(slug: String!): BlogPost
+  blogPosts(
+    limit: Int = 20
+    offset: Int = 0
+    categorySlug: String
+    tags: [String!]
+    status: PostStatus = PUBLISHED
+    sortBy: PostSortBy = PUBLISHED_AT
+  ): BlogPostConnection!
+  blogCategories: [BlogCategory!]!
+
+  # ============================================
+  # Forum Queries
+  # ============================================
+  forumThread(id: ID!): ForumThread
+  forumThreads(
+    limit: Int = 20
+    offset: Int = 0
+    categoryId: ID
+    tags: [String!]
+    sortBy: ThreadSortBy = LATEST
+  ): ForumThreadConnection!
+  forumCategories: [ForumCategory!]!
+  searchForumThreads(query: String!, limit: Int = 20): [ForumThread!]!
+
+  # ============================================
+  # Challenge Queries
+  # ============================================
+  challenge(id: ID!): Challenge
+  challenges(
+    limit: Int = 20
+    offset: Int = 0
+    status: ChallengeStatus
+    sortBy: ChallengeSortBy = START_DATE
+  ): ChallengeConnection!
+  challengeLeaderboard(challengeId: ID!, limit: Int = 100): [ChallengeSubmission!]!
+
+  # ============================================
+  # Social Queries
+  # ============================================
+  comments(
+    targetType: CommentTargetType!
+    targetId: ID!
+    limit: Int = 20
+    offset: Int = 0
+  ): CommentConnection!
+  followers(userId: ID!, limit: Int = 20, offset: Int = 0): UserConnection!
+  following(userId: ID!, limit: Int = 20, offset: Int = 0): UserConnection!
+
+  # ============================================
+  # Leaderboard & Achievements
+  # ============================================
+  leaderboard(
+    period: LeaderboardPeriod = WEEKLY
+    limit: Int = 100
+  ): [LeaderboardEntry!]!
+  achievements: [Achievement!]!
+  userAchievements(userId: ID!): [Achievement!]!
+
+  # ============================================
+  # Notifications
+  # ============================================
+  notifications(
+    limit: Int = 20
+    offset: Int = 0
+    isRead: Boolean
+  ): NotificationConnection!
+  unreadNotificationCount: Int!
+
+  # ============================================
+  # Subscription & Credits
+  # ============================================
+  mySubscription: Subscription
+  myCreditBalance: Int!
+  myCreditTransactions(
+    limit: Int = 20
+    offset: Int = 0
+  ): CreditTransactionConnection!
+}
+
+# ============================================
+# Mutation Type
+# ============================================
+type Mutation {
+  # ============================================
+  # User Mutations
+  # ============================================
+  updateProfile(input: UpdateProfileInput!): UserProfile!
+  deleteAccount: Boolean!
+
+  # ============================================
+  # Artwork Mutations
+  # ============================================
+  createArtwork(input: CreateArtworkInput!): Artwork!
+  updateArtwork(id: ID!, input: UpdateArtworkInput!): Artwork!
+  deleteArtwork(id: ID!): Boolean!
+
+  # ============================================
+  # Video Mutations
+  # ============================================
+  createVideo(input: CreateVideoInput!): Video!
+  updateVideo(id: ID!, input: UpdateVideoInput!): Video!
+  deleteVideo(id: ID!): Boolean!
+
+  # ============================================
+  # Blog Mutations
+  # ============================================
+  createBlogPost(input: CreateBlogPostInput!): BlogPost!
+  updateBlogPost(id: ID!, input: UpdateBlogPostInput!): BlogPost!
+  deleteBlogPost(id: ID!): Boolean!
+  publishBlogPost(id: ID!): BlogPost!
+
+  # ============================================
+  # Forum Mutations
+  # ============================================
+  createForumThread(input: CreateForumThreadInput!): ForumThread!
+  updateForumThread(id: ID!, input: UpdateForumThreadInput!): ForumThread!
+  deleteForumThread(id: ID!): Boolean!
+  createForumReply(input: CreateForumReplyInput!): ForumReply!
+  updateForumReply(id: ID!, input: UpdateForumReplyInput!): ForumReply!
+  deleteForumReply(id: ID!): Boolean!
+  voteForumThread(threadId: ID!, voteType: VoteType!): ForumThread!
+  voteForumReply(replyId: ID!, voteType: VoteType!): ForumReply!
+
+  # ============================================
+  # Challenge Mutations
+  # ============================================
+  createChallenge(input: CreateChallengeInput!): Challenge! # Admin only
+  updateChallenge(id: ID!, input: UpdateChallengeInput!): Challenge! # Admin only
+  deleteChallenge(id: ID!): Boolean! # Admin only
+  submitToChallenge(input: SubmitToChallengeInput!): ChallengeSubmission!
+  voteSubmission(submissionId: ID!): ChallengeSubmission!
+
+  # ============================================
+  # Social Mutations
+  # ============================================
+  createComment(input: CreateCommentInput!): Comment!
+  updateComment(id: ID!, input: UpdateCommentInput!): Comment!
+  deleteComment(id: ID!): Boolean!
+  likeTarget(targetType: LikeTargetType!, targetId: ID!): Like!
+  unlikeTarget(targetType: LikeTargetType!, targetId: ID!): Boolean!
+  followUser(userId: ID!): Follow!
+  unfollowUser(userId: ID!): Boolean!
+
+  # ============================================
+  # Notification Mutations
+  # ============================================
+  markNotificationAsRead(id: ID!): Notification!
+  markAllNotificationsAsRead: Boolean!
+  deleteNotification(id: ID!): Boolean!
+}
+
+# ============================================
+# Sort Enums
+# ============================================
+enum ArtworkSortBy {
+  CREATED_AT
+  UPDATED_AT
+  LIKES
+  VIEWS
+}
+
+enum VideoSortBy {
+  CREATED_AT
+  UPDATED_AT
+  LIKES
+  VIEWS
+}
+
+enum PostSortBy {
+  PUBLISHED_AT
+  CREATED_AT
+  LIKES
+  VIEWS
+}
+
+enum ThreadSortBy {
+  LATEST
+  HOT
+  TOP
+  UNANSWERED
+}
+
+enum ChallengeSortBy {
+  START_DATE
+  END_DATE
+  SUBMISSION_COUNT
+}
+
+enum VoteType {
+  UPVOTE
+  DOWNVOTE
+}
+
+# ============================================
+# Input Types
+# ============================================
+input UpdateProfileInput {
+  username: String
+  displayName: String
+  bio: String
+  avatarUrl: String
+  website: String
+  location: String
+}
+
+input CreateArtworkInput {
+  title: String
+  description: String
+  imageUrl: String!
+  prompt: String
+  negativePrompt: String
+  metadata: ArtworkMetadataInput
+  privacy: PrivacyLevel!
+  tags: [String!]
+}
+
+input ArtworkMetadataInput {
+  width: Int
+  height: Int
+  model: String
+  seed: Int
+  steps: Int
+  cfgScale: Float
+  sampler: String
+}
+
+input UpdateArtworkInput {
+  title: String
+  description: String
+  privacy: PrivacyLevel
+  tags: [String!]
+}
+
+input CreateVideoInput {
+  title: String
+  description: String
+  prompt: String!
+  privacy: PrivacyLevel!
+}
+
+input UpdateVideoInput {
+  title: String
+  description: String
+  privacy: PrivacyLevel
+}
+
+input CreateBlogPostInput {
+  title: String!
+  content: String!
+  excerpt: String
+  featuredImage: String
+  categoryId: ID
+  tags: [String!]
+  status: PostStatus
+}
+
+input UpdateBlogPostInput {
+  title: String
+  content: String
+  excerpt: String
+  featuredImage: String
+  categoryId: ID
+  tags: [String!]
+  status: PostStatus
+}
+
+input CreateForumThreadInput {
+  categoryId: ID!
+  title: String!
+  content: String!
+  tags: [String!]
+}
+
+input UpdateForumThreadInput {
+  title: String
+  content: String
+  tags: [String!]
+}
+
+input CreateForumReplyInput {
+  threadId: ID!
+  content: String!
+  parentReplyId: ID
+}
+
+input UpdateForumReplyInput {
+  content: String!
+}
+
+input CreateChallengeInput {
+  title: String!
+  description: String!
+  type: ChallengeType!
+  startDate: DateTime!
+  endDate: DateTime!
+  votingEndDate: DateTime!
+  bannerImageUrl: String
+  rules: String
+  prizeCredits: Int
+  prizeFeatures: JSON
+}
+
+input UpdateChallengeInput {
+  title: String
+  description: String
+  bannerImageUrl: String
+  rules: String
+  prizeCredits: Int
+  prizeFeatures: JSON
+}
+
+input SubmitToChallengeInput {
+  challengeId: ID!
+  title: String!
+  description: String
+  imageUrl: String
+  videoUrl: String
+}
+
+input CreateCommentInput {
+  targetType: CommentTargetType!
+  targetId: ID!
+  content: String!
+  parentCommentId: ID
+}
+
+input UpdateCommentInput {
+  content: String!
+}
+
+# ============================================
+# Connection Types (Pagination)
+# ============================================
+type UserConnection {
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type UserEdge {
+  node: User!
+  cursor: String!
+}
+
+type ArtworkConnection {
+  edges: [ArtworkEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type ArtworkEdge {
+  node: Artwork!
+  cursor: String!
+}
+
+type VideoConnection {
+  edges: [VideoEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type VideoEdge {
+  node: Video!
+  cursor: String!
+}
+
+type BlogPostConnection {
+  edges: [BlogPostEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type BlogPostEdge {
+  node: BlogPost!
+  cursor: String!
+}
+
+type ForumThreadConnection {
+  edges: [ForumThreadEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type ForumThreadEdge {
+  node: ForumThread!
+  cursor: String!
+}
+
+type CommentConnection {
+  edges: [CommentEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type CommentEdge {
+  node: Comment!
+  cursor: String!
+}
+
+type NotificationConnection {
+  edges: [NotificationEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type NotificationEdge {
+  node: Notification!
+  cursor: String!
+}
+
+type CreditTransactionConnection {
+  edges: [CreditTransactionEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type CreditTransactionEdge {
+  node: CreditTransaction!
+  cursor: String!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}

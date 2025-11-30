@@ -1,0 +1,1945 @@
+enum AchievementConditionType {
+  """成就点数"""
+  ACHIEVEMENT_POINTS
+
+  """评论数量"""
+  COMMENTS_COUNT
+
+  """粉丝数量"""
+  FOLLOWERS_COUNT
+
+  """收到的点赞数"""
+  LIKES_RECEIVED
+
+  """视频数量"""
+  VIDEOS_COUNT
+
+  """作品数量"""
+  WORKS_COUNT
+}
+
+"""成就定义类型（定义成就的元数据和解锁条件）"""
+type AchievementDefinition {
+  """徽章图标（emoji或URL）"""
+  badgeIcon: String
+
+  """条件类型"""
+  conditionType: AchievementConditionType
+
+  """条件值（达到多少触发）"""
+  conditionValue: Int
+
+  """创建时间（ISO 8601格式）"""
+  createdAt: String
+
+  """成就描述（中文）"""
+  description: String
+
+  """成就描述（英文）"""
+  descriptionEn: String
+
+  """成就难度等级（easy/medium/hard/extreme）"""
+  difficultyLevel: String
+
+  """成就唯一标识符（UUID）"""
+  id: ID
+
+  """是否启用（false表示已废弃）"""
+  isActive: Boolean
+
+  """是否隐藏成就（达成前不显示）"""
+  isHidden: Boolean
+
+  """成就名称（中文）"""
+  name: String
+
+  """成就名称（英文）"""
+  nameEn: String
+
+  """成就点数（解锁后获得的点数）"""
+  points: Int
+
+  """排序权重（越小越靠前）"""
+  sortOrder: Int
+
+  """成就等级（bronze/silver/gold/platinum/diamond）"""
+  tier: AchievementTier
+
+  """更新时间（ISO 8601格式）"""
+  updatedAt: String
+}
+
+enum AchievementTier {
+  """青铜成就"""
+  BRONZE
+
+  """钻石成就"""
+  DIAMOND
+
+  """黄金成就"""
+  GOLD
+
+  """铂金成就"""
+  PLATINUM
+
+  """白银成就"""
+  SILVER
+}
+
+"""作品类型（图片或视频）"""
+type Artwork {
+  """作品类型（image 或 video）"""
+  artworkType: String
+
+  """宽高比（如 16:9, 9:16）"""
+  aspectRatio: String
+
+  """作品作者"""
+  author: User
+
+  """完成时间（ISO 8601格式）"""
+  completedAt: String
+
+  """创建时间（ISO 8601格式）"""
+  createdAt: String
+
+  """时长（秒，仅视频）"""
+  duration: Int
+
+  """文件大小（字节）"""
+  fileSizeBytes: Int
+
+  """高度（像素，仅图片）"""
+  height: Int
+
+  """作品唯一标识符（UUID）"""
+  id: ID
+
+  """当前用户是否已点赞"""
+  isLiked: Boolean
+
+  """是否公开"""
+  isPublic: Boolean
+
+  """点赞数量"""
+  likeCount: Int
+
+  """创作提示词"""
+  prompt: String
+
+  """分辨率（如 720p, 1080p）"""
+  resolution: String
+
+  """状态（processing, completed, failed等）"""
+  status: String
+
+  """缩略图URL"""
+  thumbnailUrl: String
+
+  """作品URL（图片或视频）"""
+  url: String
+
+  """作品作者的用户ID"""
+  userId: ID
+
+  """浏览次数"""
+  viewCount: Int
+
+  """宽度（像素，仅图片）"""
+  width: Int
+}
+
+"""博客分类类型"""
+type BlogCategory {
+  """创建时间（ISO 8601格式）"""
+  createdAt: String
+
+  """删除时间（软删除，ISO 8601格式）"""
+  deletedAt: String
+
+  """分类描述"""
+  description: String
+
+  """分类唯一标识符（UUID）"""
+  id: ID
+
+  """是否被软删除"""
+  isDeleted: Boolean
+
+  """分类名称"""
+  name: String
+
+  """该分类下的文章数量"""
+  postCount: Int
+
+  """分类URL友好标识符"""
+  slug: String
+
+  """更新时间（ISO 8601格式）"""
+  updatedAt: String
+}
+
+"""博客文章类型"""
+type BlogPost {
+  """文章作者"""
+  author: User
+
+  """文章分类列表"""
+  categories: [BlogCategory!]
+
+  """评论次数"""
+  commentCount: Int
+
+  """文章评论列表"""
+  comments(
+    """每页数量（默认10，最大50）"""
+    limit: Int
+
+    """偏移量（用于分页）"""
+    offset: Int
+  ): [Comment!]
+
+  """文章内容（Markdown格式）"""
+  content: String
+
+  """封面图片URL"""
+  coverImageUrl: String
+
+  """创建时间（ISO 8601格式）"""
+  createdAt: String
+
+  """删除时间（软删除，ISO 8601格式）"""
+  deletedAt: String
+
+  """文章摘要"""
+  excerpt: String
+
+  """文章唯一标识符（UUID）"""
+  id: ID
+
+  """是否被软删除"""
+  isDeleted: Boolean
+
+  """当前用户是否已点赞"""
+  isLiked: Boolean
+
+  """点赞次数"""
+  likeCount: Int
+
+  """文章点赞列表"""
+  likes(
+    """每页数量（默认10，最大50）"""
+    limit: Int
+
+    """偏移量（用于分页）"""
+    offset: Int
+  ): [Like!]
+
+  """SEO描述"""
+  metaDescription: String
+
+  """SEO关键词"""
+  metaKeywords: String
+
+  """SEO标题"""
+  metaTitle: String
+
+  """发布时间（ISO 8601格式）"""
+  publishedAt: String
+
+  """阅读时长估算（分钟）"""
+  readingTime: Int
+
+  """文章URL友好标识符"""
+  slug: String
+
+  """文章状态"""
+  status: BlogPostStatus
+
+  """文章标签列表"""
+  tags: [BlogTag!]
+
+  """文章标题"""
+  title: String
+
+  """更新时间（ISO 8601格式）"""
+  updatedAt: String
+
+  """作者用户ID（UUID）"""
+  userId: String
+
+  """浏览次数"""
+  viewCount: Int
+}
+
+"""博客文章过滤器"""
+input BlogPostFilter {
+  """按作者 ID 筛选"""
+  authorId: ID
+
+  """按分类 ID 筛选"""
+  categoryId: ID
+
+  """创建时间晚于（ISO 8601格式）"""
+  createdAfter: String
+
+  """创建时间早于（ISO 8601格式）"""
+  createdBefore: String
+
+  """是否公开"""
+  isPublic: Boolean
+
+  """搜索关键词（标题或内容）"""
+  search: String
+
+  """按状态筛选（draft/published）"""
+  status: String
+
+  """按标签 ID 筛选"""
+  tagId: ID
+}
+
+"""博客文章排序"""
+input BlogPostOrderBy {
+  """排序方向（asc/desc，默认 desc）"""
+  direction: String
+
+  """排序字段（created_at/updated_at/view_count/like_count）"""
+  field: String!
+}
+
+enum BlogPostStatus {
+  """草稿"""
+  DRAFT
+
+  """已发布"""
+  PUBLISHED
+}
+
+"""博客标签类型"""
+type BlogTag {
+  """创建时间（ISO 8601格式）"""
+  createdAt: String
+
+  """删除时间（软删除，ISO 8601格式）"""
+  deletedAt: String
+
+  """标签唯一标识符（UUID）"""
+  id: ID
+
+  """是否被软删除"""
+  isDeleted: Boolean
+
+  """标签名称"""
+  name: String
+
+  """该标签下的文章数量"""
+  postCount: Int
+
+  """标签URL友好标识符"""
+  slug: String
+
+  """更新时间（ISO 8601格式）"""
+  updatedAt: String
+}
+
+"""评论类型（支持嵌套回复）"""
+type Comment {
+  """评论作者"""
+  author: User
+
+  """是否可以回复（深度<2）"""
+  canReply: Boolean
+
+  """评论内容"""
+  content: String
+
+  """被评论内容的ID（博客/作品/视频）"""
+  contentId: ID
+
+  """评论对象类型（blog_post/artwork/video）"""
+  contentType: String
+
+  """创建时间（ISO 8601格式）"""
+  createdAt: String
+
+  """删除时间（软删除，ISO 8601格式）"""
+  deletedAt: String
+
+  """嵌套深度（0=顶级，1=一级回复，2=二级回复）"""
+  depth: Int
+
+  """评论唯一标识符（UUID）"""
+  id: ID
+
+  """是否被软删除"""
+  isDeleted: Boolean
+
+  """是否已编辑"""
+  isEdited: Boolean
+
+  """当前用户是否已点赞"""
+  isLiked: Boolean
+
+  """点赞数量"""
+  likeCount: Int
+
+  """父评论（null表示顶级评论）"""
+  parent: Comment
+
+  """父评论ID（null表示顶级评论）"""
+  parentId: ID
+
+  """子评论列表（回复）"""
+  replies(
+    """每页数量（默认10，最大50）"""
+    limit: Int
+
+    """偏移量（用于分页）"""
+    offset: Int
+  ): [Comment!]
+
+  """回复数量"""
+  replyCount: Int
+
+  """更新时间（ISO 8601格式）"""
+  updatedAt: String
+
+  """评论作者的用户ID"""
+  userId: ID
+}
+
+"""评论过滤器"""
+input CommentFilter {
+  """按内容 ID 筛选"""
+  contentId: ID
+
+  """按内容类型筛选（blog_post/artwork/video）"""
+  contentType: String
+
+  """创建时间晚于（ISO 8601格式）"""
+  createdAfter: String
+
+  """创建时间早于（ISO 8601格式）"""
+  createdBefore: String
+
+  """按父评论 ID 筛选（null 表示顶级评论）"""
+  parentId: ID
+
+  """按用户 ID 筛选"""
+  userId: ID
+}
+
+"""评论排序"""
+input CommentOrderBy {
+  """排序方向（asc/desc，默认 desc）"""
+  direction: String
+
+  """排序字段（created_at/like_count）"""
+  field: String!
+}
+
+"""创建博客文章输入"""
+input CreateBlogPostInput {
+  """分类 ID 列表（可选）"""
+  categoryIds: [ID!]
+
+  """文章内容（Markdown 格式）"""
+  content: String!
+
+  """封面图片 URL（可选）"""
+  coverImage: String
+
+  """文章摘要（可选，如果不提供则自动生成）"""
+  excerpt: String
+
+  """是否公开（默认 true）"""
+  isPublic: Boolean
+
+  """文章 slug（可选，如果不提供则自动生成）"""
+  slug: String
+
+  """发布状态（draft/published，默认 draft）"""
+  status: String
+
+  """标签 ID 列表（可选）"""
+  tagIds: [ID!]
+
+  """文章标题（3-200字符）"""
+  title: String!
+}
+
+"""创建评论输入"""
+input CreateCommentInput {
+  """评论内容（1-5000字符）"""
+  content: String!
+
+  """内容 ID（博客文章/作品/视频）"""
+  contentId: ID!
+
+  """内容类型（blog_post/artwork/video）"""
+  contentType: String!
+
+  """父评论 ID（嵌套回复时使用，最多2层）"""
+  parentId: ID
+}
+
+"""创建关注输入"""
+input CreateFollowInput {
+  """被关注用户的 ID"""
+  followingId: ID!
+}
+
+"""创建论坛回复输入"""
+input CreateForumReplyInput {
+  """回复内容（1-10000字符）"""
+  content: String!
+
+  """父回复 ID（嵌套回复时使用）"""
+  parentId: ID
+
+  """主题 ID"""
+  threadId: ID!
+}
+
+"""创建论坛主题输入"""
+input CreateForumThreadInput {
+  """分类 ID"""
+  categoryId: ID!
+
+  """主题内容（10-50000字符）"""
+  content: String!
+
+  """是否公开（默认 true）"""
+  isPublic: Boolean
+
+  """标签 ID 列表（可选）"""
+  tagIds: [ID!]
+
+  """主题标题（3-200字符）"""
+  title: String!
+}
+
+"""创建论坛投票输入"""
+input CreateForumVoteInput {
+  """投票目标 ID（主题 ID 或回复 ID）"""
+  targetId: ID!
+
+  """投票目标类型（thread/reply）"""
+  targetType: String!
+
+  """投票类型（upvote/downvote）"""
+  voteType: String!
+}
+
+"""创建点赞输入"""
+input CreateLikeInput {
+  """内容 ID（博客文章/作品/评论）"""
+  contentId: ID!
+
+  """点赞类型（blog_post/artwork/comment）"""
+  likeType: String!
+}
+
+"""游标分页输入（基于游标）"""
+input CursorPaginationInput {
+  """游标：从这个位置之后开始取（Base64 编码）"""
+  after: String
+
+  """游标：从这个位置之前开始取（Base64 编码）"""
+  before: String
+
+  """向前取多少条（与 after 配合使用）"""
+  first: Int
+
+  """向后取多少条（与 before 配合使用）"""
+  last: Int
+}
+
+"""取消关注输入"""
+input DeleteFollowInput {
+  """被关注用户的 ID"""
+  followingId: ID!
+}
+
+"""取消论坛投票输入"""
+input DeleteForumVoteInput {
+  """投票目标 ID（主题 ID 或回复 ID）"""
+  targetId: ID!
+
+  """投票目标类型（thread/reply）"""
+  targetType: String!
+}
+
+"""取消点赞输入"""
+input DeleteLikeInput {
+  """内容 ID（博客文章/作品/评论）"""
+  contentId: ID!
+
+  """点赞类型（blog_post/artwork/comment）"""
+  likeType: String!
+}
+
+"""关注关系类型（用户关注/粉丝）"""
+type Follow {
+  """关注时间（ISO 8601格式）"""
+  createdAt: String
+
+  """关注者（粉丝）"""
+  follower: User
+
+  """关注者的用户ID"""
+  followerId: ID
+
+  """被关注者"""
+  following: User
+
+  """被关注者的用户ID"""
+  followingId: ID
+
+  """是否相互关注（互粉）"""
+  isMutual: Boolean
+}
+
+"""关注过滤器"""
+input FollowFilter {
+  """创建时间晚于（ISO 8601格式）"""
+  createdAfter: String
+
+  """创建时间早于（ISO 8601格式）"""
+  createdBefore: String
+
+  """按关注者 ID 筛选（查询某人关注了谁）"""
+  followerId: ID
+
+  """按被关注者 ID 筛选（查询某人的粉丝）"""
+  followingId: ID
+}
+
+"""论坛分类类型"""
+type ForumCategory {
+  """分类颜色（十六进制）"""
+  color: String
+
+  """创建时间（ISO 8601格式）"""
+  createdAt: String
+
+  """分类描述（中文）"""
+  description: String
+
+  """分类描述（英文）"""
+  descriptionEn: String
+
+  """分类图标（emoji）"""
+  icon: String
+
+  """分类唯一标识符（UUID）"""
+  id: ID
+
+  """分类名称（中文）"""
+  name: String
+
+  """分类名称（英文）"""
+  nameEn: String
+
+  """该分类下的回复总数"""
+  replyCount: Int
+
+  """分类URL友好标识符"""
+  slug: String
+
+  """排序顺序（越小越靠前）"""
+  sortOrder: Int
+
+  """该分类下的主题数量"""
+  threadCount: Int
+
+  """更新时间（ISO 8601格式）"""
+  updatedAt: String
+}
+
+"""论坛回复类型（对主题或回复的回复）"""
+type ForumReply {
+  """回复者"""
+  author: User
+
+  """回复内容"""
+  content: String
+
+  """创建时间（ISO 8601格式）"""
+  createdAt: String
+
+  """删除时间（软删除，ISO 8601格式）"""
+  deletedAt: String
+
+  """回复层级深度（0=直接回复，1=嵌套回复）"""
+  depth: Int
+
+  """点踩数"""
+  downvoteCount: Int
+
+  """回复唯一标识符（UUID）"""
+  id: ID
+
+  """是否被标记为最佳答案"""
+  isAcceptedAnswer: Boolean
+
+  """是否被软删除"""
+  isDeleted: Boolean
+
+  """是否是直接回复主题（parent_id为null）"""
+  isDirectReply: Boolean
+
+  """是否已编辑"""
+  isEdited: Boolean
+
+  """是否是新回复（24小时内）"""
+  isRecent: Boolean
+
+  """是否被举报"""
+  isReported: Boolean
+
+  """父回复（null表示直接回复主题）"""
+  parent: ForumReply
+
+  """父回复ID（null表示直接回复主题）"""
+  parentId: String
+
+  """子回复列表（嵌套回复）"""
+  replies(
+    """每页数量（默认10，最大50）"""
+    limit: Int
+
+    """偏移量（用于分页）"""
+    offset: Int
+  ): [ForumReply!]
+
+  """举报次数"""
+  reportCount: Int
+
+  """所属论坛主题"""
+  thread: ForumThread
+
+  """所属主题ID"""
+  threadId: ID
+
+  """更新时间（ISO 8601格式）"""
+  updatedAt: String
+
+  """点赞数"""
+  upvoteCount: Int
+
+  """回复者用户ID"""
+  userId: ID
+
+  """投票分数（upvote - downvote）"""
+  voteScore: Int
+}
+
+"""论坛回复过滤器"""
+input ForumReplyFilter {
+  """创建时间晚于（ISO 8601格式）"""
+  createdAfter: String
+
+  """创建时间早于（ISO 8601格式）"""
+  createdBefore: String
+
+  """是否为最佳答案"""
+  isAcceptedAnswer: Boolean
+
+  """按父回复 ID 筛选（null 表示直接回复主题）"""
+  parentId: ID
+
+  """按主题 ID 筛选"""
+  threadId: ID
+
+  """按用户 ID 筛选"""
+  userId: ID
+}
+
+"""论坛回复排序"""
+input ForumReplyOrderBy {
+  """排序方向（asc/desc，默认 asc）"""
+  direction: String
+
+  """排序字段（created_at/upvote_count）"""
+  field: String!
+}
+
+"""论坛主题类型（论坛帖子）"""
+type ForumThread {
+  """活跃度分数（回复数 + 浏览数*0.1）"""
+  activityScore: Float
+
+  """帖子作者"""
+  author: User
+
+  """是否可以回复（未锁定且状态为open）"""
+  canReply: Boolean
+
+  """所属论坛分类"""
+  category: ForumCategory
+
+  """所属分类ID"""
+  categoryId: ID
+
+  """主题内容（≥10字符）"""
+  content: String
+
+  """创建时间（ISO 8601格式）"""
+  createdAt: String
+
+  """删除时间（软删除，ISO 8601格式）"""
+  deletedAt: String
+
+  """点踩数"""
+  downvoteCount: Int
+
+  """是否有最新回复（24小时内）"""
+  hasRecentReply: Boolean
+
+  """主题唯一标识符（UUID）"""
+  id: ID
+
+  """是否被软删除"""
+  isDeleted: Boolean
+
+  """是否精华帖"""
+  isFeatured: Boolean
+
+  """是否锁定（禁止回复）"""
+  isLocked: Boolean
+
+  """是否置顶"""
+  isPinned: Boolean
+
+  """是否是新帖（3天内）"""
+  isRecent: Boolean
+
+  """是否被举报"""
+  isReported: Boolean
+
+  """最后回复时间（ISO 8601格式）"""
+  lastReplyAt: String
+
+  """最后回复用户"""
+  lastReplyUser: User
+
+  """最后回复用户ID"""
+  lastReplyUserId: String
+
+  """回复列表"""
+  replies(
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量（用于分页）"""
+    offset: Int
+  ): [ForumReply!]
+
+  """回复数量"""
+  replyCount: Int
+
+  """举报次数"""
+  reportCount: Int
+
+  """主题URL slug"""
+  slug: String
+
+  """主题状态（open/closed/archived）"""
+  status: ForumThreadStatus
+
+  """主题标题（3-200字符）"""
+  title: String
+
+  """更新时间（ISO 8601格式）"""
+  updatedAt: String
+
+  """点赞数"""
+  upvoteCount: Int
+
+  """作者用户ID"""
+  userId: ID
+
+  """浏览次数"""
+  viewCount: Int
+
+  """投票分数（upvote - downvote）"""
+  voteScore: Int
+}
+
+"""论坛主题过滤器"""
+input ForumThreadFilter {
+  """按分类 ID 筛选"""
+  categoryId: ID
+
+  """创建时间晚于（ISO 8601格式）"""
+  createdAfter: String
+
+  """创建时间早于（ISO 8601格式）"""
+  createdBefore: String
+
+  """是否为精华帖"""
+  isFeatured: Boolean
+
+  """是否已锁定"""
+  isLocked: Boolean
+
+  """是否已置顶"""
+  isPinned: Boolean
+
+  """搜索关键词（标题或内容）"""
+  search: String
+
+  """按状态筛选（open/closed/archived）"""
+  status: String
+
+  """按标签 ID 筛选"""
+  tagId: ID
+
+  """按作者 ID 筛选"""
+  userId: ID
+}
+
+"""论坛主题排序"""
+input ForumThreadOrderBy {
+  """排序方向（asc/desc，默认 desc）"""
+  direction: String
+
+  """
+  排序字段（created_at/updated_at/last_reply_at/view_count/reply_count/upvote_count）
+  """
+  field: String!
+}
+
+enum ForumThreadStatus {
+  """已归档"""
+  ARCHIVED
+
+  """已关闭"""
+  CLOSED
+
+  """开放中"""
+  OPEN
+}
+
+"""论坛投票类型（对主题或回复的点赞/点踩）"""
+type ForumVote {
+  """投票时间（ISO 8601格式）"""
+  createdAt: String
+
+  """投票唯一标识符（UUID）"""
+  id: ID
+
+  """是否是点踩（downvote）"""
+  isDownvote: Boolean
+
+  """是否是点赞（upvote）"""
+  isUpvote: Boolean
+
+  """投票目标回复（仅 target_type=reply）"""
+  reply: ForumReply
+
+  """投票目标ID（主题ID或回复ID）"""
+  targetId: ID
+
+  """投票目标类型（thread/reply）"""
+  targetType: ForumVoteTargetType
+
+  """投票目标主题（仅 target_type=thread）"""
+  thread: ForumThread
+
+  """投票用户"""
+  user: User
+
+  """投票用户ID"""
+  userId: ID
+
+  """投票类型（upvote/downvote）"""
+  voteType: ForumVoteType
+
+  """投票权重（upvote=1, downvote=-1）"""
+  voteWeight: Int
+}
+
+"""论坛投票过滤器"""
+input ForumVoteFilter {
+  """创建时间晚于（ISO 8601格式）"""
+  createdAfter: String
+
+  """创建时间早于（ISO 8601格式）"""
+  createdBefore: String
+
+  """按目标 ID 筛选"""
+  targetId: ID
+
+  """按目标类型筛选（thread/reply）"""
+  targetType: String
+
+  """按用户 ID 筛选"""
+  userId: ID
+
+  """按投票类型筛选（upvote/downvote）"""
+  voteType: String
+}
+
+enum ForumVoteTargetType {
+  """回复"""
+  REPLY
+
+  """主题帖"""
+  THREAD
+}
+
+enum ForumVoteType {
+  """点踩"""
+  DOWNVOTE
+
+  """点赞"""
+  UPVOTE
+}
+
+"""排行榜类型（用户统计数据，用于排行榜展示）"""
+type Leaderboard {
+  """成就进度百分比（已解锁成就数 / 总成就数 * 100）"""
+  achievementProgress: Float
+
+  """解锁成就数"""
+  achievementsCount: Int
+
+  """活跃度评级（inactive/low/medium/high/very_high）"""
+  activityLevel: String
+
+  """平均每作品点赞数"""
+  avgLikesPerWork: Float
+
+  """创建时间（ISO 8601格式）"""
+  createdAt: String
+
+  """粉丝数"""
+  followersCount: Int
+
+  """关注数"""
+  followingCount: Int
+
+  """影响力比率（粉丝数 / 关注数，越高越有影响力）"""
+  influenceRatio: Float
+
+  """最后计算时间（ISO 8601格式）"""
+  lastCalculatedAt: String
+
+  """排行榜综合积分（作品*10 + 点赞*1 + 粉丝*5 + 成就点数*0.5）"""
+  leaderboardScore: Int
+
+  """本月收到的点赞数"""
+  monthlyLikes: Int
+
+  """本月发布的作品数"""
+  monthlyWorks: Int
+
+  """成就总点数"""
+  totalAchievementPoints: Int
+
+  """收到的总评论数"""
+  totalCommentsReceived: Int
+
+  """总图片数（作品数 - 视频数）"""
+  totalImages: Int
+
+  """收到的总点赞数"""
+  totalLikesReceived: Int
+
+  """总视频数"""
+  totalVideos: Int
+
+  """总浏览量"""
+  totalViews: Int
+
+  """总作品数（图片+视频）"""
+  totalWorks: Int
+
+  """更新时间（ISO 8601格式）"""
+  updatedAt: String
+
+  """用户信息"""
+  user: User
+
+  """用户ID（UUID）"""
+  userId: ID
+
+  """本周收到的点赞数"""
+  weeklyLikes: Int
+
+  """本周发布的作品数"""
+  weeklyWorks: Int
+}
+
+"""点赞类型（统一管理所有点赞）"""
+type Like {
+  """被点赞的作品（仅 like_type=artwork）"""
+  artwork: Artwork
+
+  """被点赞的博客文章（仅 like_type=blog_post）"""
+  blogPost: BlogPost
+
+  """被点赞的评论（仅 like_type=comment）"""
+  comment: Comment
+
+  """被点赞内容的ID（博客/作品/评论）"""
+  contentId: ID
+
+  """点赞时间（ISO 8601格式）"""
+  createdAt: String
+
+  """点赞唯一标识符（UUID）"""
+  id: ID
+
+  """点赞对象类型（blog_post/artwork/comment）"""
+  likeType: String
+
+  """点赞用户"""
+  user: User
+
+  """点赞用户的用户ID"""
+  userId: ID
+}
+
+"""点赞过滤器"""
+input LikeFilter {
+  """按内容 ID 筛选"""
+  contentId: ID
+
+  """创建时间晚于（ISO 8601格式）"""
+  createdAfter: String
+
+  """创建时间早于（ISO 8601格式）"""
+  createdBefore: String
+
+  """按点赞类型筛选（blog_post/artwork/comment）"""
+  likeType: String
+
+  """按用户 ID 筛选"""
+  userId: ID
+}
+
+"""GraphQL 变更操作入口"""
+type Mutation {
+  """创建博客文章"""
+  createBlogPost(
+    """创建博客文章输入"""
+    input: CreateBlogPostInput!
+  ): BlogPost
+
+  """创建评论"""
+  createComment(
+    """创建评论输入"""
+    input: CreateCommentInput!
+  ): Comment
+
+  """关注用户"""
+  createFollow(
+    """关注输入"""
+    input: CreateFollowInput!
+  ): Follow
+
+  """创建论坛回复"""
+  createForumReply(
+    """创建论坛回复输入"""
+    input: CreateForumReplyInput!
+  ): ForumReply
+
+  """创建论坛主题"""
+  createForumThread(
+    """创建论坛主题输入"""
+    input: CreateForumThreadInput!
+  ): ForumThread
+
+  """创建论坛投票（upvote/downvote）"""
+  createForumVote(
+    """创建投票输入"""
+    input: CreateForumVoteInput!
+  ): ForumVote
+
+  """点赞"""
+  createLike(
+    """点赞输入"""
+    input: CreateLikeInput!
+  ): Like
+
+  """删除博客文章（软删除）"""
+  deleteBlogPost(
+    """博客文章ID"""
+    id: ID!
+  ): Boolean
+
+  """取消关注"""
+  deleteFollow(
+    """取消关注输入"""
+    input: DeleteFollowInput!
+  ): Boolean
+
+  """删除论坛投票（取消投票）"""
+  deleteForumVote(
+    """删除投票输入"""
+    input: DeleteForumVoteInput!
+  ): Boolean
+
+  """取消点赞"""
+  deleteLike(
+    """取消点赞输入"""
+    input: DeleteLikeInput!
+  ): Boolean
+
+  """测试 Mutation：回显输入的消息"""
+  echo(
+    """要回显的消息"""
+    message: String!
+  ): String
+
+  """更新博客文章"""
+  updateBlogPost(
+    """博客文章ID"""
+    id: ID!
+
+    """更新博客文章输入"""
+    input: UpdateBlogPostInput!
+  ): BlogPost
+
+  """更新论坛投票（从upvote改为downvote或反之）"""
+  updateForumVote(
+    """投票ID"""
+    id: ID!
+
+    """更新投票输入"""
+    input: UpdateForumVoteInput!
+  ): ForumVote
+}
+
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+}
+
+"""分页输入（基于偏移量）"""
+input PaginationInput {
+  """每页数量（默认10，最大100）"""
+  limit: Int
+
+  """偏移量（默认0）"""
+  offset: Int
+}
+
+"""GraphQL 查询入口"""
+type Query {
+  """获取单个作品（图片或视频）"""
+  artwork(
+    """作品ID"""
+    id: ID!
+
+    """作品类型（image 或 video）"""
+    type: String!
+  ): Artwork
+
+  """获取某个作品的点赞用户列表"""
+  artworkLikes(
+    """作品ID"""
+    artworkId: ID!
+
+    """作品类型（image 或 video）"""
+    artworkType: String!
+
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+  ): [Like!]
+
+  """获取作品统计信息（总数、分类统计等）"""
+  artworkStats: String
+
+  """获取作品列表（图片或视频）"""
+  artworks(
+    """作品类型（image/video）"""
+    artworkType: String
+
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+
+    """按用户筛选"""
+    userId: ID
+  ): [Artwork!]
+
+  """按宽高比过滤作品（16:9 或 9:16）"""
+  artworksByAspectRatio(
+    """宽高比（16:9, 9:16）"""
+    aspectRatio: String!
+
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+  ): [Artwork!]
+
+  """按时长过滤视频作品（4秒、6秒或8秒）"""
+  artworksByDuration(
+    """时长（秒）：4, 6, 8"""
+    duration: Int!
+
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+  ): [Artwork!]
+
+  """通过提示词搜索作品（支持模糊匹配）"""
+  artworksByPrompt(
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+
+    """搜索关键词"""
+    search: String!
+  ): [Artwork!]
+
+  """按分辨率过滤作品（720p 或 1080p）"""
+  artworksByResolution(
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+
+    """分辨率（720p, 1080p）"""
+    resolution: String!
+  ): [Artwork!]
+
+  """获取作品列表（Relay 分页）"""
+  artworksConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+
+    """过滤类型（image 或 video）"""
+    type: String
+  ): QueryArtworksConnection
+
+  """根据文章ID获取博客文章"""
+  blogPost(
+    """文章ID（UUID）"""
+    id: ID!
+  ): BlogPost
+
+  """获取博客文章列表"""
+  blogPosts(
+    """每页数量（默认10，最大100）"""
+    limit: Int
+
+    """偏移量（用于分页）"""
+    offset: Int
+
+    """按状态筛选（draft/published）"""
+    status: String
+  ): [BlogPost!]
+
+  """Relay-style 博客文章分页查询 (使用 cursor 分页)"""
+  blogPostsConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+
+    """排序字段 (created_at/view_count/like_count)"""
+    orderBy: String = "created_at"
+
+    """排序方向 (asc/desc)"""
+    orderDirection: String = "desc"
+
+    """按状态筛选（draft/published）"""
+    status: String
+  ): QueryBlogPostsConnection
+
+  """获取评论列表"""
+  comments(
+    """按内容ID筛选"""
+    contentId: ID
+
+    """按内容类型筛选（blog_post/artwork/video）"""
+    contentType: String
+
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+
+    """排序字段"""
+    orderBy: String = "created_at"
+
+    """按父评论筛选（嵌套评论，最多2层）"""
+    parentId: ID
+  ): [Comment!]
+
+  """返回当前服务器时间（ISO 格式）"""
+  currentTime: String
+
+  """获取当前用户失败的视频任务"""
+  failedVideos(
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+  ): [Video!]
+
+  """获取精选作品（管理员推荐）"""
+  featuredArtworks(
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+  ): [Artwork!]
+
+  """获取用户的粉丝列表"""
+  followers(
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+
+    """用户ID"""
+    userId: ID!
+  ): [Follow!]
+
+  """获取用户关注的人列表"""
+  following(
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+
+    """用户ID"""
+    userId: ID!
+  ): [Follow!]
+
+  """获取论坛回复列表"""
+  forumReplies(
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+
+    """排序字段"""
+    orderBy: String = "created_at"
+
+    """按父回复筛选（嵌套回复）"""
+    parentId: ID
+
+    """按主题筛选"""
+    threadId: ID
+  ): [ForumReply!]
+
+  """根据ID获取论坛主题"""
+  forumThread(
+    """主题ID"""
+    id: ID!
+  ): ForumThread
+
+  """获取论坛主题列表"""
+  forumThreads(
+    """按分类筛选"""
+    categoryId: ID
+
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+
+    """排序字段"""
+    orderBy: String = "created_at"
+
+    """按状态筛选（open/closed/archived）"""
+    status: String
+  ): [ForumThread!]
+
+  """测试查询：返回 Hello World"""
+  hello: String
+
+  """获取排行榜（按leaderboard_score排序）"""
+  leaderboard(
+    """返回前N名（默认100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+  ): [Leaderboard!]
+
+  """获取用户点赞的作品列表"""
+  likedArtworks(
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+
+    """用户ID"""
+    userId: ID!
+  ): [Artwork!]
+
+  """获取当前登录用户信息（需要认证）"""
+  me: User
+
+  """获取当前登录用户的所有作品"""
+  myArtworks(
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+  ): [Artwork!]
+
+  """获取当前登录用户的所有视频"""
+  myVideos(
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+
+    """状态过滤（processing, completed, failed）"""
+    status: String
+  ): [Video!]
+
+  """获取当前用户正在处理的视频任务"""
+  processingVideos: [Video!]
+
+  """获取所有公开的作品（用于画廊展示）"""
+  publicArtworks(
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+  ): [Artwork!]
+
+  """获取最近创建的作品"""
+  recentArtworks(
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+  ): [Artwork!]
+
+  """获取最近完成的视频"""
+  recentVideos(
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+  ): [Video!]
+
+  """获取热门作品（按点赞数和浏览量排序）"""
+  trendingArtworks(
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+
+    """过滤类型（image 或 video）"""
+    type: String
+  ): [Artwork!]
+
+  """根据用户ID获取用户信息"""
+  user(
+    """用户ID（UUID）"""
+    id: ID!
+  ): User
+
+  """获取用户的所有作品（图片和视频）"""
+  userArtworks(
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+
+    """过滤类型（image 或 video），不传则返回所有"""
+    type: String
+
+    """用户ID"""
+    userId: ID!
+  ): [Artwork!]
+
+  """获取指定用户的所有视频"""
+  userVideos(
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+
+    """状态过滤（processing, completed, failed）"""
+    status: String
+
+    """用户ID"""
+    userId: ID!
+  ): [Video!]
+
+  """获取用户列表（支持搜索和过滤）"""
+  users(
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+
+    """搜索关键词（匹配用户名和邮箱）"""
+    search: String
+  ): [User!]
+
+  """获取单个视频详情"""
+  video(
+    """视频ID"""
+    id: ID!
+  ): Video
+
+  """通过 Google Veo operation_id 查询视频"""
+  videoByOperationId(
+    """Google Veo operation ID"""
+    operationId: String!
+  ): Video
+
+  """获取视频统计信息（总数、状态分布等）"""
+  videoStats: String
+
+  """获取视频列表（支持多种过滤条件）"""
+  videos(
+    """宽高比过滤（16:9, 9:16）"""
+    aspectRatio: String
+
+    """时长过滤（4, 6, 8）"""
+    duration: Int
+
+    """每页数量（默认20，最大100）"""
+    limit: Int
+
+    """偏移量"""
+    offset: Int
+
+    """分辨率过滤（720p, 1080p）"""
+    resolution: String
+
+    """状态过滤（processing, completed, failed）"""
+    status: String
+  ): [Video!]
+
+  """获取视频列表（Relay 分页）"""
+  videosConnection(
+    after: String
+    before: String
+    first: Int
+    last: Int
+
+    """状态过滤"""
+    status: String
+  ): QueryVideosConnection
+}
+
+type QueryArtworksConnection {
+  edges: [QueryArtworksConnectionEdge]
+  pageInfo: PageInfo!
+}
+
+type QueryArtworksConnectionEdge {
+  cursor: String!
+  node: Artwork
+}
+
+type QueryBlogPostsConnection {
+  edges: [QueryBlogPostsConnectionEdge]
+  pageInfo: PageInfo!
+}
+
+type QueryBlogPostsConnectionEdge {
+  cursor: String!
+  node: BlogPost
+}
+
+type QueryVideosConnection {
+  edges: [QueryVideosConnectionEdge]
+  pageInfo: PageInfo!
+}
+
+type QueryVideosConnectionEdge {
+  cursor: String!
+  node: Video
+}
+
+enum SortDirection {
+  """升序"""
+  ASC
+
+  """降序"""
+  DESC
+}
+
+"""GraphQL 订阅入口（实时推送）"""
+type Subscription {
+  """订阅服务器时间（每秒推送，用于测试Subscription功能）"""
+  currentTime: String
+
+  """订阅新发布的博客文章（实时推送）"""
+  newBlogPost: BlogPost
+}
+
+"""更新博客文章输入"""
+input UpdateBlogPostInput {
+  """分类 ID 列表"""
+  categoryIds: [ID!]
+
+  """文章内容（Markdown 格式）"""
+  content: String
+
+  """封面图片 URL"""
+  coverImage: String
+
+  """文章摘要"""
+  excerpt: String
+
+  """是否公开"""
+  isPublic: Boolean
+
+  """文章 slug"""
+  slug: String
+
+  """发布状态（draft/published）"""
+  status: String
+
+  """标签 ID 列表"""
+  tagIds: [ID!]
+
+  """文章标题（3-200字符）"""
+  title: String
+}
+
+"""更新评论输入"""
+input UpdateCommentInput {
+  """评论内容（1-5000字符）"""
+  content: String!
+}
+
+"""更新论坛回复输入"""
+input UpdateForumReplyInput {
+  """回复内容（1-10000字符）"""
+  content: String!
+}
+
+"""更新论坛主题输入"""
+input UpdateForumThreadInput {
+  """分类 ID"""
+  categoryId: ID
+
+  """主题内容（10-50000字符）"""
+  content: String
+
+  """是否公开"""
+  isPublic: Boolean
+
+  """状态（open/closed/archived）"""
+  status: String
+
+  """标签 ID 列表"""
+  tagIds: [ID!]
+
+  """主题标题（3-200字符）"""
+  title: String
+}
+
+"""更新论坛投票输入"""
+input UpdateForumVoteInput {
+  """投票类型（upvote/downvote）"""
+  voteType: String!
+}
+
+"""用户类型（包含认证信息和资料信息）"""
+type User {
+  """作品数量"""
+  artworkCount: Int
+
+  """头像URL"""
+  avatarUrl: String
+
+  """个人简介"""
+  bio: String
+
+  """注册时间（ISO 8601格式）"""
+  createdAt: String
+
+  """显示名称"""
+  displayName: String
+
+  """用户邮箱（仅自己可见，其他人看到为null）"""
+  email: String
+
+  """粉丝数量"""
+  followerCount: Int
+
+  """关注数量"""
+  followingCount: Int
+
+  """GitHub用户名"""
+  githubHandle: String
+
+  """用户唯一标识符（UUID）"""
+  id: ID
+
+  """Instagram用户名"""
+  instagramHandle: String
+
+  """所在地"""
+  location: String
+
+  """文章数量"""
+  postCount: Int
+
+  """总获赞数"""
+  totalLikes: Int
+
+  """Twitter用户名"""
+  twitterHandle: String
+
+  """更新时间（ISO 8601格式）"""
+  updatedAt: String
+
+  """个人网站URL"""
+  websiteUrl: String
+}
+
+"""用户成就类型（用户解锁成就的记录）"""
+type UserAchievement {
+  """成就定义信息"""
+  achievement: AchievementDefinition
+
+  """成就ID（UUID）"""
+  achievementId: ID
+
+  """解锁天数（距离解锁已经过去多少天）"""
+  daysUnlocked: Int
+
+  """记录唯一标识符（UUID）"""
+  id: ID
+
+  """是否是新解锁（3天内）"""
+  isRecent: Boolean
+
+  """是否已解锁（有unlocked_at就是已解锁）"""
+  isUnlocked: Boolean
+
+  """是否已通知用户（用于成就解锁通知）"""
+  notified: Boolean
+
+  """当前进度（未解锁时的进度值，解锁后为最终值）"""
+  progress: Int
+
+  """解锁时间（ISO 8601格式）"""
+  unlockedAt: String
+
+  """解锁成就的用户"""
+  user: User
+
+  """用户ID（UUID）"""
+  userId: ID
+}
+
+"""视频类型（视频生成和管理）"""
+type Video {
+  """宽高比（16:9 或 9:16）"""
+  aspectRatio: String
+
+  """视频生成用户"""
+  author: User
+
+  """是否可以重试（失败且重试次数<3）"""
+  canRetry: Boolean
+
+  """完成时间（ISO 8601格式）"""
+  completedAt: String
+
+  """创建时间（ISO 8601格式）"""
+  createdAt: String
+
+  """消耗的积分数量"""
+  creditCost: Int
+
+  """下载时间（ISO 8601格式）"""
+  downloadedAt: String
+
+  """时长（秒，4/6/8）"""
+  duration: Int
+
+  """错误代码"""
+  errorCode: String
+
+  """错误消息"""
+  errorMessage: String
+
+  """文件大小（字节）"""
+  fileSizeBytes: Int
+
+  """临时视频URL（Google，2天过期）"""
+  googleVideoUrl: String
+
+  """视频唯一标识符（UUID）"""
+  id: ID
+
+  """Google临时URL是否已过期（创建超过2天）"""
+  isExpired: Boolean
+
+  """负面提示词（排除不想要的内容）"""
+  negativePrompt: String
+
+  """Google Veo 操作ID（唯一标识符）"""
+  operationId: String
+
+  """永久视频URL（Supabase Storage）"""
+  permanentVideoUrl: String
+
+  """视频生成提示词"""
+  prompt: String
+
+  """参考图片URL（用于生成视频）"""
+  referenceImageUrl: String
+
+  """分辨率（720p 或 1080p）"""
+  resolution: String
+
+  """重试次数（最大3次）"""
+  retryCount: Int
+
+  """视频状态（processing/downloading/completed/failed）"""
+  status: String
+
+  """缩略图URL"""
+  thumbnailUrl: String
+
+  """视频生成用户的用户ID"""
+  userId: ID
+}

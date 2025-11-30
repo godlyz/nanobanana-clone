@@ -1,0 +1,65 @@
+# ================================
+# 用户查询示例
+# 艹！这个文件包含用户相关的查询
+# ================================
+
+# 获取当前登录用户信息（需要认证）
+query GetMe {
+  me {
+    id
+    email
+    createdAt
+    updatedAt
+    displayName
+    avatarUrl
+    bio
+    location
+    websiteUrl
+    twitterHandle
+    githubHandle
+    instagramHandle
+    followerCount
+    followingCount
+    postCount
+    artworkCount
+    totalLikes
+  }
+}
+
+# 获取当前用户基本信息（最小查询）
+query GetMeBasic {
+  me {
+    id
+    email
+    displayName
+    avatarUrl
+  }
+}
+
+# 根据ID获取用户信息
+query GetUser($userId: ID!) {
+  user(id: $userId) {
+    id
+    email
+    createdAt
+    displayName
+    avatarUrl
+    bio
+    followerCount
+    followingCount
+    postCount
+    artworkCount
+  }
+}
+
+# 获取用户的社交媒体链接
+query GetUserSocials($userId: ID!) {
+  user(id: $userId) {
+    id
+    displayName
+    websiteUrl
+    twitterHandle
+    githubHandle
+    instagramHandle
+  }
+}

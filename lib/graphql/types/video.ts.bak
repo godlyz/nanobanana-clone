@@ -1,0 +1,195 @@
+/**
+ * GraphQL Video Type
+ *
+ * 艹！这是老王我用 Pothos 定义的 Video 类型！
+ * 专门处理视频生成，对应数据库的 video_generation_history 表！
+ */
+
+import { builder } from '../builder'
+import type { GraphQLContext } from '../context'
+
+/**
+ * Video 对象类型
+ *
+ * 艹！这个类型专门用于视频生成和管理！
+ */
+export const VideoType = builder.objectRef<{
+  id: string
+  user_id: string
+  operation_id: string
+  status: 'processing' | 'downloading' | 'completed' | 'failed'
+  prompt: string
+  negative_prompt?: string | null
+  aspect_ratio: '16:9' | '9:16'
+  resolution: '720p' | '1080p'
+  duration: number
+  reference_image_url?: string | null
+  credit_cost: number
+  google_video_url?: string | null
+  permanent_video_url?: string | null
+  thumbnail_url?: string | null
+  file_size_bytes?: bigint | null
+  error_message?: string | null
+  error_code?: string | null
+  retry_count: number
+  created_at: string
+  completed_at?: string | null
+  downloaded_at?: string | null
+}>('Video').implement({
+  description: '视频类型（视频生成和管理）',
+  fields: (t) => ({
+    // 基础字段
+    id: t.exposeID('id', {
+      description: '视频唯一标识符（UUID）'
+    }),
+
+    userId: t.exposeID('user_id', {
+      description: '视频生成用户的用户ID'
+    }),
+
+    operationId: t.exposeString('operation_id', {
+      description: 'Google Veo 操作ID（唯一标识符）'
+    }),
+
+    status: t.exposeString('status', {
+      description: '视频状态（processing/downloading/completed/failed）'
+    }),
+
+    // 输入参数
+    prompt: t.exposeString('prompt', {
+      description: '视频生成提示词'
+    }),
+
+    negativePrompt: t.string({
+      description: '负面提示词（排除不想要的内容）',
+      nullable: true,
+      resolve: (parent) => parent.negative_prompt ?? null
+    }),
+
+    aspectRatio: t.exposeString('aspect_ratio', {
+      description: '宽高比（16:9 或 9:16）'
+    }),
+
+    resolution: t.exposeString('resolution', {
+      description: '分辨率（720p 或 1080p）'
+    }),
+
+    duration: t.exposeInt('duration', {
+      description: '时长（秒，4/6/8）'
+    }),
+
+    referenceImageUrl: t.string({
+      description: '参考图片URL（用于生成视频）',
+      nullable: true,
+      resolve: (parent) => parent.reference_image_url ?? null
+    }),
+
+    // 积分追踪
+    creditCost: t.exposeInt('credit_cost', {
+      description: '消耗的积分数量'
+    }),
+
+    // 视频URL
+    googleVideoUrl: t.string({
+      description: '临时视频URL（Google，2天过期）',
+      nullable: true,
+      resolve: (parent) => parent.google_video_url ?? null
+    }),
+
+    permanentVideoUrl: t.string({
+      description: '永久视频URL（Supabase Storage）',
+      nullable: true,
+      resolve: (parent) => parent.permanent_video_url ?? null
+    }),
+
+    thumbnailUrl: t.string({
+      description: '缩略图URL',
+      nullable: true,
+      resolve: (parent) => parent.thumbnail_url ?? null
+    }),
+
+    // 元数据
+    fileSizeBytes: t.field({
+      type: 'Int',
+      description: '文件大小（字节）',
+      nullable: true,
+      resolve: (parent) => parent.file_size_bytes ? Number(parent.file_size_bytes) : null
+    }),
+
+    // 错误处理
+    errorMessage: t.string({
+      description: '错误消息',
+      nullable: true,
+      resolve: (parent) => parent.error_message ?? null
+    }),
+
+    errorCode: t.string({
+      description: '错误代码',
+      nullable: true,
+      resolve: (parent) => parent.error_code ?? null
+    }),
+
+    retryCount: t.exposeInt('retry_count', {
+      description: '重试次数（最大3次）'
+    }),
+
+    // 时间戳
+    createdAt: t.exposeString('created_at', {
+      description: '创建时间（ISO 8601格式）'
+    }),
+
+    completedAt: t.string({
+      description: '完成时间（ISO 8601格式）',
+      nullable: true,
+      resolve: (parent) => parent.completed_at ?? null
+    }),
+
+    downloadedAt: t.string({
+      description: '下载时间（ISO 8601格式）',
+      nullable: true,
+      resolve: (parent) => parent.downloaded_at ?? null
+    }),
+
+    // 艹！关联字段：视频作者
+    author: t.field({
+      type: 'User',
+      description: '视频生成用户',
+      nullable: true,
+      resolve: async (parent, _args, ctx: GraphQLContext) => {
+        // 查询作者信息
+        const { data: authUser } = await ctx.supabase.auth.admin.getUserById(parent.user_id)
+        if (!authUser.user) return null
+
+        const { data: profile } = await ctx.supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('user_id', parent.user_id)
+          .single()
+
+        return {
+          id: authUser.user.id,
+          email: authUser.user.email ?? null,
+          user_profile: profile
+        }
+      }
+    }),
+
+    // 艹！计算字段：是否可重试
+    canRetry: t.boolean({
+      description: '是否可以重试（失败且重试次数<3）',
+      resolve: (parent) => parent.status === 'failed' && parent.retry_count < 3
+    }),
+
+    // 艹！计算字段：是否已过期（Google临时URL）
+    isExpired: t.boolean({
+      description: 'Google临时URL是否已过期（创建超过2天）',
+      resolve: (parent) => {
+        if (!parent.google_video_url) return false
+        const createdAt = new Date(parent.created_at)
+        const now = new Date()
+        const diffDays = (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24)
+        return diffDays > 2
+      }
+    })
+  })
+})

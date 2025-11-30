@@ -1,0 +1,20 @@
+# ================================
+# 基础查询示例
+# 艹！这个文件包含最常用的基础查询
+# ================================
+
+# 测试查询：Hello World
+query TestHello {
+  hello
+}
+
+# 测试查询：获取当前服务器时间
+query TestCurrentTime {
+  currentTime
+}
+
+# 组合测试查询
+query TestCombined {
+  hello
+  currentTime
+}

@@ -1,0 +1,160 @@
+/**
+ * GraphQL ForumThread Input Types
+ *
+ * 艹！这是老王我用 Pothos 定义的 ForumThread Input 类型！
+ * 用于创建和更新论坛主题的 Mutation 操作！
+ */
+
+import { builder } from '../../builder'
+
+/**
+ * CreateForumThreadInput - 创建论坛主题输入
+ *
+ * 艹！这个 Input 用于创建新的论坛主题帖！
+ */
+export const CreateForumThreadInput = builder.inputType('CreateForumThreadInput', {
+  description: '创建论坛主题输入',
+  fields: (t) => ({
+    categoryId: t.id({
+      required: true,
+      description: '分类 ID'
+    }),
+    title: t.string({
+      required: true,
+      description: '主题标题（3-200字符）',
+      validate: {
+        minLength: 3,
+        maxLength: 200
+      }
+    }),
+    content: t.string({
+      required: true,
+      description: '主题内容（10-50000字符）',
+      validate: {
+        minLength: 10,
+        maxLength: 50000
+      }
+    }),
+    tagIds: t.idList({
+      required: false,
+      description: '标签 ID 列表（可选）'
+    }),
+    isPublic: t.boolean({
+      required: false,
+      description: '是否公开（默认 true）'
+    })
+  })
+})
+
+/**
+ * UpdateForumThreadInput - 更新论坛主题输入
+ *
+ * 艹！这个 Input 用于更新已有的论坛主题！
+ */
+export const UpdateForumThreadInput = builder.inputType('UpdateForumThreadInput', {
+  description: '更新论坛主题输入',
+  fields: (t) => ({
+    title: t.string({
+      required: false,
+      description: '主题标题（3-200字符）',
+      validate: {
+        minLength: 3,
+        maxLength: 200
+      }
+    }),
+    content: t.string({
+      required: false,
+      description: '主题内容（10-50000字符）',
+      validate: {
+        minLength: 10,
+        maxLength: 50000
+      }
+    }),
+    categoryId: t.id({
+      required: false,
+      description: '分类 ID'
+    }),
+    tagIds: t.idList({
+      required: false,
+      description: '标签 ID 列表'
+    }),
+    status: t.string({
+      required: false,
+      description: '状态（open/closed/archived）'
+    }),
+    isPublic: t.boolean({
+      required: false,
+      description: '是否公开'
+    })
+  })
+})
+
+/**
+ * ForumThreadFilter - 论坛主题过滤器
+ *
+ * 艹！这个 Input 用于过滤查询论坛主题！
+ */
+export const ForumThreadFilter = builder.inputType('ForumThreadFilter', {
+  description: '论坛主题过滤器',
+  fields: (t) => ({
+    categoryId: t.id({
+      required: false,
+      description: '按分类 ID 筛选'
+    }),
+    userId: t.id({
+      required: false,
+      description: '按作者 ID 筛选'
+    }),
+    tagId: t.id({
+      required: false,
+      description: '按标签 ID 筛选'
+    }),
+    status: t.string({
+      required: false,
+      description: '按状态筛选（open/closed/archived）'
+    }),
+    isLocked: t.boolean({
+      required: false,
+      description: '是否已锁定'
+    }),
+    isPinned: t.boolean({
+      required: false,
+      description: '是否已置顶'
+    }),
+    isFeatured: t.boolean({
+      required: false,
+      description: '是否为精华帖'
+    }),
+    search: t.string({
+      required: false,
+      description: '搜索关键词（标题或内容）'
+    }),
+    createdAfter: t.string({
+      required: false,
+      description: '创建时间晚于（ISO 8601格式）'
+    }),
+    createdBefore: t.string({
+      required: false,
+      description: '创建时间早于（ISO 8601格式）'
+    })
+  })
+})
+
+/**
+ * ForumThreadOrderBy - 论坛主题排序
+ *
+ * 艹！这个 Input 用于指定论坛主题的排序方式！
+ */
+export const ForumThreadOrderBy = builder.inputType('ForumThreadOrderBy', {
+  description: '论坛主题排序',
+  fields: (t) => ({
+    field: t.string({
+      required: true,
+      description: '排序字段（created_at/updated_at/last_reply_at/view_count/reply_count/upvote_count）'
+    }),
+    direction: t.string({
+      required: false,
+      description: '排序方向（asc/desc，默认 desc）'
+    })
+  })
+})

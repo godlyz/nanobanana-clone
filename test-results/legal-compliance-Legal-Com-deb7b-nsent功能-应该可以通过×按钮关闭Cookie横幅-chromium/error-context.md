@@ -1,0 +1,310 @@
+# Page snapshot
+
+```yaml
+- main [ref=e2]:
+  - generic [ref=e5]:
+    - link "🍌Nano Banana" [ref=e6] [cursor=pointer]:
+      - /url: /
+    - navigation [ref=e7]:
+      - link "AI Creation Center" [ref=e8] [cursor=pointer]:
+        - /url: /editor/image-edit
+      - link "Showcase" [ref=e9] [cursor=pointer]:
+        - /url: /showcase
+      - button "Toolbox" [ref=e10]:
+        - text: Toolbox
+        - img [ref=e11]
+      - link "Pricing" [ref=e13] [cursor=pointer]:
+        - /url: /pricing
+      - link "API" [ref=e14] [cursor=pointer]:
+        - /url: /api
+    - generic [ref=e15]:
+      - button "Tour" [ref=e16]:
+        - img [ref=e17]
+        - text: Tour
+      - button "🇺🇸EN" [ref=e20]:
+        - text: 🇺🇸EN
+        - img [ref=e21]
+      - link "Sign In" [ref=e23] [cursor=pointer]:
+        - /url: /login
+        - button "Sign In" [ref=e24]
+      - link "Launch Now" [ref=e25] [cursor=pointer]:
+        - /url: /editor/image-edit
+        - button "Launch Now" [ref=e26]
+  - generic [ref=e27]:
+    - generic [ref=e28]: 🍌
+    - generic [ref=e29]: 🍌
+    - generic [ref=e30]:
+      - generic [ref=e31]:
+        - img [ref=e32]
+        - text: AI-Powered Image & Video Editing
+      - heading "Transform Your Images & Videos with AI Magic" [level=1] [ref=e34]
+      - paragraph [ref=e35]: Generate stunning images and videos with natural language. Remove backgrounds, maintain character consistency, and preserve scenes - all powered by advanced AI technology.
+      - generic [ref=e36]:
+        - link "Start Creating" [ref=e37] [cursor=pointer]:
+          - /url: /editor/image-edit
+          - button "Start Creating" [ref=e38]
+        - link "Generate Video" [ref=e39] [cursor=pointer]:
+          - /url: /editor/image-edit?mode=video-generation
+          - button "Generate Video" [ref=e40]:
+            - img [ref=e41]
+            - text: Generate Video
+        - link "View API Docs" [ref=e44] [cursor=pointer]:
+          - /url: /api
+          - button "View API Docs" [ref=e45]
+      - generic [ref=e46]:
+        - generic [ref=e47]:
+          - img [ref=e49]
+          - text: One-Shot Editing
+        - generic [ref=e51]:
+          - img [ref=e53]
+          - text: Multi-Image Processing
+        - generic [ref=e55]:
+          - img [ref=e57]
+          - text: Precise Control
+        - generic [ref=e61]:
+          - img [ref=e63]
+          - text: AI Video Generation
+  - generic [ref=e67]:
+    - generic [ref=e68]:
+      - text: Core Features
+      - heading "Why Choose Nano Banana?" [level=2] [ref=e69]
+      - paragraph [ref=e70]: Nano Banana is the most advanced AI image editor on LMArena. Revolutionize your photo editing with natural language understanding and unmatched precision.
+    - generic [ref=e71]:
+      - link "Multi-Image Context Process multiple reference images simultaneously. Advanced workflows for complex editing tasks." [ref=e72] [cursor=pointer]:
+        - /url: /tools/multi-image
+        - generic [ref=e73]:
+          - img [ref=e75]
+          - heading "Multi-Image Context" [level=3] [ref=e79]
+          - paragraph [ref=e80]: Process multiple reference images simultaneously. Advanced workflows for complex editing tasks.
+      - link "Quick Edit Get instant AI-powered edits with one click. Fast, efficient, and surprisingly accurate." [ref=e81] [cursor=pointer]:
+        - /url: /tools/one-shot
+        - generic [ref=e82]:
+          - img [ref=e84]
+          - heading "Quick Edit" [level=3] [ref=e86]
+          - paragraph [ref=e87]: Get instant AI-powered edits with one click. Fast, efficient, and surprisingly accurate.
+      - link "Scene Preservation Keep original backgrounds and scene elements intact while making targeted edits. Perfect for professional workflows." [ref=e88] [cursor=pointer]:
+        - /url: /tools/scene-preservation
+        - generic [ref=e89]:
+          - img [ref=e91]
+          - heading "Scene Preservation" [level=3] [ref=e95]
+          - paragraph [ref=e96]: Keep original backgrounds and scene elements intact while making targeted edits. Perfect for professional workflows.
+      - link "Background Remover Instantly remove backgrounds from any image with perfect edge detection. Professional results in seconds." [ref=e97] [cursor=pointer]:
+        - /url: /tools/background-remover
+        - generic [ref=e98]:
+          - img [ref=e100]
+          - heading "Background Remover" [level=3] [ref=e103]
+          - paragraph [ref=e104]: Instantly remove backgrounds from any image with perfect edge detection. Professional results in seconds.
+      - link "Character Consistency Maintain perfect character identity across multiple edits. Preserve facial features, style, and unique characteristics effortlessly." [ref=e105] [cursor=pointer]:
+        - /url: /tools/character-consistency
+        - generic [ref=e106]:
+          - img [ref=e108]
+          - heading "Character Consistency" [level=3] [ref=e110]
+          - paragraph [ref=e111]: Maintain perfect character identity across multiple edits. Preserve facial features, style, and unique characteristics effortlessly.
+      - link "Video Generation Transform text and images into stunning AI videos. Google Veo 3.1 powered, professional quality in minutes." [ref=e112] [cursor=pointer]:
+        - /url: /tools/video-generation
+        - generic [ref=e113]:
+          - img [ref=e115]
+          - heading "Video Generation" [level=3] [ref=e118]
+          - paragraph [ref=e119]: Transform text and images into stunning AI videos. Google Veo 3.1 powered, professional quality in minutes.
+  - generic [ref=e121]:
+    - generic [ref=e122]:
+      - text: Showcase
+      - heading "Lightning-Fast AI Creations" [level=2] [ref=e123]
+      - paragraph [ref=e124]: See what Nano Banana generates in milliseconds. Real examples from our community.
+    - generic [ref=e125]:
+      - link "Lightning Speed Ultra-Fast Mountain Generation Ultra-Fast Mountain Generation Created in 0.8 seconds with Nano Banana's optimized neural engine" [ref=e126] [cursor=pointer]:
+        - /url: /showcase
+        - generic [ref=e127]:
+          - generic [ref=e128]:
+            - generic [ref=e129]: Lightning Speed
+            - img "Ultra-Fast Mountain Generation" [ref=e130]
+          - generic [ref=e131]:
+            - heading "Ultra-Fast Mountain Generation" [level=3] [ref=e132]
+            - paragraph [ref=e133]: Created in 0.8 seconds with Nano Banana's optimized neural engine
+      - link "Scene Mastery Instant Garden Creation Instant Garden Creation Complex scene rendered in milliseconds using advanced AI" [ref=e134] [cursor=pointer]:
+        - /url: /showcase
+        - generic [ref=e135]:
+          - generic [ref=e136]:
+            - generic [ref=e137]: Scene Mastery
+            - img "Instant Garden Creation" [ref=e138]
+          - generic [ref=e139]:
+            - heading "Instant Garden Creation" [level=3] [ref=e140]
+            - paragraph [ref=e141]: Complex scene rendered in milliseconds using advanced AI
+      - link "Photo Realism Tropical Paradise Scene Tropical Paradise Scene Natural lighting and realistic textures generated instantly" [ref=e142] [cursor=pointer]:
+        - /url: /showcase
+        - generic [ref=e143]:
+          - generic [ref=e144]:
+            - generic [ref=e145]: Photo Realism
+            - img "Tropical Paradise Scene" [ref=e146]
+          - generic [ref=e147]:
+            - heading "Tropical Paradise Scene" [level=3] [ref=e148]
+            - paragraph [ref=e149]: Natural lighting and realistic textures generated instantly
+      - link "Color Precision Northern Lights Magic Northern Lights Magic Stunning atmospheric effects with perfect color accuracy" [ref=e150] [cursor=pointer]:
+        - /url: /showcase
+        - generic [ref=e151]:
+          - generic [ref=e152]:
+            - generic [ref=e153]: Color Precision
+            - img "Northern Lights Magic" [ref=e154]
+          - generic [ref=e155]:
+            - heading "Northern Lights Magic" [level=3] [ref=e156]
+            - paragraph [ref=e157]: Stunning atmospheric effects with perfect color accuracy
+  - generic [ref=e159]:
+    - generic [ref=e160]:
+      - text: Testimonials
+      - heading "Loved by Creators Worldwide" [level=2] [ref=e161]
+      - paragraph [ref=e162]: Join thousands of satisfied users who trust Nano Banana for their image editing needs
+    - generic [ref=e163]:
+      - generic [ref=e164]:
+        - generic [ref=e165]:
+          - img [ref=e166]
+          - img [ref=e168]
+          - img [ref=e170]
+          - img [ref=e172]
+          - img [ref=e174]
+        - paragraph [ref=e176]: “Nano Banana has completely transformed my workflow. The character consistency is unmatched - I can finally create cohesive series without worrying about style drift.”
+        - generic [ref=e177]:
+          - img "Sarah Chen" [ref=e178]
+          - generic [ref=e179]:
+            - paragraph [ref=e180]: Sarah Chen
+            - paragraph [ref=e181]: Digital Artist
+      - generic [ref=e182]:
+        - generic [ref=e183]:
+          - img [ref=e184]
+          - img [ref=e186]
+          - img [ref=e188]
+          - img [ref=e190]
+          - img [ref=e192]
+        - paragraph [ref=e194]: “The natural language editing is a game-changer. I can describe exactly what I want and get perfect results on the first try. It's like having a professional editor on demand.”
+        - generic [ref=e195]:
+          - img "Marcus Rodriguez" [ref=e196]
+          - generic [ref=e197]:
+            - paragraph [ref=e198]: Marcus Rodriguez
+            - paragraph [ref=e199]: Content Creator
+      - generic [ref=e200]:
+        - generic [ref=e201]:
+          - img [ref=e202]
+          - img [ref=e204]
+          - img [ref=e206]
+          - img [ref=e208]
+          - img [ref=e210]
+        - paragraph [ref=e212]: “We use Nano Banana for all our UGC campaigns. The multi-image support and scene preservation features save us hours of work every week.”
+        - generic [ref=e213]:
+          - img "Emily Watson" [ref=e214]
+          - generic [ref=e215]:
+            - paragraph [ref=e216]: Emily Watson
+            - paragraph [ref=e217]: Marketing Director
+      - generic [ref=e218]:
+        - generic [ref=e219]:
+          - img [ref=e220]
+          - img [ref=e222]
+          - img [ref=e224]
+          - img [ref=e226]
+          - img [ref=e228]
+        - paragraph [ref=e230]: “As a professional photographer, I was skeptical about AI editing. Nano Banana proved me wrong - the quality is exceptional and it enhances my creative process.”
+        - generic [ref=e231]:
+          - img "David Kim" [ref=e232]
+          - generic [ref=e233]:
+            - paragraph [ref=e234]: David Kim
+            - paragraph [ref=e235]: Photographer
+  - generic [ref=e237]:
+    - generic [ref=e238]:
+      - text: FAQ
+      - heading "Frequently Asked Questions" [level=2] [ref=e239]
+      - paragraph [ref=e240]: Everything you need to know about Nano Banana
+    - generic [ref=e241]:
+      - heading "What makes Nano Banana different from other AI image editors?" [level=3] [ref=e243]:
+        - button "What makes Nano Banana different from other AI image editors?" [ref=e244]:
+          - text: What makes Nano Banana different from other AI image editors?
+          - img [ref=e245]
+      - heading "How does the image upload feature work?" [level=3] [ref=e248]:
+        - button "How does the image upload feature work?" [ref=e249]:
+          - text: How does the image upload feature work?
+          - img [ref=e250]
+      - heading "Can I use Nano Banana for commercial projects?" [level=3] [ref=e253]:
+        - button "Can I use Nano Banana for commercial projects?" [ref=e254]:
+          - text: Can I use Nano Banana for commercial projects?
+          - img [ref=e255]
+      - heading "What is character consistency and why is it important?" [level=3] [ref=e258]:
+        - button "What is character consistency and why is it important?" [ref=e259]:
+          - text: What is character consistency and why is it important?
+          - img [ref=e260]
+      - heading "How fast is the image generation process?" [level=3] [ref=e263]:
+        - button "How fast is the image generation process?" [ref=e264]:
+          - text: How fast is the image generation process?
+          - img [ref=e265]
+      - heading "Do you offer an API for developers?" [level=3] [ref=e268]:
+        - button "Do you offer an API for developers?" [ref=e269]:
+          - text: Do you offer an API for developers?
+          - img [ref=e270]
+      - heading "What kind of prompts work best?" [level=3] [ref=e273]:
+        - button "What kind of prompts work best?" [ref=e274]:
+          - text: What kind of prompts work best?
+          - img [ref=e275]
+      - heading "Is there a free trial available?" [level=3] [ref=e278]:
+        - button "Is there a free trial available?" [ref=e279]:
+          - text: Is there a free trial available?
+          - img [ref=e280]
+  - generic [ref=e283]:
+    - generic [ref=e284]:
+      - generic [ref=e285]:
+        - generic [ref=e286]: 🍌Nano Banana
+        - paragraph [ref=e287]: Transform images with AI-powered natural language editing
+      - generic [ref=e288]:
+        - heading "Product" [level=3] [ref=e289]
+        - list [ref=e290]:
+          - listitem [ref=e291]:
+            - link "Image Editor" [ref=e292] [cursor=pointer]:
+              - /url: "#editor"
+          - listitem [ref=e293]:
+            - link "nav.features" [ref=e294] [cursor=pointer]:
+              - /url: "#features"
+          - listitem [ref=e295]:
+            - link "Pricing" [ref=e296] [cursor=pointer]:
+              - /url: "#pricing"
+          - listitem [ref=e297]:
+            - link "API Documentation" [ref=e298] [cursor=pointer]:
+              - /url: "#api"
+      - generic [ref=e299]:
+        - heading "Resources" [level=3] [ref=e300]
+        - list [ref=e301]:
+          - listitem [ref=e302]:
+            - link "User Guide" [ref=e303] [cursor=pointer]:
+              - /url: /guide
+          - listitem [ref=e304]:
+            - link "Documentation" [ref=e305] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e306]:
+            - link "Showcase" [ref=e307] [cursor=pointer]:
+              - /url: "#showcase"
+          - listitem [ref=e308]:
+            - link "Blog" [ref=e309] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e310]:
+            - button "Customer Support" [ref=e311]
+          - listitem [ref=e312]:
+            - button "Contact Sales" [ref=e313]
+      - generic [ref=e314]:
+        - heading "Company" [level=3] [ref=e315]
+        - list [ref=e316]:
+          - listitem [ref=e317]:
+            - link "About Us" [ref=e318] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e319]:
+            - link "Careers" [ref=e320] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=e321]:
+            - link "Privacy Policy" [ref=e322] [cursor=pointer]:
+              - /url: /privacy
+          - listitem [ref=e323]:
+            - link "Terms of Service" [ref=e324] [cursor=pointer]:
+              - /url: /terms
+          - listitem [ref=e325]:
+            - link "Community Guidelines" [ref=e326] [cursor=pointer]:
+              - /url: /community-guidelines
+          - listitem [ref=e327]:
+            - link "Moderation Manual" [ref=e328] [cursor=pointer]:
+              - /url: /moderation
+    - generic [ref=e329]:
+      - paragraph [ref=e330]: © 2025 Nano Banana. All rights reserved.
+      - paragraph [ref=e331]: Nanobanana.ai is an independent product and is not affiliate with Google or any AI brands.
+```

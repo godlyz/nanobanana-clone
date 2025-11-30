@@ -1,0 +1,149 @@
+# ================================
+# Relay 分页查询示例
+# 艹！这个文件展示 Relay-style Cursor 分页的用法
+# ================================
+
+# 基础 Relay 分页查询（首次加载）
+query GetBlogPostsConnection {
+  blogPostsConnection(first: 10, orderBy: "created_at", orderDirection: "desc") {
+    edges {
+      cursor
+      node {
+        id
+        title
+        excerpt
+        publishedAt
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+  }
+}
+
+# Relay 分页 - 加载下一页（使用 after cursor）
+query GetNextPageBlogPosts($cursor: String!) {
+  blogPostsConnection(
+    first: 10
+    after: $cursor
+    orderBy: "created_at"
+    orderDirection: "desc"
+  ) {
+    edges {
+      cursor
+      node {
+        id
+        title
+        excerpt
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+# Relay 分页 - 加载上一页（使用 before cursor）
+query GetPreviousPageBlogPosts($cursor: String!) {
+  blogPostsConnection(
+    last: 10
+    before: $cursor
+    orderBy: "created_at"
+    orderDirection: "desc"
+  ) {
+    edges {
+      cursor
+      node {
+        id
+        title
+        excerpt
+      }
+    }
+    pageInfo {
+      hasPreviousPage
+      startCursor
+    }
+  }
+}
+
+# 按浏览量排序的 Relay 分页
+query GetBlogPostsByViewCount {
+  blogPostsConnection(first: 10, orderBy: "view_count", orderDirection: "desc") {
+    edges {
+      node {
+        id
+        title
+        viewCount
+        likeCount
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+# 按点赞数排序的 Relay 分页
+query GetBlogPostsByLikeCount {
+  blogPostsConnection(first: 10, orderBy: "like_count", orderDirection: "desc") {
+    edges {
+      node {
+        id
+        title
+        likeCount
+        commentCount
+        author {
+          id
+          displayName
+        }
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+
+# 完整的 Relay 分页查询（包含所有字段）
+query GetFullBlogPostsConnection($first: Int, $after: String, $status: String) {
+  blogPostsConnection(
+    first: $first
+    after: $after
+    status: $status
+    orderBy: "created_at"
+    orderDirection: "desc"
+  ) {
+    edges {
+      cursor
+      node {
+        id
+        title
+        slug
+        excerpt
+        coverImageUrl
+        publishedAt
+        viewCount
+        likeCount
+        commentCount
+        isLiked
+        author {
+          id
+          displayName
+          avatarUrl
+        }
+      }
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+  }
+}

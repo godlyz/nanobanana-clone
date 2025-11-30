@@ -1,0 +1,13 @@
+{
+  "provider": "GLM",
+  "apiUrl": "https://open.bigmodel.cn/api/coding/paas/v4",
+  "apiKey": "your_glm_api_key_here",
+  "models": {
+    "quick": "glm-4.5-air",
+    "detailed": "glm-4.6"
+  },
+  "timeout": 60000,
+  "headers": {
+    "Content-Type": "application/json"
+  }
+}

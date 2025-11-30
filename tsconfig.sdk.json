@@ -1,0 +1,47 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    /* 输出配置 */
+    "outDir": "./dist/sdk",
+    "rootDir": "./lib/graphql",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+
+    /* 模块配置 */
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+
+    /* 类型检查 */
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": false,
+    "incremental": true,
+
+    /* React 支持 */
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    /* 其他 */
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": [
+    "lib/graphql/sdk/**/*.ts",
+    "lib/graphql/sdk/**/*.tsx",
+    "lib/graphql/generated/types.ts",
+    "lib/graphql/generated/documents.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "__tests__",
+    "examples",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "dist"
+  ]
+}

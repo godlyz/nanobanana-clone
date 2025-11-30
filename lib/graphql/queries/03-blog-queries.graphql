@@ -1,0 +1,91 @@
+# ================================
+# 博客文章查询示例
+# 艹！这个文件包含博客文章相关的查询
+# ================================
+
+# 获取已发布的博客文章列表（分页）
+query GetPublishedBlogPosts($limit: Int, $offset: Int) {
+  blogPosts(status: "published", limit: $limit, offset: $offset) {
+    id
+    title
+    excerpt
+    coverImageUrl
+    publishedAt
+    viewCount
+    likeCount
+    commentCount
+    author {
+      id
+      displayName
+      avatarUrl
+    }
+  }
+}
+
+# 获取单个博客文章详情
+query GetBlogPost($id: ID!) {
+  blogPost(id: $id) {
+    id
+    title
+    slug
+    content
+    excerpt
+    coverImageUrl
+    status
+    publishedAt
+    createdAt
+    updatedAt
+    viewCount
+    likeCount
+    commentCount
+    isLiked
+    metaTitle
+    metaDescription
+    metaKeywords
+    author {
+      id
+      email
+      displayName
+      avatarUrl
+      bio
+    }
+  }
+}
+
+# 获取博客文章列表（包含作者信息）
+query GetBlogPostsWithAuthor {
+  blogPosts(status: "published", limit: 10) {
+    id
+    title
+    excerpt
+    publishedAt
+    author {
+      id
+      displayName
+      avatarUrl
+    }
+  }
+}
+
+# 获取最新的5篇博客文章
+query GetLatestBlogPosts {
+  blogPosts(status: "published", limit: 5, offset: 0) {
+    id
+    title
+    excerpt
+    coverImageUrl
+    publishedAt
+  }
+}
+
+# 获取草稿文章（需要作者权限）
+query GetDraftBlogPosts {
+  blogPosts(status: "draft", limit: 10) {
+    id
+    title
+    excerpt
+    status
+    createdAt
+    updatedAt
+  }
+}

@@ -1,0 +1,30 @@
+name: Check Video Success Rate
+
+on:
+  schedule:
+    - cron: "0 * * * *" # 每小时 UTC
+  workflow_dispatch:
+
+jobs:
+  check-success-rate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call success-rate cron endpoint
+        env:
+          CRON_ENDPOINT: ${{ secrets.CRON_ENDPOINT }} # 例如 https://your-domain/api/cron/check-success-rate
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$CRON_ENDPOINT" ] || [ -z "$CRON_SECRET" ]; then
+            echo "CRON_ENDPOINT 或 CRON_SECRET 未配置，跳过"
+            exit 0
+          fi
+          status=$(curl -s -o /tmp/resp.json -w "%{http_code}" \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            "$CRON_ENDPOINT")
+          echo "HTTP status: $status"
+          cat /tmp/resp.json || true
+          # 对非200/202做失败标记以便告警
+          if [ "$status" != "200" ] && [ "$status" != "202" ]; then
+            echo "Cron check returned non-success status"
+            exit 1
+          fi

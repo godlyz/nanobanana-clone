@@ -1,0 +1,81 @@
+/**
+ * GraphQL Pagination Input Types
+ *
+ * 艹！这是老王我用 Pothos 定义的分页 Input 类型！
+ * 用于所有列表查询的分页参数！
+ */
+
+import { builder } from '../../builder'
+
+/**
+ * PaginationInput - 分页输入（Offset-based）
+ *
+ * 艹！这个 Input 用于基于偏移量的分页（简单易用，适合普通列表）！
+ */
+export const PaginationInput = builder.inputType('PaginationInput', {
+  description: '分页输入（基于偏移量）',
+  fields: (t) => ({
+    limit: t.int({
+      required: false,
+      description: '每页数量（默认10，最大100）',
+      validate: {
+        min: 1,
+        max: 100
+      }
+    }),
+    offset: t.int({
+      required: false,
+      description: '偏移量（默认0）',
+      validate: {
+        min: 0
+      }
+    })
+  })
+})
+
+/**
+ * CursorPaginationInput - 游标分页输入（Cursor-based）
+ *
+ * 艹！这个 Input 用于基于游标的分页（性能更好，适合大数据量）！
+ */
+export const CursorPaginationInput = builder.inputType('CursorPaginationInput', {
+  description: '游标分页输入（基于游标）',
+  fields: (t) => ({
+    first: t.int({
+      required: false,
+      description: '向前取多少条（与 after 配合使用）',
+      validate: {
+        min: 1,
+        max: 100
+      }
+    }),
+    after: t.string({
+      required: false,
+      description: '游标：从这个位置之后开始取（Base64 编码）'
+    }),
+    last: t.int({
+      required: false,
+      description: '向后取多少条（与 before 配合使用）',
+      validate: {
+        min: 1,
+        max: 100
+      }
+    }),
+    before: t.string({
+      required: false,
+      description: '游标：从这个位置之前开始取（Base64 编码）'
+    })
+  })
+})
+
+/**
+ * SortDirection - 排序方向枚举
+ *
+ * 艹！这个 Enum 用于指定排序方向！
+ */
+export const SortDirection = builder.enumType('SortDirection', {
+  values: {
+    ASC: { value: 'asc', description: '升序' },
+    DESC: { value: 'desc', description: '降序' }
+  } as const
+})

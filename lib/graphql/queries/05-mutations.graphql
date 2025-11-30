@@ -1,0 +1,14 @@
+# ================================
+# Mutation 变更操作示例
+# 艹！这个文件包含所有 Mutation 操作示例
+# ================================
+
+# 测试 Mutation：Echo
+mutation TestEcho($message: String!) {
+  echo(message: $message)
+}
+
+# 测试 Mutation 示例变量：
+# {
+#   "message": "Hello GraphQL!"
+# }

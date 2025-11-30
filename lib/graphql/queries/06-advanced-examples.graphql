@@ -1,0 +1,213 @@
+# ================================
+# 高级查询示例
+# 艹！这个文件展示复杂查询和最佳实践
+# ================================
+
+# 组合查询：同时获取多个资源
+query GetDashboardData {
+  me {
+    id
+    email
+    displayName
+    avatarUrl
+    postCount
+    followerCount
+  }
+  blogPosts(status: "published", limit: 5) {
+    id
+    title
+    viewCount
+    likeCount
+  }
+  currentTime
+}
+
+# 使用别名（Aliases）查询同一字段的不同参数
+query GetMultipleBlogPostLists {
+  latestPosts: blogPosts(status: "published", limit: 5, offset: 0) {
+    id
+    title
+    publishedAt
+  }
+  popularPosts: blogPosts(status: "published", limit: 5, offset: 0) {
+    id
+    title
+    viewCount
+  }
+}
+
+# ================================
+# 使用片段（Fragments）复用字段
+# 艹！Week 8优化：增强Fragment定义，提高复用性和可维护性
+# ================================
+
+# Fragment 1: 用户基本信息（简化版）
+# 用途：用户列表、评论作者、文章作者等
+# 适用场景：不需要完整用户信息的场景
+fragment UserBasicInfo on User {
+  id
+  email
+  displayName
+  avatarUrl
+}
+
+# Fragment 2: 用户详细信息（完整版）
+# 用途：用户个人资料页、用户详情弹窗
+# 适用场景：需要完整用户信息的场景
+fragment UserDetailInfo on User {
+  id
+  email
+  displayName
+  avatarUrl
+  bio
+  location
+  websiteUrl
+  twitterHandle
+  githubHandle
+  followerCount
+  followingCount
+  postCount
+  artworkCount
+  totalLikes
+}
+
+# Fragment 3: 博客文章预览（列表/卡片）
+# 用途：博客文章列表、相关文章推荐、搜索结果
+# 适用场景：不需要完整文章内容的场景（列表/卡片展示）
+fragment BlogPostPreview on BlogPost {
+  id
+  title
+  slug
+  excerpt
+  coverImageUrl
+  publishedAt
+  viewCount
+  likeCount
+  commentCount
+}
+
+# Fragment 4: 博客文章详情（完整版）
+# 用途：博客文章详情页
+# 适用场景：需要完整文章内容和元数据的场景
+fragment BlogPostDetail on BlogPost {
+  id
+  title
+  slug
+  content
+  excerpt
+  coverImageUrl
+  status
+  publishedAt
+  createdAt
+  updatedAt
+  viewCount
+  likeCount
+  commentCount
+  isLiked
+  metaTitle
+  metaDescription
+  metaKeywords
+}
+
+# 艹！老王备注：
+# 1. UserBasicInfo 保持不变，用于简单场景
+# 2. 新增 UserDetailInfo 用于需要完整用户信息的场景
+# 3. BlogPostPreview 增强，添加 slug 和统计字段（viewCount, likeCount, commentCount）
+# 4. 新增 BlogPostDetail 用于博客详情页，包含完整内容和SEO元数据
+
+query GetBlogPostsWithFragments {
+  blogPosts(status: "published", limit: 10) {
+    ...BlogPostPreview
+    author {
+      ...UserBasicInfo
+    }
+  }
+}
+
+# 复杂嵌套查询：博客文章 + 作者详情 + 统计信息
+query GetBlogPostWithFullAuthorInfo($postId: ID!) {
+  blogPost(id: $postId) {
+    id
+    title
+    content
+    excerpt
+    coverImageUrl
+    publishedAt
+    viewCount
+    likeCount
+    commentCount
+    isLiked
+    author {
+      id
+      email
+      displayName
+      avatarUrl
+      bio
+      location
+      websiteUrl
+      twitterHandle
+      githubHandle
+      followerCount
+      followingCount
+      postCount
+      artworkCount
+      totalLikes
+    }
+  }
+}
+
+# 批量查询：使用多个变量查询多个用户
+# 艹！GraphQL 不支持数组索引，必须传递单独的变量
+query GetMultipleUsers($userId1: ID!, $userId2: ID!, $userId3: ID!) {
+  user1: user(id: $userId1) {
+    ...UserBasicInfo
+  }
+  user2: user(id: $userId2) {
+    ...UserBasicInfo
+  }
+  user3: user(id: $userId3) {
+    ...UserBasicInfo
+  }
+}
+
+# 条件查询：根据登录状态返回不同字段
+query GetConditionalData($includeEmail: Boolean = false) {
+  me {
+    id
+    email @include(if: $includeEmail)
+    displayName
+    avatarUrl
+  }
+}
+
+# 性能优化示例：仅查询必需字段
+query GetOptimizedBlogPostList {
+  blogPosts(status: "published", limit: 20) {
+    id
+    title
+    excerpt
+    publishedAt
+    author {
+      id
+      displayName
+    }
+  }
+}
+
+# 深度嵌套查询示例（注意：深度不要超过5层）
+query GetDeepNestedData {
+  me {
+    id
+    displayName
+    followerCount
+  }
+  blogPosts(status: "published", limit: 3) {
+    id
+    title
+    author {
+      id
+      displayName
+      postCount
+    }
+  }
+}

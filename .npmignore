@@ -1,0 +1,61 @@
+# 测试文件
+__tests__/
+*.test.ts
+*.test.tsx
+vitest.config.ts
+vitest.setup.ts
+playwright.config.ts
+test-results/
+coverage/
+
+# 示例代码
+examples/
+
+# 开发工具
+.vscode/
+.github/
+.husky/
+
+# 配置文件
+.env*
+.eslintrc*
+.prettierrc*
+tsconfig.json
+tsconfig.sdk.json
+next.config.mjs
+codegen.yml
+postcss.config.mjs
+
+# 构建输出（Next.js）
+.next/
+out/
+dist/
+
+# 日志和缓存
+*.log
+.cache/
+.turbo/
+node_modules/
+
+# 文档（保留 SDK README）
+docs/
+!lib/graphql/sdk/README.md
+!lib/graphql/generated/README.md
+
+# 应用代码（仅保留 SDK 和生成的类型）
+app/
+components/
+public/
+scripts/
+supabase/
+types/
+!lib/graphql/sdk/
+!lib/graphql/generated/
+
+# 其他
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/

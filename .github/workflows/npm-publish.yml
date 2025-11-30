@@ -1,0 +1,136 @@
+# 🔥 老王的SDK自动发布工作流
+# 艹！这个workflow会自动把SDK发布到npm，绝对tm靠谱！
+
+name: Publish GraphQL SDK to npm
+
+on:
+  # 当创建新的release时触发
+  release:
+    types: [published]
+
+  # 也可以手动触发
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g., 0.1.1, 0.2.0, 1.0.0)'
+        required: false
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  publish:
+    name: Build and Publish SDK
+    runs-on: ubuntu-latest
+
+    # 🔒 安全权限设置
+    permissions:
+      contents: write
+      id-token: write  # 用于npm provenance
+
+    steps:
+      # 1. 检出代码
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 获取完整历史（用于版本标签）
+
+      # 2. 配置Node.js环境
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'pnpm'
+
+      # 3. 安装pnpm
+      - name: 📦 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      # 4. 安装依赖
+      - name: 📚 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # 5. 生成GraphQL类型（codegen）
+      - name: 🏗️ Generate GraphQL types
+        run: pnpm run codegen
+
+      # 6. 构建SDK
+      - name: 🔨 Build SDK
+        run: pnpm run build:sdk
+
+      # 7. 运行测试（确保质量）
+      - name: ✅ Run tests
+        run: pnpm test
+        env:
+          # 🔥 老王备注：测试环境变量，按需配置
+          NODE_ENV: test
+
+      # 8. 配置Git用户（用于版本标签提交）
+      - name: 🔐 Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      # 9. 更新版本号（仅在workflow_dispatch时）
+      - name: 🔢 Bump version
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          pnpm version ${{ github.event.inputs.version }} --no-git-tag-version
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          git add package.json
+          git commit -m "chore(release): v$NEW_VERSION"
+          git tag "v$NEW_VERSION"
+
+      # 10. 发布到npm
+      - name: 🚀 Publish to npm
+        run: pnpm publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true  # 启用npm provenance（可选但推荐）
+
+      # 11. 推送版本标签到GitHub（仅workflow_dispatch）
+      - name: 📤 Push tags to GitHub
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          git push origin main --tags
+
+      # 12. 创建GitHub Release（仅workflow_dispatch）
+      - name: 📝 Create GitHub Release
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.NEW_VERSION }}
+          release_name: Release v${{ env.NEW_VERSION }}
+          body: |
+            ## GraphQL SDK v${{ env.NEW_VERSION }}
+
+            ### 🎯 主要变更
+            请查看 [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md)
+
+            ### 📦 安装
+            ```bash
+            npm install @nanobanana/graphql-sdk@${{ env.NEW_VERSION }}
+            ```
+
+            ### 🔗 npm包
+            https://www.npmjs.com/package/@nanobanana/graphql-sdk
+          draft: false
+          prerelease: false
+
+# 🎯 使用说明
+# 1. 手动触发：GitHub Actions → Publish GraphQL SDK to npm → Run workflow
+# 2. 选择版本类型：patch（0.1.0→0.1.1）/ minor（0.1.0→0.2.0）/ major（0.1.0→1.0.0）
+# 3. 自动发布：创建GitHub Release时自动触发
+#
+# 🔑 必需的Secrets：
+# - NPM_TOKEN: npm发布令牌（在npm.com生成）
+# - GITHUB_TOKEN: 自动提供，无需配置

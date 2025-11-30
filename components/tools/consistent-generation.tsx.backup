@@ -1,0 +1,431 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { ImageIcon as ImageIconLucide, Loader2, Download, Save, Sparkles, FolderOpen, Clock } from "lucide-react"
+import { useLanguage } from "@/lib/language-context"
+import { useTheme } from "@/lib/theme-context"
+import { createClient } from "@/lib/supabase/client"
+import { useRouter } from "next/navigation"
+import type { User as SupabaseUser } from "@supabase/supabase-js"
+
+interface ConsistentGenerationProps {
+  user: SupabaseUser | null
+}
+
+export function ConsistentGeneration({ user }: ConsistentGenerationProps) {
+  const { t, language } = useLanguage()
+  const { theme } = useTheme()
+  const router = useRouter()
+  const supabase = createClient()
+
+  const [savedImages, setSavedImages] = useState<Array<{ name: string; url: string }>>([])
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [prompt, setPrompt] = useState("")
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [generatedImages, setGeneratedImages] = useState<string[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const [isLoadingImages, setIsLoadingImages] = useState(false)
+  const [savingImageIndex, setSavingImageIndex] = useState<number | null>(null)
+  const [saveNameInput, setSaveNameInput] = useState("")
+  const [creditsUsed, setCreditsUsed] = useState<number>(0)
+  const [historyRecordId, setHistoryRecordId] = useState<string | null>(null)
+  const [historyRecords, setHistoryRecords] = useState<any[]>([])
+  const [loadingHistory, setLoadingHistory] = useState(false)
+
+  // 加载用户已保存的图片和历史记录
+  useEffect(() => {
+    if (user) {
+      loadSavedImages()
+      loadHistory()
+    }
+  }, [user])
+
+  const loadSavedImages = async () => {
+    if (!user) return
+
+    setIsLoadingImages(true)
+    setError(null)
+
+    try {
+      const { data, error } = await supabase.storage
+        .from('generated-images')
+        .list(user.id, {
+          limit: 100,
+          sortBy: { column: 'created_at', order: 'desc' }
+        })
+
+      if (error) throw error
+
+      if (data && data.length > 0) {
+        const imagePromises = data.map(async (file) => {
+          const { data: { publicUrl } } = supabase.storage
+            .from('generated-images')
+            .getPublicUrl(`${user.id}/${file.name}`)
+
+          return { name: file.name, url: publicUrl }
+        })
+
+        const images = await Promise.all(imagePromises)
+        setSavedImages(images)
+      }
+    } catch (err) {
+      console.error('Error loading images:', err)
+      setError(t("consistentGeneration.loadFailed"))
+    } finally {
+      setIsLoadingImages(false)
+    }
+  }
+
+  // 加载历史记录
+  const loadHistory = async () => {
+    if (!user) return
+    setLoadingHistory(true)
+    try {
+      const response = await fetch('/api/history?tool_type=consistent-generation&limit=10')
+      const data = await response.json()
+      if (data.data) setHistoryRecords(data.data)
+    } catch (err) {
+      console.error('Failed to load history:', err)
+    } finally {
+      setLoadingHistory(false)
+    }
+  }
+
+  // 主题样式
+  const bgColor = theme === "light" ? "bg-[#FFFEF5]" : "bg-[#0A0F1C]"
+  const textColor = theme === "light" ? "text-[#1E293B]" : "text-white"
+  const mutedColor = theme === "light" ? "text-[#64748B]" : "text-[#94A3B8]"
+  const cardBg = theme === "light" ? "bg-[#FFFFFF]" : "bg-[#0F1728]"
+  const cardBorder = theme === "light" ? "border-[#F59E0B]/20" : "border-[#1E293B]"
+  const inputBg = theme === "light" ? "bg-white" : "bg-[#1E293B]"
+  const inputBorder = theme === "light" ? "border-[#E2E8F0]" : "border-[#374151]"
+
+  // 生成一致性图片
+  const handleGenerate = async () => {
+    if (!selectedImage) {
+      setError(t("consistentGeneration.selectImageFirst"))
+      return
+    }
+
+    if (!prompt.trim()) {
+      setError(t("consistentGeneration.enterPromptFirst"))
+      return
+    }
+
+    if (!user) {
+      router.push('/login')
+      return
+    }
+
+    setIsGenerating(true)
+    setError(null)
+
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: `Based on the reference image, generate a new image with the same subject/character/style: ${prompt.trim()}. Maintain consistency in appearance, style, and characteristics.`,
+          images: [selectedImage],
+          toolType: 'consistent-generation',
+        })
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || t("consistentGeneration.generationFailed"))
+      }
+
+      const data = await response.json()
+
+      // 处理生成的图片
+      if (data.images && data.images.length > 0) {
+        setGeneratedImages(data.images)
+      } else if (data.result) {
+        setGeneratedImages([data.result])
+      } else {
+        throw new Error(t("consistentGeneration.noImageGenerated"))
+      }
+
+      // 保存积分消耗和历史记录ID
+      if (data.credits_used) {
+        setCreditsUsed(data.credits_used)
+        alert(t("consistentGeneration.generationSuccess") || `生成成功！消耗了 ${data.credits_used} 积分`)
+      }
+      if (data.history_record_id) {
+        setHistoryRecordId(data.history_record_id)
+        // 延迟刷新历史记录，确保数据库已写入
+        setTimeout(() => loadHistory(), 1000)
+      }
+    } catch (err) {
+      console.error('Generation error:', err)
+      setError(err instanceof Error ? err.message : t("consistentGeneration.generationFailed"))
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
+  // 保存图片到Supabase Storage
+  const handleSaveImage = async (imageBase64: string, index: number) => {
+    if (!user) {
+      router.push('/login')
+      return
+    }
+
+    const imageName = saveNameInput.trim() || `consistent-gen-${Date.now()}`
+    setSavingImageIndex(index)
+
+    try {
+      const base64Data = imageBase64.split(',')[1]
+      const byteCharacters = atob(base64Data)
+      const byteNumbers = new Array(byteCharacters.length)
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i)
+      }
+      const byteArray = new Uint8Array(byteNumbers)
+      const blob = new Blob([byteArray], { type: 'image/png' })
+
+      const fileName = `${user.id}/${imageName}-${Date.now()}.png`
+      const { error: uploadError } = await supabase.storage
+        .from('generated-images')
+        .upload(fileName, blob)
+
+      if (uploadError) throw uploadError
+
+      alert(t("consistentGeneration.saveSuccess"))
+      setSaveNameInput("")
+      loadSavedImages() // 刷新图库
+    } catch (err) {
+      console.error('Save error:', err)
+      alert(t("consistentGeneration.saveFailed"))
+    } finally {
+      setSavingImageIndex(null)
+    }
+  }
+
+  // 下载图片
+  const handleDownload = (imageBase64: string, index: number) => {
+    const link = document.createElement('a')
+    link.href = imageBase64
+    link.download = `consistent-generation-${Date.now()}-${index + 1}.png`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="grid lg:grid-cols-2 gap-6">
+        {/* 左侧：已保存图片库 */}
+        <div className={`${cardBg} rounded-xl border ${cardBorder} p-6`}>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <FolderOpen className="w-5 h-5 text-[#D97706]" />
+            <h2 className={`text-xl font-semibold ${textColor}`}>
+              {t("consistentGeneration.savedImages")}
+            </h2>
+          </div>
+          <Button
+            onClick={loadSavedImages}
+            variant="outline"
+            size="sm"
+            disabled={isLoadingImages}
+          >
+            {isLoadingImages ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              t("consistentGeneration.refresh")
+            )}
+          </Button>
+        </div>
+
+        {savedImages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <FolderOpen className={`w-16 h-16 ${mutedColor} mb-4`} />
+            <p className={mutedColor}>{t("consistentGeneration.noSavedImages")}</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-3 max-h-60 overflow-y-auto mb-4">
+            {savedImages.map((img, index) => (
+              <button
+                key={index}
+                onClick={() => setSelectedImage(img.url)}
+                className={`relative rounded-lg overflow-hidden border-2 transition-all ${
+                  selectedImage === img.url
+                    ? 'border-[#D97706] ring-2 ring-[#D97706]/30'
+                    : `${cardBorder} hover:border-[#D97706]/50`
+                }`}
+              >
+                <img
+                  src={img.url}
+                  alt={img.name}
+                  className="w-full h-24 object-cover"
+                />
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* 提示词输入 */}
+        <div className="mb-4">
+          <h3 className={`text-sm font-medium ${textColor} mb-3`}>
+            {t("consistentGeneration.promptLabel")}
+          </h3>
+          <Textarea
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder={t("consistentGeneration.promptPlaceholder")}
+            className={`min-h-[100px] ${inputBg} ${inputBorder} ${textColor}`}
+          />
+        </div>
+
+        {/* 生成按钮 */}
+        <Button
+          onClick={handleGenerate}
+          disabled={!selectedImage || !prompt.trim() || isGenerating}
+          className="w-full bg-[#D97706] hover:bg-[#B45309] text-white"
+        >
+          {isGenerating ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              {t("consistentGeneration.generating")}
+            </>
+          ) : (
+            <>
+              <Sparkles className="w-4 h-4 mr-2" />
+              {t("consistentGeneration.generateNow")} ({language === 'zh' ? '消耗 2 积分' : 'Costs 2 Credits'})
+            </>
+          )}
+        </Button>
+
+        {error && (
+          <div className="mt-4 p-3 bg-red-100 dark:bg-red-900/20 border border-red-300 dark:border-red-700 rounded-lg">
+            <p className="text-red-700 dark:text-red-400 text-sm">{error}</p>
+          </div>
+        )}
+      </div>
+
+      {/* 右侧：输出画廊 */}
+      <div className={`${cardBg} rounded-xl border ${cardBorder} p-6`}>
+        <div className="flex items-center gap-2 mb-4">
+          <ImageIconLucide className="w-5 h-5 text-[#D97706]" />
+          <h2 className={`text-xl font-semibold ${textColor}`}>
+            {t("consistentGeneration.outputGallery")}
+          </h2>
+        </div>
+
+        {/* 选中的参考图预览 */}
+        {selectedImage && (
+          <div className="mb-4">
+            <p className={`text-xs ${mutedColor} mb-2`}>{t("consistentGeneration.selectedReference")}</p>
+            <img
+              src={selectedImage}
+              alt="Selected Reference"
+              className="w-full rounded-lg border border-[#D97706]"
+            />
+          </div>
+        )}
+
+        {generatedImages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <ImageIconLucide className={`w-16 h-16 ${mutedColor} mb-4`} />
+            <p className={mutedColor}>{t("consistentGeneration.noImagesYet")}</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {generatedImages.map((img, index) => (
+              <div key={index} className="space-y-3">
+                <img
+                  src={img}
+                  alt={`Generated ${index + 1}`}
+                  className="w-full rounded-lg"
+                />
+                <div className="flex gap-2">
+                  <Input
+                    type="text"
+                    placeholder={t("consistentGeneration.enterImageName")}
+                    value={saveNameInput}
+                    onChange={(e) => setSaveNameInput(e.target.value)}
+                    className={`flex-1 ${inputBg} ${inputBorder}`}
+                  />
+                  <Button
+                    onClick={() => handleSaveImage(img, index)}
+                    disabled={savingImageIndex === index}
+                    variant="outline"
+                    size="icon"
+                  >
+                    {savingImageIndex === index ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Save className="w-4 h-4" />
+                    )}
+                  </Button>
+                  <Button
+                    onClick={() => handleDownload(img, index)}
+                    variant="outline"
+                    size="icon"
+                  >
+                    <Download className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      </div>
+
+      {/* 历史记录轮播 */}
+      {user && historyRecords.length > 0 && (
+        <div className={`${cardBg} rounded-xl border ${cardBorder} p-6`}>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Clock className="w-5 h-5 text-[#D97706]" />
+              <h2 className={`text-xl font-semibold ${textColor}`}>
+                {t("consistentGeneration.historyTitle") || "历史记录"}
+              </h2>
+            </div>
+            <Button
+              onClick={loadHistory}
+              variant="outline"
+              size="sm"
+              disabled={loadingHistory}
+            >
+              {loadingHistory ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                t("consistentGeneration.refresh") || "刷新"
+              )}
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {historyRecords.map((record) => {
+              const images = record.generated_images || []
+              return images.map((img: string, imgIndex: number) => (
+                <div key={`${record.id}-${imgIndex}`} className="relative group">
+                  <img
+                    src={img}
+                    alt={`History ${record.id}`}
+                    className="w-full aspect-square object-cover rounded-lg border-2 border-[#D97706]/20 group-hover:border-[#D97706] transition-all cursor-pointer"
+                    onClick={() => {
+                      // 点击历史图片时设置为selected
+                      setSelectedImage(img)
+                    }}
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-2 rounded-b-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                    <p className="truncate">{new Date(record.created_at).toLocaleDateString()}</p>
+                    <p className="text-[#D97706]">{record.credits_used || 2} {t("consistentGeneration.credits") || "积分"}</p>
+                  </div>
+                </div>
+              ))
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}

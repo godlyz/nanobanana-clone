@@ -1,0 +1,572 @@
+/**
+ * 🔥 老王的活动规则管理 API
+ * 用途: 管理营销活动规则的增删改查操作
+ * 老王警告: 这个API要是被恶意利用，整个营销体系都要乱套！
+ */
+
+import { NextRequest, NextResponse } from 'next/server'
+import { createServiceClient } from '@/lib/supabase/service'
+import { promotionRuleCache } from '@/lib/promotion-rule-cache'
+import { withRBAC, AdminAction, logAdminAction } from '@/lib/admin-auth'
+import { promotionEngine } from '@/lib/promotion-engine'
+
+// 活动规则类型定义
+interface PromotionRule {
+  rule_name: string
+  rule_type: 'discount' | 'bonus_credits' | 'credits_extension' | 'subscription_extension' | 'trial_extension' | 'free_package'
+  priority?: number
+  stackable?: boolean
+  discount_config?: {
+    type: 'percentage' | 'fixed'
+    value: number
+    min_price?: number
+    max_discount?: number
+  }
+  gift_config?: {
+    type: 'bonus_credits' | 'credits_extension' | 'subscription_extension' | 'trial_extension' | 'free_package'
+    amount?: number
+    extend_days?: number
+    extend_months?: number
+    description?: string
+  }
+  usage_limit?: number
+  apply_to: {
+    type: 'all' | 'subscriptions' | 'packages'
+    tiers?: string[]
+    package_ids?: string[]
+    min_price?: number
+  }
+  target_users: {
+    type: 'all' | 'new_users' | 'vip_users' | 'specific_users'
+    user_ids?: string[]
+    emails?: string[]
+  }
+  start_date: string
+  end_date: string
+  display_name?: string
+  display_description?: string
+  display_badge?: string
+  display_position?: 'pricing_page' | 'checkout' | 'dashboard' | 'all'
+  is_visible?: boolean
+  created_by?: string
+  updated_by?: string
+}
+
+/**
+ * 🔥 获取活动规则列表（优化版）
+ */
+async function handleGET(req: NextRequest) {
+  try {
+    console.log('📋 获取活动规则列表')
+
+    // 获取查询参数
+    const { searchParams } = new URL(req.url)
+    const status = searchParams.get('status')
+    const type = searchParams.get('type')
+    const active = searchParams.get('active') // 'true', 'false', 'all'
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = parseInt(searchParams.get('limit') || '20')
+    const search = searchParams.get('search')
+
+    // 尝试从缓存获取活动规则，如果失败则直接从数据库获取
+    let allRules: any[] = []
+    
+    try {
+      // 使用 Promise.race 设置3秒超时
+      const timeout = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('获取规则超时')), 3000)
+      )
+      const rulesPromise = promotionRuleCache.getActiveRules()
+      allRules = await Promise.race([rulesPromise, timeout]) as any[]
+    } catch (cacheError) {
+      console.warn('⚠️ 缓存获取失败，从数据库直接读取:', cacheError)
+      // 缓存失败时从数据库直接获取
+      const supabase = createServiceClient()
+      const { data: dbRules } = await supabase
+        .from('promotion_rules')
+        .select('*')
+        .eq('status', 'active')
+        .order('priority', { ascending: false })
+      
+      allRules = dbRules || []
+    }
+
+    // 🔥 老王修复：确保 allRules 是数组类型
+    if (!Array.isArray(allRules)) {
+      console.warn('⚠️ 缓存返回的不是数组，转换为空数组:', typeof allRules)
+      allRules = []
+    }
+
+    // 如果需要获取非活跃规则，需要从数据库查询
+    if (active === 'false' || status === 'inactive') {
+      console.log('📡 从数据库获取非活跃规则')
+      const supabase = createServiceClient()
+      const { data: inactiveRules } = await supabase
+        .from('promotion_rules')
+        .select('*')
+        .eq('status', 'inactive')
+        .order('created_at', { ascending: false })
+
+      if (inactiveRules) {
+        allRules = [...allRules, ...inactiveRules]
+      }
+    }
+
+    // 过滤规则
+    let filteredRules = allRules
+
+    // 按状态过滤
+    if (status && status !== 'all') {
+      filteredRules = filteredRules.filter(rule => rule.status === status)
+    }
+
+    // 按类型过滤
+    if (type && type !== 'all') {
+      filteredRules = filteredRules.filter(rule => rule.rule_type === type)
+    }
+
+    // 按活跃状态过滤
+    if (active === 'true') {
+      filteredRules = filteredRules.filter(rule => rule.status === 'active')
+    } else if (active === 'false') {
+      filteredRules = filteredRules.filter(rule => rule.status === 'inactive')
+    }
+
+    // 搜索过滤
+    if (search) {
+      const searchTerm = search.toLowerCase()
+      filteredRules = filteredRules.filter(rule =>
+        rule.rule_name.toLowerCase().includes(searchTerm) ||
+        (rule.display_name && rule.display_name.toLowerCase().includes(searchTerm)) ||
+        (rule.display_description && rule.display_description.toLowerCase().includes(searchTerm))
+      )
+    }
+
+    // 排序（按优先级和创建时间）
+    filteredRules.sort((a, b) => {
+      if (b.priority !== a.priority) {
+        return b.priority - a.priority
+      }
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    })
+
+    // 分页
+    const total = filteredRules.length
+    const startIndex = (page - 1) * limit
+    const endIndex = startIndex + limit
+    const paginatedRules = filteredRules.slice(startIndex, endIndex)
+
+    // 格式化响应数据
+    const formattedRules = paginatedRules.map(rule => ({
+      id: rule.id,
+      rule_name: rule.rule_name,
+      rule_type: rule.rule_type,
+      priority: rule.priority,
+      stackable: rule.stackable,
+      discount_config: rule.discount_config,
+      gift_config: rule.gift_config,
+      usage_count: rule.usage_count,
+      usage_limit: rule.usage_limit,
+      status: rule.status,
+      apply_to: rule.apply_to,
+      target_users: rule.target_users,
+      start_date: rule.start_date,
+      end_date: rule.end_date,
+      display_name: rule.display_name,
+      display_description: rule.display_description,
+      display_badge: rule.display_badge,
+      display_position: rule.display_position,
+      is_visible: rule.is_visible,
+      created_at: rule.created_at,
+      updated_at: rule.updated_at,
+      created_by: rule.created_by,
+      updated_by: rule.updated_by
+    }))
+
+    return NextResponse.json({
+      success: true,
+      data: formattedRules,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasNext: endIndex < total,
+        hasPrev: page > 1
+      },
+      message: `获取到 ${formattedRules.length} 个活动规则`
+    })
+
+  } catch (error) {
+    console.error('❌ 获取活动规则列表失败:', error)
+    return NextResponse.json({
+      success: false,
+      error: '获取活动规则列表失败',
+      message: error instanceof Error ? error.message : '未知错误'
+    }, { status: 500 })
+  }
+}
+
+/**
+ * 🔥 创建新的活动规则
+ */
+async function handlePOST(req: NextRequest) {
+  try {
+    console.log('➕ 创建新的活动规则')
+
+    const body = await req.json()
+    const {
+      rule_name,
+      rule_type,
+      priority = 10,
+      stackable = true,
+      discount_config,
+      gift_config,
+      usage_limit,
+      apply_to,
+      target_users,
+      start_date,
+      end_date,
+      display_name,
+      display_description,
+      display_badge,
+      display_position = 'pricing_page',
+      is_visible = true,
+      created_by
+    } = body as PromotionRule
+
+    // 验证必需字段
+    if (!rule_name || !rule_type || !apply_to || !target_users || !start_date || !end_date) {
+      return NextResponse.json({
+        success: false,
+        error: '缺少必需字段',
+        message: 'rule_name, rule_type, apply_to, target_users, start_date, end_date 是必需的'
+      }, { status: 400 })
+    }
+
+    // 验证规则类型
+    const validTypes = ['discount', 'bonus_credits', 'credits_extension', 'subscription_extension', 'trial_extension', 'free_package']
+    if (!validTypes.includes(rule_type)) {
+      return NextResponse.json({
+        success: false,
+        error: '无效的规则类型',
+        message: `规则类型必须是: ${validTypes.join(', ')}`
+      }, { status: 400 })
+    }
+
+    // 验证折扣配置
+    if (rule_type === 'discount' && (!discount_config || !discount_config.type || !discount_config.value)) {
+      return NextResponse.json({
+        success: false,
+        error: '折扣规则必须提供 discount_config',
+        message: 'discount_config 包含 type 和 value 字段'
+      }, { status: 400 })
+    }
+
+    // 验证赠送配置
+    if (rule_type !== 'discount' && (!gift_config || !gift_config.type)) {
+      return NextResponse.json({
+        success: false,
+        error: '非折扣规则必须提供 gift_config',
+        message: 'gift_config 包含 type 字段'
+      }, { status: 400 })
+    }
+
+    // 验证日期格式
+    const startDate = new Date(start_date)
+    const endDate = new Date(end_date)
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      return NextResponse.json({
+        success: false,
+        error: '无效的日期格式',
+        message: 'start_date 和 end_date 必须是有效的 ISO 日期字符串'
+      }, { status: 400 })
+    }
+
+    if (endDate <= startDate) {
+      return NextResponse.json({
+        success: false,
+        error: '结束日期必须晚于开��日期',
+        message: 'end_date 必须大于 start_date'
+      }, { status: 400 })
+    }
+
+    const supabase = createServiceClient()
+
+    // 创建活动规则
+    const { data: newRule, error: createError } = await supabase
+      .from('promotion_rules')
+      .insert({
+        rule_name,
+        rule_type,
+        priority,
+        stackable,
+        discount_config,
+        gift_config,
+        usage_count: 0,
+        usage_limit,
+        status: 'active',
+        apply_to,
+        target_users,
+        start_date: startDate.toISOString(),
+        end_date: endDate.toISOString(),
+        display_name,
+        display_description,
+        display_badge,
+        display_position,
+        is_visible,
+        created_by: created_by || 'system',
+        updated_by: created_by || 'system',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .select()
+      .single()
+
+    if (createError) {
+      console.error('❌ 创建活动规则失败:', createError)
+      return NextResponse.json({
+        success: false,
+        error: '创建活动规则失败',
+        message: createError.message
+      }, { status: 400 })
+    }
+
+    // 刷新缓存
+    await promotionRuleCache.refresh()
+
+    // 记录审计日志
+    await logAdminAction({
+      adminId: created_by || 'system',
+      action: AdminAction.PROMOTION_WRITE,
+      resourceType: 'promotion',
+      resourceId: newRule.id,
+      newValues: {
+        rule_name,
+        rule_type,
+        priority,
+        stackable,
+        discount_config,
+        gift_config,
+        usage_limit,
+        status: 'active'
+      },
+      ipAddress: req.ip,
+      userAgent: req.headers.get('user-agent') || undefined
+    })
+
+    console.log(`✅ 活动规则创建成功: ${rule_name} (ID: ${newRule.id})`)
+
+    return NextResponse.json({
+      success: true,
+      data: newRule,
+      message: '活动规则创建成功'
+    }, { status: 201 })
+
+  } catch (error) {
+    console.error('❌ 创建活动规则失败:', error)
+    return NextResponse.json({
+      success: false,
+      error: '创建活动规则失败',
+      message: error instanceof Error ? error.message : '未知错误'
+    }, { status: 500 })
+  }
+}
+
+/**
+ * 🔥 批量更新活动规则
+ */
+async function handlePUT(req: NextRequest) {
+  try {
+    console.log('🔄 批量更新活动规则')
+
+    const body = await req.json()
+    const { updates, updated_by } = body
+
+    // 验证请求数据
+    if (!Array.isArray(updates) || updates.length === 0) {
+      return NextResponse.json({
+        success: false,
+        error: '无效的请求数据',
+        message: 'updates 必须是非空数组'
+      }, { status: 400 })
+    }
+
+    const supabase = createServiceClient()
+    const results = []
+
+    // 逐个更新规则
+    for (const update of updates) {
+      const { id, ...updateData } = update
+
+      if (!id) {
+        console.warn('⚠️ 跳过没有 ID 的更新项')
+        continue
+      }
+
+      // 获取原始数据用于审计
+      const { data: originalData } = await supabase
+        .from('promotion_rules')
+        .select('*')
+        .eq('id', id)
+        .single()
+
+      const { data: updatedData, error } = await supabase
+        .from('promotion_rules')
+        .update({
+          ...updateData,
+          updated_at: new Date().toISOString(),
+          updated_by: updated_by || 'system'
+        })
+        .eq('id', id)
+        .select()
+        .single()
+
+      if (error) {
+        console.error(`❌ 更新规则失败 (ID: ${id}):`, error)
+      } else {
+        results.push(updatedData)
+
+        // 记录审计日志
+        await logAdminAction({
+          adminId: updated_by || 'system',
+          action: AdminAction.PROMOTION_WRITE,
+          resourceType: 'promotion',
+          resourceId: id,
+          oldValues: originalData,
+          newValues: updatedData,
+          ipAddress: req.ip,
+          userAgent: req.headers.get('user-agent') || undefined
+        })
+      }
+    }
+
+    // 刷新缓存
+    if (results.length > 0) {
+      await promotionRuleCache.refresh()
+    }
+
+    console.log(`✅ 批量更新完成: ${results.length}/${updates.length} 个规则更新成功`)
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        updated: results.length,
+        total: updates.length,
+        results
+      },
+      message: `成功更新 ${results.length} 个活动规则`
+    })
+
+  } catch (error) {
+    console.error('❌ 批量更新活动规则失败:', error)
+    return NextResponse.json({
+      success: false,
+      error: '批量更新活动规则失败',
+      message: error instanceof Error ? error.message : '未知错误'
+    }, { status: 500 })
+  }
+}
+
+/**
+ * 🔥 批量删除活动规则
+ */
+async function handleDELETE(req: NextRequest) {
+  try {
+    console.log('🗑️ 批量删除活动规则')
+
+    const { searchParams } = new URL(req.url)
+    const ids = searchParams.get('ids')
+    const updatedBy = searchParams.get('updatedBy') || 'system'
+
+    if (!ids) {
+      return NextResponse.json({
+        success: false,
+        error: '缺少必需参数',
+        message: '请在查询参数中提供 ids (逗号分隔的 ID 列表)'
+      }, { status: 400 })
+    }
+
+    const idList = ids.split(',').filter(id => id.trim())
+    if (idList.length === 0) {
+      return NextResponse.json({
+        success: false,
+        error: '无效的 ID 列表',
+        message: 'ids 参数不能为空'
+      }, { status: 400 })
+    }
+
+    const supabase = createServiceClient()
+    const results = []
+
+    // 逐个删除规则（软删除 - 设置为 inactive）
+    for (const id of idList) {
+      // 获取原始数据用于审计
+      const { data: originalData } = await supabase
+        .from('promotion_rules')
+        .select('*')
+        .eq('id', id.trim())
+        .single()
+
+      const { data: deletedData, error } = await supabase
+        .from('promotion_rules')
+        .update({
+          status: 'inactive',
+          updated_at: new Date().toISOString(),
+          updated_by: updatedBy
+        })
+        .eq('id', id.trim())
+        .select()
+        .single()
+
+      if (error) {
+        console.error(`❌ 删除规则失败 (ID: ${id}):`, error)
+      } else {
+        results.push(deletedData)
+
+        // 记录审计日志
+        await logAdminAction({
+          adminId: updatedBy,
+          action: AdminAction.PROMOTION_DELETE,
+          resourceType: 'promotion',
+          resourceId: id.trim(),
+          oldValues: originalData,
+          newValues: { status: 'inactive' },
+          ipAddress: req.ip,
+          userAgent: req.headers.get('user-agent') || undefined
+        })
+      }
+    }
+
+    // 刷新缓存
+    if (results.length > 0) {
+      await promotionRuleCache.refresh()
+    }
+
+    console.log(`✅ 批量删除完成: ${results.length}/${idList.length} 个规则已停用`)
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        deleted: results.length,
+        total: idList.length,
+        results
+      },
+      message: `成功停用 ${results.length} 个活动规则`
+    })
+
+  } catch (error) {
+    console.error('❌ 批量删除活动规则失败:', error)
+    return NextResponse.json({
+      success: false,
+      error: '批量删除活动规则失败',
+      message: error instanceof Error ? error.message : '未知错误'
+    }, { status: 500 })
+  }
+}
+
+// 导出带有 RBAC 保护的处理器
+export const GET = withRBAC(AdminAction.PROMOTION_READ)(handleGET)
+export const POST = withRBAC(AdminAction.PROMOTION_WRITE)(handlePOST)
+export const PUT = withRBAC(AdminAction.PROMOTION_WRITE)(handlePUT)
+export const DELETE = withRBAC(AdminAction.PROMOTION_DELETE)(handleDELETE)

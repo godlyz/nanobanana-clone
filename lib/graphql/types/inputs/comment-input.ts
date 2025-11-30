@@ -1,0 +1,106 @@
+/**
+ * GraphQL Comment Input Types
+ *
+ * 艹！这是老王我用 Pothos 定义的 Comment Input 类型！
+ * 用于创建和更新评论的 Mutation 操作！
+ */
+
+import { builder } from '../../builder'
+
+/**
+ * CreateCommentInput - 创建评论输入
+ *
+ * 艹！这个 Input 用于创建新的评论！
+ * 支持对博客文章、作品、视频的评论，以及嵌套回复！
+ */
+export const CreateCommentInput = builder.inputType('CreateCommentInput', {
+  description: '创建评论输入',
+  fields: (t) => ({
+    contentId: t.id({
+      required: true,
+      description: '内容 ID（博客文章/作品/视频）'
+    }),
+    contentType: t.string({
+      required: true,
+      description: '内容类型（blog_post/artwork/video）'
+    }),
+    content: t.string({
+      required: true,
+      description: '评论内容（1-5000字符）',
+    }),
+    parentId: t.id({
+      required: false,
+      description: '父评论 ID（嵌套回复时使用，最多2层）'
+    })
+  })
+})
+
+/**
+ * UpdateCommentInput - 更新评论输入
+ *
+ * 艹！这个 Input 用于更新已有的评论！
+ * 只能更新评论内容，其他字段不可修改！
+ */
+export const UpdateCommentInput = builder.inputType('UpdateCommentInput', {
+  description: '更新评论输入',
+  fields: (t) => ({
+    content: t.string({
+      required: true,
+      description: '评论内容（1-5000字符）',
+    })
+  })
+})
+
+/**
+ * CommentFilter - 评论过滤器
+ *
+ * 艹！这个 Input 用于过滤查询评论！
+ */
+export const CommentFilter = builder.inputType('CommentFilter', {
+  description: '评论过滤器',
+  fields: (t) => ({
+    contentId: t.id({
+      required: false,
+      description: '按内容 ID 筛选'
+    }),
+    contentType: t.string({
+      required: false,
+      description: '按内容类型筛选（blog_post/artwork/video）'
+    }),
+    userId: t.id({
+      required: false,
+      description: '按用户 ID 筛选'
+    }),
+    parentId: t.id({
+      required: false,
+      description: '按父评论 ID 筛选（null 表示顶级评论）'
+    }),
+    createdAfter: t.string({
+      required: false,
+      description: '创建时间晚于（ISO 8601格式）'
+    }),
+    createdBefore: t.string({
+      required: false,
+      description: '创建时间早于（ISO 8601格式）'
+    })
+  })
+})
+
+/**
+ * CommentOrderBy - 评论排序
+ *
+ * 艹！这个 Input 用于指定评论的排序方式！
+ */
+export const CommentOrderBy = builder.inputType('CommentOrderBy', {
+  description: '评论排序',
+  fields: (t) => ({
+    field: t.string({
+      required: true,
+      description: '排序字段（created_at/like_count）'
+    }),
+    direction: t.string({
+      required: false,
+      description: '排序方向（asc/desc，默认 desc）'
+    })
+  })
+})

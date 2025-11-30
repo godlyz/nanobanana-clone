@@ -1,0 +1,155 @@
+/**
+ * GraphQL ForumVote Type
+ *
+ * 艹！这是老王我用 Pothos 定义的 ForumVote 类型！
+ * 论坛投票系统（upvote/downvote），对应数据库的 forum_votes 表！
+ */
+
+import { builder } from '../builder'
+import type { GraphQLContext } from '../context'
+
+/**
+ * ForumVote 目标类型枚举
+ */
+export const ForumVoteTargetTypeEnum = builder.enumType('ForumVoteTargetType', {
+  values: {
+    THREAD: { value: 'thread', description: '主题帖' },
+    REPLY: { value: 'reply', description: '回复' }
+  } as const
+})
+
+/**
+ * ForumVote 投票类型枚举
+ */
+export const ForumVoteTypeEnum = builder.enumType('ForumVoteType', {
+  values: {
+    UPVOTE: { value: 'upvote', description: '点赞' },
+    DOWNVOTE: { value: 'downvote', description: '点踩' }
+  } as const
+})
+
+/**
+ * ForumVote 对象类型
+ *
+ * 艹！这个类型管理论坛的投票系统！
+ * 用户可以对主题帖或回复进行upvote/downvote
+ */
+export const ForumVoteType = builder.objectRef<{
+  id: string
+  user_id: string
+  target_type: string
+  target_id: string
+  vote_type: string
+  created_at: string
+}>('ForumVote').implement({
+  description: '论坛投票类型（对主题或回复的点赞/点踩）',
+  fields: (t) => ({
+    // 基础字段
+    id: t.exposeID('id', {
+      description: '投票唯一标识符（UUID）'
+    }),
+
+    userId: t.exposeID('user_id', {
+      description: '投票用户ID'
+    }),
+
+    targetType: t.field({
+      type: ForumVoteTargetTypeEnum,
+      description: '投票目标类型（thread/reply）',
+      resolve: (parent) => parent.target_type as any
+    }),
+
+    targetId: t.exposeID('target_id', {
+      description: '投票目标ID（主题ID或回复ID）'
+    }),
+
+    voteType: t.field({
+      type: ForumVoteTypeEnum,
+      description: '投票类型（upvote/downvote）',
+      resolve: (parent) => parent.vote_type as any
+    }),
+
+    createdAt: t.exposeString('created_at', {
+      description: '投票时间（ISO 8601格式）'
+    }),
+
+    // 艹！关联字段：投票用户
+    user: t.field({
+      type: 'User',
+      description: '投票用户',
+      nullable: true,
+      resolve: async (parent, _args, ctx: GraphQLContext) => {
+        const { data: authUser } = await ctx.supabase.auth.admin.getUserById(parent.user_id)
+        if (!authUser.user) return null
+
+        const { data: profile } = await ctx.supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('user_id', parent.user_id)
+          .single()
+
+        return {
+          id: authUser.user.id,
+          email: authUser.user.email ?? null,
+          user_profile: profile as any // Supabase 查询类型和 UserProfile 不完全匹配，加断言
+        }
+      }
+    }),
+
+    // 艹！关联字段：投票目标（主题）
+    thread: t.field({
+      type: 'ForumThread',
+      description: '投票目标主题（仅 target_type=thread）',
+      nullable: true,
+      resolve: async (parent, _args, ctx: GraphQLContext) => {
+        if (parent.target_type !== 'thread') return null
+
+        const { data } = await ctx.supabase
+          .from('forum_threads')
+          .select('*')
+          .eq('id', parent.target_id)
+          .is('deleted_at', null)
+          .single()
+
+        return data
+      }
+    }),
+
+    // 艹！关联字段：投票目标（回复）
+    reply: t.field({
+      type: 'ForumReply',
+      description: '投票目标回复（仅 target_type=reply）',
+      nullable: true,
+      resolve: async (parent, _args, ctx: GraphQLContext) => {
+        if (parent.target_type !== 'reply') return null
+
+        const { data } = await ctx.supabase
+          .from('forum_replies')
+          .select('*')
+          .eq('id', parent.target_id)
+          .is('deleted_at', null)
+          .single()
+
+        return data
+      }
+    }),
+
+    // 艹！计算字段：是否是点赞
+    isUpvote: t.boolean({
+      description: '是否是点赞（upvote）',
+      resolve: (parent) => parent.vote_type === 'upvote'
+    }),
+
+    // 艹！计算字段：是否是点踩
+    isDownvote: t.boolean({
+      description: '是否是点踩（downvote）',
+      resolve: (parent) => parent.vote_type === 'downvote'
+    }),
+
+    // 艹！计算字段：投票权重（upvote=1, downvote=-1）
+    voteWeight: t.int({
+      description: '投票权重（upvote=1, downvote=-1）',
+      resolve: (parent) => (parent.vote_type === 'upvote' ? 1 : -1)
+    })
+  })
+})

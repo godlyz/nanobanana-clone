@@ -1,0 +1,199 @@
+/**
+ * GraphQL Leaderboard Type
+ *
+ * 艹！这是老王我用 Pothos 定义的 Leaderboard 类型！
+ * 排行榜系统，对应数据库的 user_stats 表！
+ */
+
+import { builder } from '../builder'
+import type { GraphQLContext } from '../context'
+
+/**
+ * Leaderboard 对象类型
+ *
+ * 艹！这个类型就是用户统计数据，用于排行榜展示！
+ * 注意：数据来源是 user_stats 表，不是独立的排行榜表！
+ */
+export const LeaderboardType = builder.objectRef<{
+  user_id: string
+  total_works: number
+  total_videos: number
+  total_likes_received: number
+  total_comments_received: number
+  total_views: number
+  followers_count: number
+  following_count: number
+  achievements_count: number
+  total_achievement_points: number
+  leaderboard_score: number
+  weekly_likes: number
+  monthly_likes: number
+  weekly_works: number
+  monthly_works: number
+  created_at: string
+  updated_at: string
+  last_calculated_at?: string | null
+}>('Leaderboard').implement({
+  description: '排行榜类型（用户统计数据，用于排行榜展示）',
+  fields: (t) => ({
+    // 用户关联
+    userId: t.exposeID('user_id', {
+      description: '用户ID（UUID）'
+    }),
+
+    // 艹！关联字段：用户信息
+    user: t.field({
+      type: 'User',
+      description: '用户信息',
+      nullable: true,
+      resolve: async (parent, _args, ctx: GraphQLContext) => {
+        // 艹！查询用户信息
+        const { data: authUser } = await ctx.supabase.auth.admin.getUserById(parent.user_id)
+        if (!authUser.user) return null
+
+        const { data: profile } = await ctx.supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('user_id', parent.user_id)
+          .single()
+
+        return {
+          id: authUser.user.id,
+          email: authUser.user.email ?? null,
+          user_profile: profile
+        }
+      }
+    }),
+
+    // 创作统计
+    totalWorks: t.exposeInt('total_works', {
+      description: '总作品数（图片+视频）'
+    }),
+
+    totalVideos: t.exposeInt('total_videos', {
+      description: '总视频数'
+    }),
+
+    // 社交统计
+    totalLikesReceived: t.exposeInt('total_likes_received', {
+      description: '收到的总点赞数'
+    }),
+
+    totalCommentsReceived: t.exposeInt('total_comments_received', {
+      description: '收到的总评论数'
+    }),
+
+    totalViews: t.exposeInt('total_views', {
+      description: '总浏览量'
+    }),
+
+    // 关注统计
+    followersCount: t.exposeInt('followers_count', {
+      description: '粉丝数'
+    }),
+
+    followingCount: t.exposeInt('following_count', {
+      description: '关注数'
+    }),
+
+    // 成就统计
+    achievementsCount: t.exposeInt('achievements_count', {
+      description: '解锁成就数'
+    }),
+
+    totalAchievementPoints: t.exposeInt('total_achievement_points', {
+      description: '成就总点数'
+    }),
+
+    // 排行榜积分
+    leaderboardScore: t.exposeInt('leaderboard_score', {
+      description: '排行榜综合积分（作品*10 + 点赞*1 + 粉丝*5 + 成就点数*0.5）'
+    }),
+
+    // 周期统计（用于周榜/月榜）
+    weeklyLikes: t.exposeInt('weekly_likes', {
+      description: '本周收到的点赞数'
+    }),
+
+    monthlyLikes: t.exposeInt('monthly_likes', {
+      description: '本月收到的点赞数'
+    }),
+
+    weeklyWorks: t.exposeInt('weekly_works', {
+      description: '本周发布的作品数'
+    }),
+
+    monthlyWorks: t.exposeInt('monthly_works', {
+      description: '本月发布的作品数'
+    }),
+
+    // 时间戳
+    createdAt: t.exposeString('created_at', {
+      description: '创建时间（ISO 8601格式）'
+    }),
+
+    updatedAt: t.exposeString('updated_at', {
+      description: '更新时间（ISO 8601格式）'
+    }),
+
+    lastCalculatedAt: t.string({
+      description: '最后计算时间（ISO 8601格式）',
+      nullable: true,
+      resolve: (parent) => parent.last_calculated_at ?? null
+    }),
+
+    // 艹！计算字段：总图片数
+    totalImages: t.int({
+      description: '总图片数（作品数 - 视频数）',
+      resolve: (parent) => Math.max(0, parent.total_works - parent.total_videos)
+    }),
+
+    // 艹！计算字段：平均每作品点赞数
+    avgLikesPerWork: t.float({
+      description: '平均每作品点赞数',
+      resolve: (parent) => {
+        if (parent.total_works === 0) return 0
+        return parent.total_likes_received / parent.total_works
+      }
+    }),
+
+    // 艹！计算字段：粉丝/关注比率（影响力指标）
+    influenceRatio: t.float({
+      description: '影响力比率（粉丝数 / 关注数，越高越有影响力）',
+      resolve: (parent) => {
+        if (parent.following_count === 0) return parent.followers_count
+        return parent.followers_count / parent.following_count
+      }
+    }),
+
+    // 艹！计算字段：活跃度评级
+    activityLevel: t.string({
+      description: '活跃度评级（inactive/low/medium/high/very_high）',
+      resolve: (parent) => {
+        // 艹！基于本周作品数和点赞数判断活跃度
+        const weeklyScore = parent.weekly_works * 5 + parent.weekly_likes
+
+        if (weeklyScore === 0) return 'inactive'
+        if (weeklyScore < 10) return 'low'
+        if (weeklyScore < 50) return 'medium'
+        if (weeklyScore < 200) return 'high'
+        return 'very_high'
+      }
+    }),
+
+    // 艹！计算字段：成就进度百分比
+    achievementProgress: t.float({
+      description: '成就进度百分比（已解锁成就数 / 总成就数 * 100）',
+      resolve: async (parent, _args, ctx: GraphQLContext) => {
+        // 艹！查询总成就数
+        const { count } = await ctx.supabase
+          .from('achievements_definitions')
+          .select('*', { count: 'exact', head: true })
+          .eq('is_active', true)
+
+        if (!count || count === 0) return 0
+        return (parent.achievements_count / count) * 100
+      }
+    })
+  })
+})

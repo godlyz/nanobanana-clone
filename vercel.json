@@ -1,0 +1,41 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/refill-credits",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/activate-monthly-credits",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/activate-pending-subscriptions",
+      "schedule": "0 1 * * *"
+    },
+    {
+      "path": "/api/cron/check-success-rate",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/distribute-challenge-prizes",
+      "schedule": "0 * * * *"
+    }
+  ],
+  "env": {
+    "GRAPHQL_INTROSPECTION_ENABLED": "false",
+    "NEXT_PUBLIC_GRAPHQL_PLAYGROUND_ENABLED": "false",
+    "GRAPHQL_MAX_COMPLEXITY": "1000",
+    "GRAPHQL_MAX_DEPTH": "5",
+    "GRAPHQL_RATE_LIMIT_FREE": "100",
+    "GRAPHQL_RATE_LIMIT_BASIC": "500",
+    "GRAPHQL_RATE_LIMIT_PRO": "2000",
+    "GRAPHQL_RATE_LIMIT_MAX": "5000",
+    "GRAPHQL_RATE_LIMIT_ADMIN": "10000"
+  },
+  "build": {
+    "env": {
+      "GRAPHQL_INTROSPECTION_ENABLED": "false",
+      "NEXT_PUBLIC_GRAPHQL_PLAYGROUND_ENABLED": "false"
+    }
+  }
+}

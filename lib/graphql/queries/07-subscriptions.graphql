@@ -1,0 +1,54 @@
+# 艹！GraphQL Subscriptions 查询定义（Week 8新增）
+# 用于实时推送功能
+
+# Subscription 1: 订阅新发布的博客文章
+# 用途：实时推送新文章到客户端
+# 适用场景：博客首页、文章列表页
+subscription OnNewBlogPost {
+  newBlogPost {
+    id
+    title
+    slug
+    excerpt
+    coverImageUrl
+    status
+    publishedAt
+    createdAt
+    viewCount
+    likeCount
+    commentCount
+    author {
+      id
+      displayName
+      avatarUrl
+    }
+  }
+}
+
+# Subscription 2: 订阅服务器时间（测试用）
+# 用途：测试Subscription功能是否正常工作
+# 适用场景：开发调试、健康检查
+subscription OnCurrentTime {
+  currentTime
+}
+
+# Subscription 3: 订阅新发布文章（简化版，只包含基本字段）
+# 用途：通知栏、Toast消息
+# 适用场景：不需要完整文章信息的场景
+subscription OnNewBlogPostSimple {
+  newBlogPost {
+    id
+    title
+    publishedAt
+    author {
+      displayName
+    }
+  }
+}
+
+# 艹！老王备注：
+# 1. Subscription使用异步生成器（async generator）实现
+# 2. graphql-yoga v5 支持 Server-Sent Events (SSE)，无需WebSocket
+# 3. 订阅会一直保持连接直到客户端主动取消
+# 4. 生产环境建议使用 Redis Pub/Sub 替代轮询数据库
+# 5. Rate Limiting 同样适用于 Subscription（每个订阅算一次请求）
