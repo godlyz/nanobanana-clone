@@ -1,10 +1,10 @@
 "use client"
 
-import { useState, useEffect, useMemo, useTransition, useCallback } from "react"
+import { useState, useEffect, useMemo, useTransition, useCallback, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Upload, Sparkles, ImageIcon as ImageIconLucide, Type, Clock, LogIn, Download, ZoomIn, ZoomOut, RotateCcw, X, Maximize2, Video } from "lucide-react"
+import { Upload, Sparkles, ImageIcon as ImageIconLucide, Type, Clock, LogIn, Download, ZoomIn, ZoomOut, RotateCcw, X, Maximize2, Video, AlertCircle, Loader2 } from "lucide-react"
 import { useLanguage } from "@/lib/language-context"
 import { useTheme } from "@/lib/theme-context"
 import { Header } from "@/components/header"
@@ -64,6 +64,9 @@ import { usePathname, useSearchParams, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
 import { downloadImage } from "@/lib/download-utils"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { usePromptOptimizer } from "@/hooks/use-prompt-optimizer"
+import { PromptOptimizationModal } from "@/components/prompt-optimizer/optimization-modal"
 
 
 export default function ImageEditPage() {
@@ -81,6 +84,20 @@ export default function ImageEditPage() {
   const [user, setUser] = useState<SupabaseUser | null>(null)
   const [hasPaidPlan, setHasPaidPlan] = useState<boolean>(false) // 🔥 付费订阅状态
   const [isPending, startTransition] = useTransition() // 🔥 老王新增：过渡状态管理
+
+  // 🔥 老王新增：提示词优化 hook
+  const promptOptimizer = usePromptOptimizer({ level: 'quick', category: 'general' })
+  const [optimizerModalOpen, setOptimizerModalOpen] = useState(false)
+
+  // 🔥 老王修复：用ref手动检测result变化，避免React依赖问题导致页面刷新
+  const prevResultRef = useRef<typeof promptOptimizer.result>(null)
+  useEffect(() => {
+    // 只在result从null变为非null时打开弹窗
+    if (promptOptimizer.result && !prevResultRef.current) {
+      setOptimizerModalOpen(true)
+    }
+    prevResultRef.current = promptOptimizer.result
+  }, [promptOptimizer.result])
 
   // 🔥 图片预览状态
   const [previewImage, setPreviewImage] = useState<string | null>(null)
@@ -539,6 +556,30 @@ export default function ImageEditPage() {
     setSubmissionImageUrl(item.url)
     setSubmissionImageIndex(item.image_index)
     setShowSubmissionDialog(true)
+  }
+
+  // 🔥 老王新增：提示词优化处理函数
+  const handleOptimizePrompt = async () => {
+    const currentPrompt = activeTab === "image-to-image" ? prompt : textPrompt
+    if (!currentPrompt.trim()) return
+
+    // 老王：调用optimize并等待完成
+    await promptOptimizer.optimize(currentPrompt)
+
+    // 老王：优化完成后，如果有结果就显示弹窗
+    // 注意：这里需要在下一个tick检查，因为state更新是异步的
+    // 如果有错误，Alert组件会自动显示，不需要在这里处理
+  }
+
+  // 🔥 老王新增：应用优化后的提示词
+  const handleApplyOptimizedPrompt = (optimizedPrompt: string) => {
+    if (activeTab === "image-to-image") {
+      setPrompt(optimizedPrompt)
+    } else {
+      setTextPrompt(optimizedPrompt)
+    }
+    setOptimizerModalOpen(false)
+    promptOptimizer.reset()
   }
 
   // Image to Image states
@@ -1195,7 +1236,36 @@ export default function ImageEditPage() {
                         />
                         <div className="flex items-center justify-between mt-3">
                           <button className={`${primaryColor} text-sm hover:underline`}>{t("imageEditor.copy")}</button>
+                          {/* 🔥 老王新增：提示词优化按钮 (Image-to-Image 模式) */}
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            disabled={!prompt.trim() || promptOptimizer.isLoading}
+                            onClick={handleOptimizePrompt}
+                            className="gap-2"
+                          >
+                            {promptOptimizer.isLoading ? (
+                              <>
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                {t("promptOptimizer.optimizing")}
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles className="h-4 w-4" />
+                                {t("promptOptimizer.button")}
+                              </>
+                            )}
+                          </Button>
                         </div>
+                        {/* 🔥 老王新增：提示词优化错误提示 (Image-to-Image 模式) */}
+                        {promptOptimizer.error && (
+                          <Alert variant="destructive" className="mt-2">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertTitle>{t("error")}</AlertTitle>
+                            <AlertDescription>{promptOptimizer.error}</AlertDescription>
+                          </Alert>
+                        )}
                       </div>
                     </div>
 
@@ -1338,7 +1408,36 @@ export default function ImageEditPage() {
                         />
                         <div className="flex items-center justify-between mt-3">
                           <button className={`${primaryColor} text-sm hover:underline`}>{t("imageEditor.copy")}</button>
+                          {/* 🔥 老王新增：提示词优化按钮 (Text-to-Image 模式) */}
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            disabled={!textPrompt.trim() || promptOptimizer.isLoading}
+                            onClick={handleOptimizePrompt}
+                            className="gap-2"
+                          >
+                            {promptOptimizer.isLoading ? (
+                              <>
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                {t("promptOptimizer.optimizing")}
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles className="h-4 w-4" />
+                                {t("promptOptimizer.button")}
+                              </>
+                            )}
+                          </Button>
                         </div>
+                        {/* 🔥 老王新增：提示词优化错误提示 (Text-to-Image 模式) */}
+                        {promptOptimizer.error && (
+                          <Alert variant="destructive" className="mt-2">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertTitle>{t("error")}</AlertTitle>
+                            <AlertDescription>{promptOptimizer.error}</AlertDescription>
+                          </Alert>
+                        )}
                       </div>
                     </div>
 
@@ -1744,6 +1843,17 @@ export default function ImageEditPage() {
 
         {/* 🔥 老王新增：首次访问自动触发引导提示 */}
         <FirstVisitPrompt tourType="editor" />
+
+        {/* 🔥 老王新增：提示词优化结果弹窗（使用专业组件） */}
+        <PromptOptimizationModal
+          open={optimizerModalOpen}
+          onClose={() => {
+            setOptimizerModalOpen(false)
+            promptOptimizer.reset()
+          }}
+          result={promptOptimizer.result}
+          onApply={handleApplyOptimizedPrompt}
+        />
       </div>
     </>
   )

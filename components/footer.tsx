@@ -103,6 +103,17 @@ export function Footer() {
                   {t("footer.resources.userGuide")}
                 </Link>
               </li>
+              {/* 🔥 老王新增：社区链接 */}
+              <li>
+                <Link href="/forum" className="text-background/70 hover:text-background">
+                  {t("footer.resources.forum")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/feed" className="text-background/70 hover:text-background">
+                  {t("footer.resources.activityFeed")}
+                </Link>
+              </li>
               <li>
                 <Link href="#" className="text-background/70 hover:text-background">
                   {t("footer.resources.docs")}

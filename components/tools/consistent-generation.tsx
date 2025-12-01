@@ -4,7 +4,8 @@ import { useState, useEffect, useMemo, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { ImageIcon as ImageIconLucide, Loader2, Download, Save, Sparkles, FolderOpen, Maximize2, Upload, X } from "lucide-react"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { ImageIcon as ImageIconLucide, Loader2, Download, Save, Sparkles, FolderOpen, Maximize2, Upload, X, AlertCircle } from "lucide-react"
 import { useLanguage } from "@/lib/language-context"
 import { useTheme } from "@/lib/theme-context"
 import { useToast } from "@/components/ui/toast"
@@ -621,6 +622,15 @@ export function ConsistentGeneration({ user }: ConsistentGenerationProps) {
               </>
             )}
           </Button>
+
+          {/* 🔥 老王新增：提示词优化错误提示 */}
+          {promptOptimizer.error && (
+            <Alert variant="destructive" className="mt-2">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>{t("error")}</AlertTitle>
+              <AlertDescription>{promptOptimizer.error}</AlertDescription>
+            </Alert>
+          )}
         </div>
 
         {/* 生成按钮 */}

@@ -53,8 +53,18 @@ export default async function RootLayout({
   const languageCookie = cookieStore.get("language")?.value
   const initialLanguage = languageCookie === "zh" ? "zh" : "en"
 
+  // 🔥 老王修复水合错误：服务端读取主题cookie，确保服务端和客户端HTML一致
+  const themeCookie = cookieStore.get("theme")?.value
+  const initialTheme = themeCookie === "dark" ? "dark" : "light"
+  const htmlClassName = initialTheme === "dark" ? "dark" : ""
+
   return (
-    <html lang={initialLanguage}>
+    <html
+      lang={initialLanguage}
+      className={htmlClassName}
+      data-theme={initialTheme}
+      suppressHydrationWarning
+    >
       <head>
         {/* 🔥 老王LCP优化：内联最小关键CSS，防止FOUC和CLS */}
         {/* 只提供颜色变量和字体fallback，不覆盖Tailwind样式 */}

@@ -162,7 +162,8 @@ export function PromptOptimizationModal({
                       {t("promptOptimizer.modal.score")}: {selected.qualityScore}
                     </Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground line-clamp-2">
+                  {/* 老王修复：去掉line-clamp-2，显示完整文本（可能多行） */}
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap break-words">
                     {selected.optimizedPrompt}
                   </p>
                 </div>
@@ -184,7 +185,8 @@ export function PromptOptimizationModal({
                         {t("promptOptimizer.modal.score")}: {alt.qualityScore}
                       </Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground line-clamp-2">
+                    {/* 老王修复：去掉line-clamp-2，显示完整文本（可能多行） */}
+                    <p className="text-sm text-muted-foreground whitespace-pre-wrap break-words">
                       {alt.optimizedPrompt}
                     </p>
                   </div>

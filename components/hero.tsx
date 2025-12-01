@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Sparkles, Zap, Target, Video } from "lucide-react"
+import { Sparkles, Zap, Target, Video, Users } from "lucide-react"
 import Link from "next/link"
 import { useLanguage } from "@/lib/language-context"
 
@@ -57,6 +57,17 @@ export function Hero() {
               className="px-10 py-6 text-base font-semibold rounded-full border-2 bg-transparent"
             >
               {t("hero.cta.docs")}
+            </Button>
+          </Link>
+          {/* 🔥 老王新增：探索社区 CTA 按钮 */}
+          <Link href="/forum">
+            <Button
+              size="lg"
+              variant="outline"
+              className="px-10 py-6 text-base font-semibold rounded-full border-2 bg-transparent"
+            >
+              <Users className="w-5 h-5 mr-2" />
+              {t("hero.cta.community")}
             </Button>
           </Link>
         </div>

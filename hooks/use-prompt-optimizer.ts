@@ -84,8 +84,8 @@ export function usePromptOptimizer(options: UsePromptOptimizerOptions = {}) {
           enablePersonalization: options.enablePersonalization || false,
           userPreferences: options.userPreferences
         }),
-        // 老王：30秒超时，别让用户等太久
-        signal: AbortSignal.timeout(30000)
+        // 老王修复：60秒超时，GLM API有时候会比较慢（之前30秒会超时）
+        signal: AbortSignal.timeout(60000)
       })
 
       const data = await response.json()

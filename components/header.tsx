@@ -144,6 +144,39 @@ export function Header() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            {/* 🔥 老王新增：Community 社区下拉菜单 */}
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                id="header-community-menu"
+                className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {t("nav.community")}
+                <ChevronDown className="w-4 h-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuItem asChild>
+                  <Link href="/forum" className="cursor-pointer">
+                    {t("nav.forum")}
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/feed" className="cursor-pointer">
+                    {t("nav.activityFeed")}
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/community-guidelines" className="cursor-pointer">
+                    {t("nav.communityGuidelines")}
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/moderation" className="cursor-pointer">
+                    {t("nav.moderationManual")}
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               {t("nav.pricing")}
             </Link>

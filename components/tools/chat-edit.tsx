@@ -4,7 +4,8 @@ import { useState, useRef, useEffect, useMemo, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Upload, X, MessageCircle, Sparkles, Image as ImageIcon, Loader2, Clock, Maximize2, RefreshCw, Download } from "lucide-react"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Upload, X, MessageCircle, Sparkles, Image as ImageIcon, Loader2, Clock, Maximize2, RefreshCw, Download, AlertCircle } from "lucide-react"
 import { useLanguage } from "@/lib/language-context"
 import { useTheme } from "@/lib/theme-context"
 import { createClient } from "@/lib/supabase/client"
@@ -513,6 +514,15 @@ export function ChatEdit({ user }: ChatEditProps) {
                     </Button>
                   </div>
                 </div>
+
+                {/* 🔥 老王新增：提示词优化错误提示 */}
+                {promptOptimizer.error && (
+                  <Alert variant="destructive" className="mt-2">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>{t("error")}</AlertTitle>
+                    <AlertDescription>{promptOptimizer.error}</AlertDescription>
+                  </Alert>
+                )}
               </CardContent>
             </Card>
 

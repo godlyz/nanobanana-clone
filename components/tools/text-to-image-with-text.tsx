@@ -6,7 +6,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Loader2, Sparkles, FileText, Download, Copy, Check, Clock, Maximize2, RefreshCw } from "lucide-react"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Loader2, Sparkles, FileText, Download, Copy, Check, Clock, Maximize2, RefreshCw, AlertCircle } from "lucide-react"
 import { useLanguage } from "@/lib/language-context"
 import { useTheme } from "@/lib/theme-context"
 import { createClient } from "@/lib/supabase/client"
@@ -606,6 +607,15 @@ export function TextToImageWithText({ user }: TextToImageWithTextProps) {
                   </>
                 )}
               </Button>
+
+              {/* 🔥 老王新增：提示词优化错误提示 */}
+              {promptOptimizer.error && (
+                <Alert variant="destructive" className="mt-2">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>{t("error")}</AlertTitle>
+                  <AlertDescription>{promptOptimizer.error}</AlertDescription>
+                </Alert>
+              )}
 
               {error && (
                 <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">

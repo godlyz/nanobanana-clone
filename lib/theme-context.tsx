@@ -13,19 +13,33 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light")
+  // 🔥 老王修复水合错误：初始主题从服务端渲染的HTML读取（避免闪烁）
+  const [theme, setTheme] = useState<Theme>(() => {
+    // 服务端渲染时默认返回light，客户端会立即从HTML读取真实值
+    if (typeof window === "undefined") return "light"
+
+    // 客户端首次渲染：从HTML元素读取服务端设置的主题（避免水合错误）
+    const htmlTheme = document.documentElement.getAttribute("data-theme") as Theme | null
+    return htmlTheme || "light"
+  })
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
-    // 从 localStorage 读取主题偏好
-    const savedTheme = localStorage.getItem("theme") as Theme | null
-    if (savedTheme) {
-      setTheme(savedTheme)
+    // 🔥 老王修复：客户端挂载后，优先使用HTML上的主题（服务端SSR传递的值）
+    const htmlTheme = document.documentElement.getAttribute("data-theme") as Theme | null
+    if (htmlTheme) {
+      setTheme(htmlTheme)
     } else {
-      // 检测系统主题偏好
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
-      setTheme(prefersDark ? "dark" : "light")
+      // 如果HTML上没有主题属性，再从localStorage读取
+      const savedTheme = localStorage.getItem("theme") as Theme | null
+      if (savedTheme) {
+        setTheme(savedTheme)
+      } else {
+        // 最后才检测系统主题偏好
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
+        setTheme(prefersDark ? "dark" : "light")
+      }
     }
   }, [])
 
