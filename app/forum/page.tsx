@@ -8,17 +8,20 @@
  * - 集成 ForumStatsCard（统计卡片）
  * - 集成 ForumBreadcrumb（面包屑导航）
  * - 优化布局和响应式设计
+ * - 🔥 2025-12-01：添加Header和Footer（和其他页面保持一致）
  */
 
 "use client"
 
 import { useState, useEffect } from "react"
+import dynamic from "next/dynamic"
 import { useSearchParams } from "next/navigation"
 import { useLanguage } from "@/lib/language-context"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PlusCircle } from "lucide-react"
 import Link from "next/link"
+import { Header } from "@/components/header"
 import {
   ForumCategoryList,
   ForumThreadList,
@@ -36,6 +39,11 @@ import type {
   PaginatedResponse,
   GetThreadsParams,
 } from "@/types/forum"
+
+// 🔥 老王优化：Footer动态加载（非首屏内容）
+const Footer = dynamic(() => import("@/components/footer").then(m => ({ default: m.Footer })), {
+  loading: () => <div className="min-h-[200px]"></div>
+})
 
 /**
  * 论坛首页
@@ -163,15 +171,20 @@ export default function ForumPage() {
     : undefined
 
   return (
-    <div className="container mx-auto px-4 py-6">
-      {/* 面包屑导航 */}
-      <div className="mb-4">
-        <ForumBreadcrumb
-          category={currentCategory}
-          tag={currentTag}
-          searchQuery={searchQuery || undefined}
-        />
-      </div>
+    <main className="min-h-screen">
+      {/* 🔥 老王修复：添加Header（fixed定位） */}
+      <Header />
+
+      {/* 🔥 老王修复：主内容区域添加pt-16，避免被fixed Header遮挡 */}
+      <div className="container mx-auto px-4 py-6 pt-24">
+        {/* 面包屑导航 */}
+        <div className="mb-4">
+          <ForumBreadcrumb
+            category={currentCategory}
+            tag={currentTag}
+            searchQuery={searchQuery || undefined}
+          />
+        </div>
 
       {/* 页头 */}
       <div className="mb-6">
@@ -329,6 +342,10 @@ export default function ForumPage() {
           )}
         </aside>
       </div>
-    </div>
+      </div>
+
+      {/* 🔥 老王修复：添加Footer */}
+      <Footer />
+    </main>
   )
 }

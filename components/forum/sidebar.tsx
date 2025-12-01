@@ -105,7 +105,7 @@ export function ForumSidebar({
               return (
                 <Link
                   key={category.id}
-                  href={`/forum?category=${category.slug}`}
+                  href={`/forum?category_id=${category.id}`}
                   className={cn(
                     "flex items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent",
                     isActive && "bg-accent font-medium"
@@ -144,7 +144,7 @@ export function ForumSidebar({
                 return (
                   <Link
                     key={tag.id}
-                    href={`/forum?tag=${tag.slug}`}
+                    href={`/forum?tag_slug=${tag.slug}`}
                   >
                     <Badge
                       variant={isActive ? 'default' : 'secondary'}

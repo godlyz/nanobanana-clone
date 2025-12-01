@@ -190,3 +190,67 @@ select:focus-visible {
   --editor-text: #F1F5F9;
   --editor-muted: #94A3B8;
 }
+
+/* 🔥 老王新增：传统中文排版样式 */
+/* 用于社区规范和审核员手册页面 */
+.chinese-typography h2 {
+  font-size: 1.875rem !important; /* 30px - 3xl */
+  font-weight: 700 !important; /* bold */
+  margin-top: 3rem !important;
+  margin-bottom: 1.5rem !important;
+  padding-bottom: 0.5rem !important;
+  border-bottom: 1px solid hsl(var(--border)) !important;
+}
+
+.chinese-typography h3 {
+  font-size: 1.5rem !important; /* 24px - 2xl */
+  font-weight: 600 !important; /* semibold */
+  margin-top: 2.5rem !important;
+  margin-bottom: 1.25rem !important;
+  margin-left: 1.5rem !important; /* H3缩进约3个汉字 */
+}
+
+.chinese-typography h4 {
+  font-size: 1.25rem !important; /* 20px - xl */
+  font-weight: 500 !important; /* medium */
+  margin-top: 1.5rem !important;
+  margin-bottom: 1rem !important;
+  margin-left: 2rem !important; /* H4缩进约4个汉字 */
+}
+
+.chinese-typography p {
+  text-indent: 2em !important; /* 首行缩进2个汉字 */
+  margin-left: 1.5rem !important; /* 整体左缩进约3个汉字 */
+  margin-bottom: 1rem !important;
+  line-height: 1.75 !important;
+}
+
+.chinese-typography ul,
+.chinese-typography ol {
+  margin-left: 1.5rem !important; /* 列表左缩进 */
+  margin-top: 1rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.chinese-typography li {
+  text-indent: 0 !important; /* 列表项不缩进（避免双重缩进） */
+  line-height: 1.75 !important;
+}
+
+.chinese-typography pre {
+  margin-left: 1.5rem !important; /* 代码块缩进 */
+  margin-top: 1rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.chinese-typography blockquote {
+  margin-left: 1.5rem !important; /* 引用块缩进 */
+  margin-top: 1rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.chinese-typography table {
+  margin-left: 1.5rem !important; /* 表格缩进 */
+  margin-top: 1rem !important;
+  margin-bottom: 1rem !important;
+}

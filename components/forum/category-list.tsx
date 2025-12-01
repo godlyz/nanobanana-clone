@@ -49,7 +49,7 @@ export function ForumCategoryList({ categories, currentCategoryId }: ForumCatego
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {categories.map((category) => {
         const isActive = currentCategoryId === category.id
         const categoryName = language === 'zh' ? category.name : (category.name_en || category.name)
@@ -60,7 +60,7 @@ export function ForumCategoryList({ categories, currentCategoryId }: ForumCatego
         return (
           <Link
             key={category.id}
-            href={`/forum?category=${category.slug}`}
+            href={`/forum?category_id=${category.id}`}
             className="block transition-transform hover:scale-105"
           >
             <Card

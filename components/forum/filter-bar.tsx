@@ -53,8 +53,9 @@ export function ForumFilterBar({
 
   // 当前筛选状态
   const currentSort = (searchParams.get('sort') || 'latest') as SortOption
-  const currentCategoryId = searchParams.get('category_id') || ''
-  const currentTagSlug = searchParams.get('tag_slug') || ''
+  // 老王修复：默认值用 "_all_" 代替空字符串（避免Select报错）
+  const currentCategoryId = searchParams.get('category_id') || '_all_'
+  const currentTagSlug = searchParams.get('tag_slug') || '_all_'
   const currentStatus = searchParams.get('status') || ''
 
   // 排序选项配置
@@ -101,12 +102,14 @@ export function ForumFilterBar({
 
   // 分类变化
   const handleCategoryChange = (categoryId: string) => {
-    updateSearchParams({ category_id: categoryId === '' ? null : categoryId })
+    // 老王修复：使用 "_all_" 作为"所有分类"的特殊值（空字符串会导致Select报错）
+    updateSearchParams({ category_id: (categoryId === '' || categoryId === '_all_') ? null : categoryId })
   }
 
   // 标签变化
   const handleTagChange = (tagSlug: string) => {
-    updateSearchParams({ tag_slug: tagSlug === '' ? null : tagSlug })
+    // 老王修复：使用 "_all_" 作为"所有标签"的特殊值（空字符串会导致Select报错）
+    updateSearchParams({ tag_slug: (tagSlug === '' || tagSlug === '_all_') ? null : tagSlug })
   }
 
   // 状态变化
@@ -119,8 +122,8 @@ export function ForumFilterBar({
     router.push(pathname)
   }
 
-  // 是否有活动筛选
-  const hasActiveFilters = !!(currentCategoryId || currentTagSlug || (showStatusFilter && currentStatus))
+  // 是否有活动筛选（老王修复：排除 "_all_" 这个特殊值）
+  const hasActiveFilters = !!((currentCategoryId && currentCategoryId !== '_all_') || (currentTagSlug && currentTagSlug !== '_all_') || (showStatusFilter && currentStatus))
 
   // 获取当前分类名称
   const currentCategoryName = categories.find(c => c.id === currentCategoryId)
@@ -177,7 +180,8 @@ export function ForumFilterBar({
               <SelectValue placeholder={language === 'zh' ? '所有分类' : 'All Categories'} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">
+              {/* 老王修复：value不能是空字符串，用 "_all_" 代替 */}
+              <SelectItem value="_all_">
                 {language === 'zh' ? '所有分类' : 'All Categories'}
               </SelectItem>
               {categories.filter(cat => cat.is_visible).map(category => (
@@ -201,7 +205,8 @@ export function ForumFilterBar({
               <SelectValue placeholder={language === 'zh' ? '所有标签' : 'All Tags'} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">
+              {/* 老王修复：value不能是空字符串，用 "_all_" 代替 */}
+              <SelectItem value="_all_">
                 {language === 'zh' ? '所有标签' : 'All Tags'}
               </SelectItem>
               {tags.map(tag => (
