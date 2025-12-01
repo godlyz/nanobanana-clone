@@ -1,5 +1,4 @@
 {
-  "_comment": "Vercel Deployment Configuration - 仅包含符合schema的标准字段",
   "crons": [
     {
       "path": "/api/cron/activate-monthly-credits",
