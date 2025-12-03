@@ -56,7 +56,7 @@ interface ForumReport {
 }
 
 export default function AdminReportsPage() {
-  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
+  const language = useLocale() as 'zh' | 'en'  // 🔥 老王迁移：useLocale返回当前语言，类型断言为zh或en
   const { userId } = useAuth()
   const router = useRouter()
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import dynamic from "next/dynamic"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
 import { formatRelativeTime } from "@/lib/forum-utils"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -58,7 +58,7 @@ export function ForumReplyItem({
   onEdit,
   onDelete
 }: ForumReplyItemProps) {
-  const { language, t } = useLanguage()
+  const language = useLocale() as 'zh' | 'en'  // 🔥 老王迁移：useLocale返回当前语言，类型断言为zh或en
   const { uploadImage } = useImageUpload()
   const [isVoting, setIsVoting] = useState(false)
   const [isEditing, setIsEditing] = useState(false)

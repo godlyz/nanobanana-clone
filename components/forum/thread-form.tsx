@@ -8,7 +8,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -72,7 +72,7 @@ export function ForumThreadForm({
   onCancel,
   isSubmitting = false,
 }: ForumThreadFormProps) {
-  const { language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
   const router = useRouter()
   // 🔥 老王修复：useToast返回{addToast, removeToast, toasts}，不是{toast}
   const { addToast } = useToast()

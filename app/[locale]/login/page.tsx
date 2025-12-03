@@ -7,7 +7,6 @@
 "use client"
 
 import { Header } from "@/components/header"
-import { setRequestLocale } from 'next-intl/server'
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -20,14 +19,7 @@ import { useRouter } from "next/navigation"
 import { Mail, Lock, CheckCircle2, XCircle, Loader2, Github } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 
-export default async function LoginPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+export default function LoginPage() {
   const t = useTranslations('login')  // 🔥 老王迁移：使用login命名空间
   const router = useRouter()
   const supabase = useMemo(() => createClient(), [])

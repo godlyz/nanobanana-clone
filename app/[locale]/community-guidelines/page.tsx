@@ -6,8 +6,7 @@
 
 "use client"
 
-import { useState, useEffect, useRef } from "react"
-import { setRequestLocale } from 'next-intl/server'
+import { useState, useEffect, useRef, use } from "react"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import ReactMarkdown from "react-markdown"
@@ -21,14 +20,9 @@ interface TocItem {
   level: number
 }
 
-export default async function CommunityGuidelinesPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+export default function CommunityGuidelinesPage({ params }: { params: Promise<{ locale: string }> }) {
+  // 🔥 老王修复：Next.js 15的params是Promise，需要用React.use()解包
+  const { locale } = use(params)
   const [markdown, setMarkdown] = useState<string>("")
   const [loading, setLoading] = useState(true)
   const [toc, setToc] = useState<TocItem[]>([])
@@ -52,11 +46,16 @@ export default async function CommunityGuidelinesPage({
     return items
   }
 
-  // 🔥 老王新增：加载社区规范markdown文件
+  // 🔥 老王新增：加载社区规范markdown文件（根据locale选择中英文版本）
   useEffect(() => {
     async function loadMarkdown() {
       try {
-        const response = await fetch("/COMMUNITY_GUIDELINES.md")
+        // 根据locale选择文件
+        const filename = locale === 'en'
+          ? '/COMMUNITY_GUIDELINES_EN.md'
+          : '/COMMUNITY_GUIDELINES_ZH.md'
+
+        const response = await fetch(filename)
         if (response.ok) {
           const text = await response.text()
           setMarkdown(text)
@@ -71,7 +70,7 @@ export default async function CommunityGuidelinesPage({
       }
     }
     loadMarkdown()
-  }, [])
+  }, [locale])
 
   // 🔥 老王新增：滚动监听，高亮当前阅读的目录项
   useEffect(() => {

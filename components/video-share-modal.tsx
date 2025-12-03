@@ -2,7 +2,7 @@
 
 import { X, Share2, Loader2, Check, AlertCircle } from "lucide-react"
 import { useState, useEffect } from "react"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
 import type { VideoShowcaseCategory } from "@/types/showcase"
 
 // 🔥 老王创建：视频分享到Showcase的Modal组件
@@ -42,7 +42,7 @@ export function VideoShareModal({
   videoPrompt,
   onSuccess,
 }: VideoShareModalProps) {
-  const { language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState<VideoShowcaseCategory>('creative')

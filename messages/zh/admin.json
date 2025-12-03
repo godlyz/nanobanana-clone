@@ -1,0 +1,18 @@
+{
+  "admin": {
+    "login": {
+      "title": "管理后台登录",
+      "subtitle": "使用管理员账号登录",
+      "email": "邮箱地址",
+      "emailPlaceholder": "admin@example.com",
+      "password": "密码",
+      "passwordPlaceholder": "••••••••",
+      "signingIn": "登录中...",
+      "signin": "登录",
+      "adminOnly": "此登录页面仅供管理员使用",
+      "visitHomepage": "如需访问用户端，请访问",
+      "homepage": "首页",
+      "checkingStatus": "检查登录状态..."
+    }
+  }
+}

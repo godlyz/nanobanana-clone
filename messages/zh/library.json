@@ -1,0 +1,111 @@
+{
+  "subjects": {
+    "loginRequired": "需要登录",
+    "loginMessage": "请登录以访问主体库",
+    "loginButton": "登录",
+    "title": "主体库",
+    "subtitle": "管理您的主体图像，用于角色一致性保持和批量创作",
+    "searchPlaceholder": "搜索主体名称或描述...",
+    "filter": {
+      "all": "全部",
+      "person": "人物",
+      "object": "物体",
+      "pet": "宠物",
+      "other": "其他"
+    },
+    "uploadButton": "上传主体",
+    "empty": {
+      "title": "主体库为空",
+      "message": "上传您的第一个主体图像以开始创作"
+    },
+    "uploadModal": {
+      "title": "上传主体",
+      "clickToUpload": "点击上传图片",
+      "name": "名称",
+      "nameRequired": "* 必填",
+      "namePlaceholder": "输入主体名称",
+      "description": "描述（可选）",
+      "descriptionPlaceholder": "添加一些描述以便识别",
+      "type": "类型",
+      "typeRequired": "* 必填",
+      "cancelButton": "取消",
+      "uploadingButton": "上传中...",
+      "uploadButton": "上传"
+    },
+    "deleteModal": {
+      "title": "确认删除",
+      "message": "删除后无法恢复，确定要删除这个主体吗？",
+      "cancelButton": "取消",
+      "deleteButton": "删除"
+    },
+    "error": {
+      "fileTooLarge": "文件过大，请上传小于5MB的图片",
+      "invalidFileType": "请上传图片文件",
+      "uploadFailed": "上传失败，请重试",
+      "deleteFailed": "删除失败，请重试",
+      "fetchFailed": "获取主体库失败"
+    },
+    "types": {
+      "person": "人物",
+      "object": "物体",
+      "pet": "宠物",
+      "other": "其他"
+    }
+  },
+  "scenes": {
+    "loginRequired": "需要登录",
+    "loginMessage": "请登录以访问场景库",
+    "loginButton": "登录",
+    "title": "场景库",
+    "subtitle": "管理您的场景图像，用于场景保留和批量创作",
+    "searchPlaceholder": "搜索场景名称、描述或标签...",
+    "filter": {
+      "all": "全部",
+      "indoor": "室内",
+      "outdoor": "室外",
+      "abstract": "抽象",
+      "other": "其他"
+    },
+    "uploadButton": "上传场景",
+    "empty": {
+      "title": "场景库为空",
+      "message": "上传您的第一个场景图像以开始创作"
+    },
+    "uploadModal": {
+      "title": "上传场景",
+      "clickToUpload": "点击上传图片",
+      "supportedFormats": "支持 PNG、JPG、WEBP（最大5MB）",
+      "name": "名称",
+      "nameRequired": "* 必填",
+      "namePlaceholder": "输入场景名称",
+      "description": "描述（可选）",
+      "descriptionPlaceholder": "添加一些描述以便识别",
+      "type": "类型",
+      "typeRequired": "* 必填",
+      "tags": "标签（可选）",
+      "tagsPlaceholder": "输入标签后按回车添加",
+      "cancelButton": "取消",
+      "uploadingButton": "上传中...",
+      "uploadButton": "上传"
+    },
+    "deleteModal": {
+      "title": "确认删除",
+      "message": "删除后无法恢复，确定要删除这个场景吗？",
+      "cancelButton": "取消",
+      "deleteButton": "删除"
+    },
+    "error": {
+      "fileTooLarge": "文件过大，请上传小于5MB的图片",
+      "invalidFileType": "请上传图片文件",
+      "uploadFailed": "上传失败，请重试",
+      "deleteFailed": "删除失败，请重试",
+      "fetchFailed": "获取场景库失败"
+    },
+    "types": {
+      "indoor": "室内",
+      "outdoor": "室外",
+      "abstract": "抽象",
+      "other": "其他"
+    }
+  }
+}

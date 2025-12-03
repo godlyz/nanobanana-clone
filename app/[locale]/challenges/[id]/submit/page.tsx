@@ -7,7 +7,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { setRequestLocale } from 'next-intl/server'
 import { useRouter, useParams } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -53,14 +52,8 @@ interface SubmissionFormData {
   file_url: string
 }
 
-export default async function SubmitArtworkPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+// 🔥 老王修复：Client Component不能用async，移除Server Component参数
+export default function SubmitArtworkPage() {
   const router = useRouter()
   const params = useParams()
   const challengeId = params.id as string

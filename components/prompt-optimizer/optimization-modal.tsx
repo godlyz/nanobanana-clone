@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle2, Sparkles, TrendingUp } from "lucide-react"
-import { useLanguage } from "@/lib/language-context"
+import { useTranslations } from "next-intl"  // 🔥 老王保留：t()函数暂时继续用旧接口
 import type { OptimizationResult } from "@/hooks/use-prompt-optimizer"
 
 interface PromptOptimizationModalProps {
@@ -42,7 +42,7 @@ export function PromptOptimizationModal({
   onApply,
   originalScore = 0
 }: PromptOptimizationModalProps) {
-  const { t } = useLanguage()
+  const t = useTranslations("common")
   const [selectedOption, setSelectedOption] = useState<string>("main")
 
   // 艹！没有结果就别tm显示了

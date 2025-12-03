@@ -1,0 +1,26 @@
+{
+  "showcasePage": {
+    "badge": "社区精选",
+    "title": "案例展示画廊",
+    "subtitle": "探索我们社区使用 Nano Banana 创建的惊人图像转换",
+    "tryNow": "立即试用",
+    "submitWork": "提交您的作品",
+    "filter": {
+      "all": "全部",
+      "portrait": "肖像",
+      "landscape": "风景",
+      "product": "产品",
+      "creative": "创意",
+      "anime": "动漫"
+    },
+    "tryThis": "试试这个",
+    "loadMore": "加载更多",
+    "noDescription": "暂无描述",
+    "cta": {
+      "title": "准备创建您自己的作品？",
+      "description": "加入数千名使用 Nano Banana 转换图像的创作者",
+      "button": "开始创作"
+    },
+    "comingSoon": "即将推出"
+  }
+}

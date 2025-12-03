@@ -18,7 +18,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { useLanguage } from '@/lib/language-context'
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
 
 interface VideoExtendDialogProps {
   open: boolean
@@ -43,7 +43,7 @@ export function VideoExtendDialog({
   extensionChain = [],
   onConfirm,
 }: VideoExtendDialogProps) {
-  const { language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [extendPrompt, setExtendPrompt] = useState('')

@@ -7,7 +7,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
@@ -61,7 +61,7 @@ export function ForumTagSelector({
   disabled = false,
   placeholder,
 }: ForumTagSelectorProps) {
-  const { language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
   const [open, setOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [isCreating, setIsCreating] = useState(false)

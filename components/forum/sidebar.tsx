@@ -7,7 +7,7 @@
 "use client"
 
 import Link from "next/link"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
@@ -65,7 +65,7 @@ export function ForumSidebar({
   currentCategoryId,
   currentTagSlug,
 }: ForumSidebarProps) {
-  const { language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
 
   return (
     <div className="space-y-6">

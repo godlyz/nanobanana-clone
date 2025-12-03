@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
 import { useTheme } from "@/lib/theme-context"
 import { useRouter } from "next/navigation"
 import {
@@ -55,7 +55,7 @@ interface SubscriptionManagementSectionProps {
  * - 或者等到期后自然结束（回到Free计划）
  */
 export function SubscriptionManagementSection({ subscription, loading }: SubscriptionManagementSectionProps) {
-  const { language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
   const { theme } = useTheme()
   const router = useRouter()
 

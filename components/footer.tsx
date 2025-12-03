@@ -1,7 +1,7 @@
 "use client"
 
-import Link from "next/link"
-import { useLanguage } from "@/lib/language-context"
+import { Link } from "@/i18n/navigation" // 🔥 老王迁移：使用next-intl的locale-aware导航
+import { useTranslations } from 'next-intl' // 🔥 老王迁移：从next-intl获取翻译
 import { ContactModal } from "@/components/contact-modal"
 import { useState, useEffect } from "react"
 
@@ -14,7 +14,7 @@ interface ContactInfo {
 }
 
 export function Footer() {
-  const { t } = useLanguage()
+  const t = useTranslations('common') // 🔥 老王迁移：使用common命名空间
 
   // 🔥 老王新增：弹窗状态管理
   const [showSupportModal, setShowSupportModal] = useState(false)
@@ -69,7 +69,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4">{t("footer.product")}</h3>
+            <h3 className="font-semibold mb-4">{t("footer.product.title")}</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="#editor" className="text-background/70 hover:text-background">
@@ -78,7 +78,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="#features" className="text-background/70 hover:text-background">
-                  {t("nav.features")}
+                  {t("nav.toolbox")}
                 </Link>
               </li>
               <li>
@@ -95,7 +95,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4">{t("footer.resources")}</h3>
+            <h3 className="font-semibold mb-4">{t("footer.resources.title")}</h3>
             <ul className="space-y-2 text-sm">
               {/* 🔥 老王新增：用户指南链接（最重要，放第一位） */}
               <li>
@@ -150,7 +150,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4">{t("footer.company")}</h3>
+            <h3 className="font-semibold mb-4">{t("footer.company.title")}</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="#" className="text-background/70 hover:text-background">

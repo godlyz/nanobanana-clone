@@ -7,21 +7,13 @@
 "use client"
 
 import Link from "next/link"
-import { setRequestLocale } from 'next-intl/server'
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Sparkles, Zap, CheckCircle } from "lucide-react"
 import { useTranslations } from 'next-intl'  // 🔥 老王迁移：使用next-intl
 
-export default async function BackgroundRemoverPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+export default function BackgroundRemoverPage() {
   const t = useTranslations('bgRemover')  // 🔥 老王迁移：使用bgRemover命名空间
   return (
     <div className="min-h-screen flex flex-col">

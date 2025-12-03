@@ -1,0 +1,359 @@
+{
+  "credits": {
+    "starter": {
+      "name": "入门包",
+      "description": "适合轻度使用和体验",
+      "feature1": "100 AI 生成积分",
+      "feature2": "基础功能访问",
+      "feature3": "标准质量输出",
+      "feature4": "7天有效期",
+      "badge": "最受欢迎"
+    },
+    "growth": {
+      "name": "成长包",
+      "description": "适合中度使用",
+      "feature1": "450 AI 生成积分",
+      "feature2": "高级功能访问",
+      "feature3": "高质量输出",
+      "feature4": "30天有效期",
+      "feature5": "优先处理队列",
+      "badge": "性价比高"
+    },
+    "professional": {
+      "name": "专业包",
+      "description": "适合专业用户",
+      "feature1": "1000 AI 生成积分",
+      "feature2": "所有功能访问",
+      "feature3": "超高质量输出",
+      "feature4": "60天有效期",
+      "feature5": "优先处理队列",
+      "feature6": "批量处理",
+      "badge": "专业推荐"
+    },
+    "enterprise": {
+      "name": "企业包",
+      "description": "适合团队和企业",
+      "feature1": "4200 AI 生成积分",
+      "feature2": "企业级功能",
+      "feature3": "最高质量输出",
+      "feature4": "90天有效期",
+      "feature5": "专属客服支持",
+      "feature6": "API 访问权限",
+      "feature7": "批量处理",
+      "badge": "企业首选"
+    },
+    "transaction": {
+      "type": {
+        "register_bonus": "注册赠送",
+        "subscription_refill_monthly": "月度订阅充值",
+        "subscription_refill_yearly": "年度订阅充值",
+        "subscription_auto_refill": "年付订阅月度自动充值",
+        "package_purchase": "积分包购买",
+        "text_to_image": "文生图生成",
+        "image_to_image": "图生图生成",
+        "freeze": "积分冻结",
+        "unfreeze": "积分解冻",
+        "admin_adjustment": "管理员调整",
+        "refund": "退款"
+      },
+      "desc": {
+        "register_bonus": "{amount}积分（{days}天有效）",
+        "subscription_refill_monthly": "{plan}套餐（每月{amount}积分，{days}天有效）",
+        "subscription_refill_yearly": "{plan}套餐（12个月共{amount}积分，{days}天有效）",
+        "subscription_auto_refill": "{plan}套餐（{amount}积分，{days}天有效）",
+        "package_purchase": "{package}积分包（{amount}积分，{days}天有效）",
+        "text_to_image": "消费{amount}积分",
+        "image_to_image": "消费{amount}积分",
+        "freeze": "{amount}积分（订阅升级，冻结至{date}）",
+        "unfreeze": "解冻{amount}积分",
+        "admin_adjustment": "{amount}积分（{reason}）",
+        "refund": "退款{amount}积分"
+      }
+    },
+    "plan": {
+      "basic": "Basic",
+      "pro": "Pro",
+      "max": "Max"
+    },
+    "package": {
+      "starter": "Starter",
+      "growth": "Growth",
+      "professional": "Professional",
+      "enterprise": "Enterprise"
+    }
+  },
+  "profile": {
+    "pageTitle": "个人中心",
+    "pageDescription": "管理您的个人资料、订阅、积分、推荐记录、API 密钥和使用统计",
+    "loading": "加载中...",
+    "pleaseLogin": "请先登录",
+    "needLoginMessage": "您需要登录才能查看账户信息",
+    "tabs": {
+      "profile": "个人资料",
+      "subscription": "订阅管理",
+      "credits": "积分管理",
+      "submissions": "我的推荐",
+      "stats": "使用统计",
+      "apiKeys": "API 密钥"
+    },
+    "credits": {
+      "overview": "积分概览",
+      "current": "当前积分",
+      "totalEarned": "累计获得",
+      "totalUsed": "累计使用",
+      "unit": "积分",
+      "expiryTime": "积分过期时间",
+      "permanent": "永久有效",
+      "costInfo": "文生图消耗1积分,图生图消耗2积分",
+      "loadingInfo": "正在加载积分信息...",
+      "expiringWarning": "过期提醒",
+      "expiringMessage": "您有 {credits} 积分将在7天内过期,请尽快使用。",
+      "expiresOn": "将于 {date} 过期",
+      "expiryTBD": "过期时间待确认",
+      "transactionHistory": "积分明细",
+      "totalRecords": "共 {count} 条记录",
+      "filterAll": "全部",
+      "filterEarned": "获得",
+      "filterUsed": "消耗",
+      "noTransactions": "暂无积分记录",
+      "loadMore": "加载更多 ({current}/{total})",
+      "loadingMore": "加载中..."
+    },
+    "apiKeys": {
+      "title": "API 密钥管理",
+      "createNew": "创建新密钥",
+      "active": "激活",
+      "inactive": "已停用",
+      "rotate": "重新生成",
+      "rotating": "重新生成中...",
+      "pause": "暂停",
+      "enable": "启用",
+      "updating": "更新中...",
+      "createdAt": "创建于 {date}",
+      "lastUsed": "最后使用 {date}",
+      "securityNote": "为保障安全,历史密钥仅在首次创建时可查看或复制。",
+      "noKeys": "暂无 API 密钥",
+      "noKeysMessage": "创建您的第一个 API 密钥开始使用",
+      "securityTip": "安全提示",
+      "securityMessage": "请妥善保管您的 API 密钥,切勿在代码中暴露或提交到版本控制中。",
+      "dialog": {
+        "title": "创建新的 API 密钥",
+        "description": "自定义密钥名称以便区分使用场景。该密钥只会在首次创建时展示完整内容,请妥善保存。",
+        "nameLabel": "密钥名称",
+        "namePlaceholder": "API Key {number}",
+        "nameHint": "例如: 生产环境前端、测试机器人等",
+        "cancel": "取消",
+        "create": "创建",
+        "creating": "创建中..."
+      }
+    },
+    "plan": {
+      "basic": "基础版",
+      "pro": "专业版",
+      "max": "旗舰版"
+    },
+    "tab": {
+      "stats": "使用统计"
+    },
+    "info": {
+      "editProfile": "编辑资料",
+      "accountSecurity": "账户安全",
+      "lastLogin": "最后登录时间",
+      "loginIP": "登录IP地址",
+      "password": "登录密码",
+      "changePassword": "修改密码",
+      "accountStats": "账户统计",
+      "error": {
+        "canvasContext": "无法获取 Canvas 上下文",
+        "cropFailed": "裁剪失败",
+        "uploadFailed": "头像上传失败：{error}",
+        "saveFailed": "保存失败：{error}",
+        "saveRetry": "保存失败，请稍后重试",
+        "invalidImage": "请选择图片文件",
+        "imageTooLarge": "图片不能超过 5MB",
+        "readFailed": "读取图片失败，请重试",
+        "adjustCrop": "请先调整裁剪区域",
+        "compressFailed": "裁剪后图片仍超过 500KB，请降低分辨率或缩放后重试",
+        "cropRetry": "裁剪失败，请重试"
+      },
+      "field": {
+        "email": "邮箱",
+        "registeredAt": "注册时间",
+        "lastSignIn": "最后登录时间",
+        "loginIP": "登录IP地址",
+        "password": "登录密码",
+        "displayName": "显示名称",
+        "avatar": "头像",
+        "avatarLink": "头像链接（可选，若留空则使用上传结果）",
+        "location": "所在城市 / 团队",
+        "bio": "个人简介",
+        "zoom": "缩放"
+      },
+      "button": {
+        "edit": "编辑资料",
+        "changePassword": "修改密码",
+        "selectImage": "选择图片",
+        "recrop": "重新裁剪",
+        "clear": "清除",
+        "applyCrop": "应用裁剪",
+        "cancelCrop": "取消裁剪",
+        "cancel": "取消",
+        "save": "保存",
+        "saving": "保存中..."
+      },
+      "status": {
+        "normal": "账户正常",
+        "active": "活跃",
+        "unknown": "未知"
+      },
+      "title": {
+        "accountSecurity": "账户安全",
+        "accountStats": "账户统计"
+      },
+      "desc": {
+        "securitySettings": "管理您的登录和安全设置",
+        "passwordSecurity": "定期更新密码以保护账户安全"
+      },
+      "dialog": {
+        "title": "编辑个人资料",
+        "desc": "更新将在保存成功后立即生效。"
+      },
+      "placeholder": {
+        "displayName": "请输入显示名称",
+        "location": "例：上海 / Growth 团队",
+        "bio": "用几句话介绍你自己或当前项目",
+        "noAvatar": "无头像"
+      },
+      "stats": {
+        "imagesGenerated": "图像生成",
+        "creditsRemaining": "剩余积分",
+        "activeDays": "使用天数"
+      },
+      "user": {
+        "unnamed": "未命名用户"
+      },
+      "avatar": {
+        "hint": "支持 JPG/PNG，原图 ≤ 5MB，裁剪后自动压缩至 500KB 内。"
+      }
+    },
+    "subscription": {
+      "title": "订阅管理",
+      "desc": "管理您的订阅计划",
+      "count": "共 {count} 个订阅",
+      "freePlan": "免费版",
+      "upgradeDesc": "升级到付费套餐，享受更多功能和积分",
+      "plan": {
+        "basic": "基础版",
+        "pro": "专业版",
+        "max": "至尊版"
+      },
+      "status": {
+        "active": "激活",
+        "frozen": "冻结",
+        "inactive": "未激活",
+        "expired": "已过期"
+      },
+      "billing": {
+        "yearly": "年付",
+        "monthly": "月付"
+      },
+      "field": {
+        "startDate": "开始时间",
+        "expiryDate": "到期时间"
+      },
+      "remaining": {
+        "months": "剩余{count}个月未使用"
+      },
+      "frozen": {
+        "credits": "冻结积分",
+        "remaining": "冻结剩余"
+      },
+      "unit": {
+        "credits": "分",
+        "days": "天"
+      },
+      "button": {
+        "upgrade": "升级套餐",
+        "viewPlans": "查看套餐"
+      }
+    },
+    "stats": {
+      "imageGeneration": "图像生成",
+      "apiCalls": "API调用",
+      "creditsUsed": "积分消耗",
+      "activeDays": "活跃天数",
+      "usageTrend": "使用趋势",
+      "popularFeatures": "最常用功能"
+    },
+    "usage": {
+      "loading": "加载统计数据中...",
+      "noData": "暂无统计数据",
+      "card": {
+        "imageGeneration": "图像生成",
+        "apiCalls": "API调用",
+        "creditsUsed": "积分消耗",
+        "activeDays": "活跃天数"
+      },
+      "desc": {
+        "monthlyGeneration": "本月累计生成",
+        "monthlyCalls": "本月累计调用",
+        "monthlyUsed": "本月累计消耗",
+        "sinceRegistration": "注册以来"
+      },
+      "trend": {
+        "title": "使用趋势",
+        "7days": "7天",
+        "30days": "30天",
+        "90days": "90天"
+      },
+      "popular": {
+        "title": "最常用功能",
+        "desc": "根据使用频率排序",
+        "times": "次"
+      }
+    },
+    "submissions": {
+      "error": {
+        "fetchFailed": "获取推荐列表失败",
+        "unknown": "未知错误",
+        "deleteFailed": "删除失败",
+        "loadFailed": "加载失败"
+      },
+      "confirm": {
+        "delete": "确定要删除这个推荐吗？"
+      },
+      "success": {
+        "deleted": "✅ 删除成功！"
+      },
+      "title": "我的推荐",
+      "count": "共 {count} 个推荐",
+      "button": {
+        "refresh": "刷新",
+        "create": "去创作",
+        "cancel": "取消",
+        "viewShowcase": "在展示页查看"
+      },
+      "empty": {
+        "message": "还没有提交任何推荐"
+      },
+      "status": {
+        "pending": "审核中",
+        "approved": "已通过",
+        "rejected": "已拒绝"
+      },
+      "category": {
+        "portrait": "人像",
+        "landscape": "风景",
+        "product": "产品",
+        "creative": "创意",
+        "anime": "动漫"
+      },
+      "rejection": {
+        "reason": "拒绝原因："
+      },
+      "preview": {
+        "noDescription": "暂无描述"
+      }
+    }
+  }
+}

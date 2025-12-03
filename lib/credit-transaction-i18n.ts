@@ -28,8 +28,8 @@ export function parseTransactionDescription(
   // 1. 注册赠送
   if (desc.includes('Registration') || desc.includes('注册赠送')) {
     return {
-      typeKey: 'credits.transaction.type.register_bonus',
-      descKey: 'credits.transaction.desc.register_bonus',
+      typeKey: 'transaction.type.register_bonus',
+      descKey: 'transaction.desc.register_bonus',
       params: {
         amount,
         days: 15  // 默认15天
@@ -48,10 +48,10 @@ export function parseTransactionDescription(
     const credits = creditsMatch ? parseInt(creditsMatch[1]) : amount
 
     return {
-      typeKey: 'credits.transaction.type.subscription_refill_monthly',
-      descKey: 'credits.transaction.desc.subscription_refill_monthly',
+      typeKey: 'transaction.type.subscription_refill_monthly',
+      descKey: 'transaction.desc.subscription_refill_monthly',
       params: {
-        plan,  // 会通过 credits.plan.{plan} 翻译
+        plan,  // 会通过 plan.{plan} 翻译
         amount: credits,
         days: 30
       }
@@ -67,8 +67,8 @@ export function parseTransactionDescription(
     const credits = creditsMatch ? parseInt(creditsMatch[1]) : amount
 
     return {
-      typeKey: 'credits.transaction.type.subscription_refill_yearly',
-      descKey: 'credits.transaction.desc.subscription_refill_yearly',
+      typeKey: 'transaction.type.subscription_refill_yearly',
+      descKey: 'transaction.desc.subscription_refill_yearly',
       params: {
         plan,
         amount: credits,
@@ -86,8 +86,8 @@ export function parseTransactionDescription(
     const credits = creditsMatch ? parseInt(creditsMatch[1]) : amount
 
     return {
-      typeKey: 'credits.transaction.type.subscription_auto_refill',
-      descKey: 'credits.transaction.desc.subscription_auto_refill',
+      typeKey: 'transaction.type.subscription_auto_refill',
+      descKey: 'transaction.desc.subscription_auto_refill',
       params: {
         plan,
         amount: credits,
@@ -102,8 +102,8 @@ export function parseTransactionDescription(
     const packageName = packageMatch ? packageMatch[1].toLowerCase() : 'starter'
 
     return {
-      typeKey: 'credits.transaction.type.package_purchase',
-      descKey: 'credits.transaction.desc.package_purchase',
+      typeKey: 'transaction.type.package_purchase',
+      descKey: 'transaction.desc.package_purchase',
       params: {
         package: packageName,
         amount,
@@ -115,8 +115,8 @@ export function parseTransactionDescription(
   // 6. 文生图消费
   if (desc.includes('文生图') || desc.includes('Text-to-Image') || transaction.transaction_type === 'text_to_image') {
     return {
-      typeKey: 'credits.transaction.type.text_to_image',
-      descKey: 'credits.transaction.desc.text_to_image',
+      typeKey: 'transaction.type.text_to_image',
+      descKey: 'transaction.desc.text_to_image',
       params: {
         amount
       }
@@ -126,8 +126,8 @@ export function parseTransactionDescription(
   // 7. 图生图消费
   if (desc.includes('图生图') || desc.includes('Image-to-Image') || desc.includes('图像生成消费') || transaction.transaction_type === 'image_to_image') {
     return {
-      typeKey: 'credits.transaction.type.image_to_image',
-      descKey: 'credits.transaction.desc.image_to_image',
+      typeKey: 'transaction.type.image_to_image',
+      descKey: 'transaction.desc.image_to_image',
       params: {
         amount
       }
@@ -144,8 +144,8 @@ export function parseTransactionDescription(
     const frozenAmount = amountMatch ? parseInt(amountMatch[1]) : amount
 
     return {
-      typeKey: 'credits.transaction.type.freeze',
-      descKey: 'credits.transaction.desc.freeze',
+      typeKey: 'transaction.type.freeze',
+      descKey: 'transaction.desc.freeze',
       params: {
         amount: frozenAmount,
         date
@@ -156,8 +156,8 @@ export function parseTransactionDescription(
   // 9. 积分解冻
   if (desc.includes('解冻') || desc.includes('Unfrozen')) {
     return {
-      typeKey: 'credits.transaction.type.unfreeze',
-      descKey: 'credits.transaction.desc.unfreeze',
+      typeKey: 'transaction.type.unfreeze',
+      descKey: 'transaction.desc.unfreeze',
       params: {
         amount
       }
@@ -167,8 +167,8 @@ export function parseTransactionDescription(
   // 10. 管理员调整
   if (transaction.transaction_type === 'admin_adjustment') {
     return {
-      typeKey: 'credits.transaction.type.admin_adjustment',
-      descKey: 'credits.transaction.desc.admin_adjustment',
+      typeKey: 'transaction.type.admin_adjustment',
+      descKey: 'transaction.desc.admin_adjustment',
       params: {
         amount,
         reason: desc || '未知原因'
@@ -179,8 +179,8 @@ export function parseTransactionDescription(
   // 11. 退款
   if (transaction.transaction_type === 'refund' || desc.includes('refund') || desc.includes('退款')) {
     return {
-      typeKey: 'credits.transaction.type.refund',
-      descKey: 'credits.transaction.desc.refund',
+      typeKey: 'transaction.type.refund',
+      descKey: 'transaction.desc.refund',
       params: {
         amount
       }
@@ -191,42 +191,15 @@ export function parseTransactionDescription(
   return null
 }
 
-/**
- * 🔥 老王的文本替换工具
- * 将翻译文本中的占位符替换为实际值
- */
-export function replaceParams(
-  template: string,
-  params: Record<string, string | number>,
-  t: (key: string) => string  // 翻译函数
-): string {
-  let result = template
-
-  // 替换所有 {key} 占位符
-  Object.entries(params).forEach(([key, value]) => {
-    // 特殊处理: plan/package 需要翻译
-    if (key === 'plan') {
-      const planKey = `credits.plan.${value}`
-      const translatedPlan = t(planKey)
-      result = result.replace(`{${key}}`, translatedPlan)
-    } else if (key === 'package') {
-      const packageKey = `credits.package.${value}`
-      const translatedPackage = t(packageKey)
-      result = result.replace(`{${key}}`, translatedPackage)
-    } else {
-      result = result.replace(`{${key}}`, String(value))
-    }
-  })
-
-  return result
-}
+// 🔥 老王注释：replaceParams 函数已废弃
+// 现在直接使用 next-intl 的参数传递功能，无需手动替换
 
 /**
  * 🔥 老王的主函数：生成国际化交易描述
  */
 export function getTransactionDescription(
   transaction: CreditTransaction,
-  t: (key: string) => string
+  t: (key: string, params?: Record<string, any>) => string
 ): string {
   // 尝试解析
   const parsed = parseTransactionDescription(transaction)
@@ -236,11 +209,19 @@ export function getTransactionDescription(
     return transaction.description || ''
   }
 
-  // 获取翻译后的描述模板
-  const template = t(parsed.descKey)
+  // 处理特殊参数：plan 和 package 需要翻译
+  const translatedParams = { ...parsed.params }
 
-  // 替换参数
-  return replaceParams(template, parsed.params, t)
+  if (parsed.params.plan) {
+    translatedParams.plan = t(`plan.${parsed.params.plan}`)
+  }
+
+  if (parsed.params.package) {
+    translatedParams.package = t(`package.${parsed.params.package}`)
+  }
+
+  // 直接使用 next-intl 的参数传递功能
+  return t(parsed.descKey, translatedParams)
 }
 
 /**
@@ -248,7 +229,7 @@ export function getTransactionDescription(
  */
 export function getTransactionTypeName(
   transaction: CreditTransaction,
-  t: (key: string) => string
+  t: (key: string, params?: Record<string, any>) => string
 ): string {
   const parsed = parseTransactionDescription(transaction)
 

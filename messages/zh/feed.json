@@ -1,0 +1,24 @@
+{
+  "title": "动态信息流",
+  "subtitle": "查看您关注的创作者的最新动态",
+  "empty": {
+    "title": "暂无动态",
+    "description": "关注一些创作者，他们的动态将显示在这里",
+    "cta": "发现创作者"
+  },
+  "activity": {
+    "newArtwork": "分享了新作品",
+    "newVideo": "创建了新视频",
+    "commented": "发表了评论",
+    "followed": "开始关注",
+    "earned": "获得了成就",
+    "liked": "点赞了作品",
+    "default": "有了新动态"
+  },
+  "time": {
+    "justNow": "刚刚",
+    "minsAgo": "分钟前",
+    "hoursAgo": "小时前",
+    "daysAgo": "天前"
+  }
+}

@@ -7,21 +7,13 @@
 "use client"
 
 import Link from "next/link"
-import { setRequestLocale } from 'next-intl/server'
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Shield, Sparkles, CheckCircle } from "lucide-react"
 import { useTranslations } from 'next-intl'  // 🔥 老王迁移：使用next-intl
 
-export default async function ScenePreservationPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+export default function ScenePreservationPage() {
   const t = useTranslations('scenePreserve')  // 🔥 老王迁移：使用scenePreserve命名空间
 
   return (

@@ -7,21 +7,13 @@
 "use client"
 
 import Link from "next/link"
-import { setRequestLocale } from 'next-intl/server'
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Layers, Sparkles, CheckCircle } from "lucide-react"
 import { useTranslations } from 'next-intl'  // 🔥 老王迁移：使用next-intl
 
-export default async function MultiImagePage({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+export default function MultiImagePage() {
   const t = useTranslations('multiImage')  // 🔥 老王迁移：使用multiImage命名空间
 
   return (

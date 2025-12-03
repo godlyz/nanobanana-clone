@@ -1,7 +1,20 @@
 "use client"
 
+/**
+ * 🔥 老王兼容层：语言上下文（已部分迁移到 next-intl）
+ *
+ * 这个文件现在是一个**兼容层**，用于支持未迁移的组件。
+ * 新组件应该使用 next-intl 的 useTranslations hook。
+ *
+ * 兼容机制：
+ * 1. 监听 URL 中的 locale 变化（/en/ 或 /zh/）
+ * 2. 自动同步内部 language 状态
+ * 3. 让未迁移的组件继续正常工作
+ */
+
 import Cookies from "js-cookie"
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
+import { useLocale } from 'next-intl' // 🔥 老王：从 next-intl 获取当前 locale
 
 type Language = "en" | "zh"
 
@@ -20,28 +33,37 @@ export function LanguageProvider({
   children: ReactNode
   initialLanguage?: Language
 }) {
-  // 🔥 老王彻底修复水合错误：使用服务器端传递的 initialLanguage，确保服务器端和客户端完全一致
-  const [language, setLanguageState] = useState<Language>(initialLanguage)
+  // 🔥 老王迁移：从 next-intl 获取当前 locale 作为语言同步源
+  let urlLocale: Language = "en"
+  try {
+    // 在 NextIntlClientProvider 内部时，useLocale 可用
+    urlLocale = useLocale() as Language
+  } catch {
+    // 在 NextIntlClientProvider 外部时（如旧的 layout），使用 initialLanguage
+    urlLocale = initialLanguage
+  }
+
+  // 🔥 老王：使用 URL locale 作为主要语言源
+  const [language, setLanguageState] = useState<Language>(urlLocale)
   const [mounted, setMounted] = useState(false)
 
-  // 🔥 老王修复：客户端挂载后标记 mounted（服务器端已经读取过 cookie 了）
+  // 🔥 老王迁移：监听 URL locale 变化，自动同步
   useEffect(() => {
     setMounted(true)
-    // 🔥 老王补充：如果服务器端没有传递 initialLanguage（比如旧代码），从 localStorage 迁移
-    if (initialLanguage === "en") {
-      const localLang = localStorage.getItem("language") as Language
-      if (localLang === "zh") {
-        setLanguageState(localLang)
-        Cookies.set("language", localLang, { expires: 365 })
-      }
+    // 当 URL locale 改变时，同步内部状态
+    if (urlLocale !== language) {
+      setLanguageState(urlLocale)
+      Cookies.set("language", urlLocale, { expires: 365 })
+      localStorage.setItem("language", urlLocale)
     }
-  }, [initialLanguage])
+  }, [urlLocale, language])
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang)
     // 🔥 老王修复：同时更新 cookie 和 localStorage
     Cookies.set("language", lang, { expires: 365 }) // 有效期1年
     localStorage.setItem("language", lang)
+    // 注意：这不会改变 URL，所以新的 LanguageSwitcher 才是切换语言的正确方式
   }
 
   const t = (key: string): string => {
@@ -882,17 +904,17 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Footer
     "footer.tagline": "Transform images with AI-powered natural language editing",
-    "footer.product": "Product",
+    "footer.product.title": "Product",
     "footer.product.editor": "Image Editor",
     "footer.product.api": "API Documentation",
     "footer.product.pricing": "Pricing",
     "footer.product.showcase": "Showcase",
-    "footer.company": "Company",
+    "footer.company.title": "Company",
     "footer.company.about": "About Us",
     "footer.company.blog": "Blog",
     "footer.company.careers": "Careers",
     "footer.company.contact": "Contact",
-    "footer.resources": "Resources",
+    "footer.resources.title": "Resources",
     "footer.resources.docs": "Documentation",
     "footer.resources.guides": "Guides",
     "footer.resources.support": "Support",
@@ -915,7 +937,7 @@ const translations: Record<Language, Record<string, string>> = {
     "contact.modal.copy": "Copy",
     "contact.modal.copied": "Copied!",
 
-    "footer.legal": "Legal",
+    "footer.legal.title": "Legal",
     "footer.legal.privacy": "Privacy Policy",
     "footer.legal.terms": "Terms of Service",
     "footer.legal.cookies": "Cookie Policy",
@@ -1187,9 +1209,9 @@ const translations: Record<Language, Record<string, string>> = {
     // Batch Editor page translations
     "batchEditor.title": "Batch Image Editor",
     "batchEditor.subtitle": "Process multiple images simultaneously with AI-powered editing",
-    "batchEditor.uploadMultiple": "Upload Multiple Images",
+    "batchEditor.uploadMultiple.title": "Upload Multiple Images",
     "batchEditor.uploadMultiple.subtitle": "Drag and drop up to 50 images or click to browse",
-    "batchEditor.sharedPrompt": "Shared Prompt",
+    "batchEditor.sharedPrompt.title": "Shared Prompt",
     "batchEditor.sharedPrompt.placeholder": "Enter a prompt that will be applied to all images...",
     "batchEditor.processAll": "Process All Images",
     "batchEditor.features.parallel.title": "Parallel Processing",
@@ -1230,21 +1252,21 @@ const translations: Record<Language, Record<string, string>> = {
     "apiPage.features.global.description": "Distributed infrastructure for low-latency access worldwide",
     "apiPage.quickStart": "Quick Start Example",
     "apiPage.endpoints.title": "API Endpoints",
-    "apiPage.endpoints.edit": "Edit Image",
+    "apiPage.endpoints.edit.title": "Edit Image",
     "apiPage.endpoints.edit.description": "Transform images with natural language prompts",
-    "apiPage.endpoints.remove": "Remove Background",
+    "apiPage.endpoints.remove.title": "Remove Background",
     "apiPage.endpoints.remove.description": "Remove image backgrounds with AI precision",
-    "apiPage.endpoints.batch": "Batch Process",
+    "apiPage.endpoints.batch.title": "Batch Process",
     "apiPage.endpoints.batch.description": "Process multiple images in parallel",
     "apiPage.pricing.title": "API Pricing",
     "apiPage.pricing.description": "Simple, usage-based pricing with no hidden fees",
-    "apiPage.pricing.free": "Free Tier",
+    "apiPage.pricing.free.title": "Free Tier",
     "apiPage.pricing.free.requests": "100 requests/month",
     "apiPage.pricing.free.price": "$0",
-    "apiPage.pricing.pro": "Pro Tier",
+    "apiPage.pricing.pro.title": "Pro Tier",
     "apiPage.pricing.pro.requests": "10,000 requests/month",
     "apiPage.pricing.pro.price": "$99/mo",
-    "apiPage.pricing.enterprise": "Enterprise",
+    "apiPage.pricing.enterprise.title": "Enterprise",
     "apiPage.pricing.enterprise.requests": "Unlimited requests",
     "apiPage.pricing.enterprise.price": "Custom",
 
@@ -3083,17 +3105,17 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Footer
     "footer.tagline": "用 AI 驱动的自然语言编辑转换图像",
-    "footer.product": "产品",
+    "footer.product.title": "产品",
     "footer.product.editor": "图像编辑器",
     "footer.product.api": "API 文档",
     "footer.product.pricing": "定价",
     "footer.product.showcase": "案例展示",
-    "footer.company": "公司",
+    "footer.company.title": "公司",
     "footer.company.about": "关于我们",
     "footer.company.blog": "博客",
     "footer.company.careers": "招聘",
     "footer.company.contact": "联系我们",
-    "footer.resources": "资源",
+    "footer.resources.title": "资源",
     "footer.resources.docs": "文档",
     "footer.resources.guides": "指南",
     "footer.resources.support": "支持",
@@ -3116,7 +3138,7 @@ const translations: Record<Language, Record<string, string>> = {
     "contact.modal.copy": "复制",
     "contact.modal.copied": "已复制！",
 
-    "footer.legal": "法律",
+    "footer.legal.title": "法律",
     "footer.legal.privacy": "隐私政策",
     "footer.legal.terms": "服务条款",
     "footer.legal.cookies": "Cookie 政策",
@@ -3388,9 +3410,9 @@ const translations: Record<Language, Record<string, string>> = {
     // Batch Editor page translations (Chinese)
     "batchEditor.title": "批量图像编辑器",
     "batchEditor.subtitle": "使用 AI 驱动的编辑同时处理多张图像",
-    "batchEditor.uploadMultiple": "上传多张图像",
+    "batchEditor.uploadMultiple.title": "上传多张图像",
     "batchEditor.uploadMultiple.subtitle": "拖放最多 50 张图像或点击浏览",
-    "batchEditor.sharedPrompt": "共享提示词",
+    "batchEditor.sharedPrompt.title": "共享提示词",
     "batchEditor.sharedPrompt.placeholder": "输入将应用于所有图像的提示词...",
     "batchEditor.processAll": "处理所有图像",
     "batchEditor.features.parallel.title": "并行处理",
@@ -3427,21 +3449,21 @@ const translations: Record<Language, Record<string, string>> = {
     "apiPage.features.global.description": "分布式基础设施，全球低延迟访问",
     "apiPage.quickStart": "快速入门示例",
     "apiPage.endpoints.title": "API 端点",
-    "apiPage.endpoints.edit": "编辑图像",
+    "apiPage.endpoints.edit.title": "编辑图像",
     "apiPage.endpoints.edit.description": "用自然语言提示转换图像",
-    "apiPage.endpoints.remove": "移除背景",
+    "apiPage.endpoints.remove.title": "移除背景",
     "apiPage.endpoints.remove.description": "使用 AI 精度移除图像背景",
-    "apiPage.endpoints.batch": "批量处理",
+    "apiPage.endpoints.batch.title": "批量处理",
     "apiPage.endpoints.batch.description": "并行处理多张图像",
     "apiPage.pricing.title": "API 定价",
     "apiPage.pricing.description": "简单的基于使用量的定价，无隐藏费用",
-    "apiPage.pricing.free": "免费套餐",
+    "apiPage.pricing.free.title": "免费套餐",
     "apiPage.pricing.free.requests": "100 次请求/月",
     "apiPage.pricing.free.price": "¥0",
-    "apiPage.pricing.pro": "专业版套餐",
+    "apiPage.pricing.pro.title": "专业版套餐",
     "apiPage.pricing.pro.requests": "10,000 次请求/月",
     "apiPage.pricing.pro.price": "¥699/月",
-    "apiPage.pricing.enterprise": "企业版",
+    "apiPage.pricing.enterprise.title": "企业版",
     "apiPage.pricing.enterprise.requests": "无限请求",
     "apiPage.pricing.enterprise.price": "定制",
 

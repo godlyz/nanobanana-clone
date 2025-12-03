@@ -34,7 +34,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useTheme } from '@/lib/theme-context'
-import { useLanguage } from '@/lib/language-context'
+import { useTranslations } from "next-intl"  // 🔥 老王保留：t()函数暂时继续用旧接口
 
 // 推荐状态类型
 type SubmissionStatus = 'pending' | 'approved' | 'rejected'
@@ -62,7 +62,7 @@ interface ProfileSubmissionsProps {
 
 export function ProfileSubmissionsSection({ theme }: ProfileSubmissionsProps) {
   const router = useRouter()
-  const { t } = useLanguage()
+  const t = useTranslations("profile")  // 🔥 老王修复：profile相关翻译在profile命名空间
   const [submissions, setSubmissions] = useState<Submission[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -103,13 +103,13 @@ export function ProfileSubmissionsSection({ theme }: ProfileSubmissionsProps) {
       const result = await response.json()
 
       if (!result.success) {
-        throw new Error(result.error || t('profile.submissions.error.fetchFailed'))
+        throw new Error(result.error || t("submissions.error.fetchFailed"))
       }
 
       setSubmissions(result.data || [])
     } catch (err) {
       console.error('❌ 获取推荐列表失败:', err)
-      setError(err instanceof Error ? err.message : t('profile.submissions.error.unknown'))
+      setError(err instanceof Error ? err.message : t("submissions.error.unknown"))
     } finally {
       setLoading(false)
     }
@@ -117,7 +117,7 @@ export function ProfileSubmissionsSection({ theme }: ProfileSubmissionsProps) {
 
   // 删除推荐
   const handleDelete = async (id: string) => {
-    if (!confirm(t('profile.submissions.confirm.delete'))) {
+    if (!confirm(t("submissions.confirm.delete"))) {
       return
     }
 
@@ -134,16 +134,16 @@ export function ProfileSubmissionsSection({ theme }: ProfileSubmissionsProps) {
       const result = await response.json()
 
       if (!result.success) {
-        throw new Error(result.error || t('profile.submissions.error.deleteFailed'))
+        throw new Error(result.error || t("submissions.error.deleteFailed"))
       }
 
       // 刷新列表
       await fetchSubmissions()
 
-      alert(t('profile.submissions.success.deleted'))
+      alert(t("submissions.success.deleted"))
     } catch (err) {
       console.error('❌ 删除失败:', err)
-      alert(err instanceof Error ? err.message : t('profile.submissions.error.deleteFailed'))
+      alert(err instanceof Error ? err.message : t("submissions.error.deleteFailed"))
     }
   }
 
@@ -160,17 +160,17 @@ export function ProfileSubmissionsSection({ theme }: ProfileSubmissionsProps) {
       case 'pending':
         return <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/20">
           <Clock className="w-3 h-3 mr-1" />
-          {t('profile.submissions.status.pending')}
+          {t("submissions.status.pending")}
         </Badge>
       case 'approved':
         return <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/20">
           <CheckCircle className="w-3 h-3 mr-1" />
-          {t('profile.submissions.status.approved')}
+          {t("submissions.status.approved")}
         </Badge>
       case 'rejected':
         return <Badge variant="outline" className="bg-red-500/10 text-red-600 border-red-500/20">
           <XCircle className="w-3 h-3 mr-1" />
-          {t('profile.submissions.status.rejected')}
+          {t("submissions.status.rejected")}
         </Badge>
     }
   }
@@ -205,9 +205,9 @@ export function ProfileSubmissionsSection({ theme }: ProfileSubmissionsProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <ImageIcon className="w-6 h-6 text-[#D97706]" />
-          <h2 className={`text-xl font-semibold ${textColor}`}>{t('profile.submissions.title')}</h2>
+          <h2 className={`text-xl font-semibold ${textColor}`}>{t("submissions.title")}</h2>
           <span className="text-sm text-muted-foreground">
-            {t('profile.submissions.count').replace('{count}', submissions.length.toString())}
+            {t("submissions.count", { count: submissions.length })}
           </span>
         </div>
 
@@ -222,7 +222,7 @@ export function ProfileSubmissionsSection({ theme }: ProfileSubmissionsProps) {
           ) : (
             <RefreshCw className="w-4 h-4 mr-1" />
           )}
-          {t('profile.submissions.button.refresh')}
+          {t("submissions.button.refresh")}
         </Button>
       </div>
 
@@ -233,7 +233,7 @@ export function ProfileSubmissionsSection({ theme }: ProfileSubmissionsProps) {
             <div className="flex items-start gap-3 text-red-600">
               <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
               <div>
-                <p className="font-medium">{t('profile.submissions.error.loadFailed')}</p>
+                <p className="font-medium">{t("submissions.error.loadFailed")}</p>
                 <p className="text-sm mt-1">{error}</p>
               </div>
             </div>
@@ -250,9 +250,9 @@ export function ProfileSubmissionsSection({ theme }: ProfileSubmissionsProps) {
         <Card className={`${cardBg} border`}>
           <CardContent className="pt-12 pb-12 text-center text-muted-foreground">
             <ImageIcon className="w-12 h-12 mx-auto mb-4 opacity-40" />
-            <p className="mb-4">{t('profile.submissions.empty.message')}</p>
+            <p className="mb-4">{t("submissions.empty.message")}</p>
             <Button onClick={() => router.push('/editor/image-edit')} className="bg-[#F5A623] hover:bg-[#F5A623]/90 text-white">
-              {t('profile.submissions.button.create')}
+              {t("submissions.button.create")}
             </Button>
           </CardContent>
         </Card>
@@ -315,7 +315,7 @@ export function ProfileSubmissionsSection({ theme }: ProfileSubmissionsProps) {
                 {/* 拒绝原因 */}
                 {submission.status === 'rejected' && submission.rejection_reason && (
                   <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-                    <p className="text-sm text-red-600 font-medium mb-1">{t('profile.submissions.rejection.reason')}</p>
+                    <p className="text-sm text-red-600 font-medium mb-1">{t("submissions.rejection.reason")}</p>
                     <p className="text-sm text-red-600/80">{submission.rejection_reason}</p>
                   </div>
                 )}
@@ -330,7 +330,7 @@ export function ProfileSubmissionsSection({ theme }: ProfileSubmissionsProps) {
                       onClick={() => handleDelete(submission.id)}
                     >
                       <Trash2 className="w-4 h-4 mr-1" />
-                      {t('profile.submissions.button.cancel')}
+                      {t("submissions.button.cancel")}
                     </Button>
                   )}
                   {submission.status === 'approved' && (
@@ -339,7 +339,7 @@ export function ProfileSubmissionsSection({ theme }: ProfileSubmissionsProps) {
                       className="flex-1 bg-[#F5A623] hover:bg-[#F5A623]/90 text-white"
                       onClick={() => router.push('/showcase')}
                     >
-                      {t('profile.submissions.button.viewShowcase')}
+                      {t("submissions.button.viewShowcase")}
                     </Button>
                   )}
                 </div>
@@ -355,7 +355,7 @@ export function ProfileSubmissionsSection({ theme }: ProfileSubmissionsProps) {
           <DialogHeader>
             <DialogTitle>{selectedSubmission?.title}</DialogTitle>
             <DialogDescription>
-              {selectedSubmission?.description || t('profile.submissions.preview.noDescription')}
+              {selectedSubmission?.description || t("submissions.preview.noDescription")}
             </DialogDescription>
           </DialogHeader>
           {selectedSubmission && (

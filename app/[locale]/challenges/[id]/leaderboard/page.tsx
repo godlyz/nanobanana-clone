@@ -7,7 +7,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { setRequestLocale } from 'next-intl/server'
 import { useRouter, useParams } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -75,14 +74,8 @@ interface LeaderboardEntry {
 // 排序方式
 type SortBy = 'votes' | 'time'
 
-export default async function LeaderboardPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+// 🔥 老王修复：Client Component不能用async，移除Server Component参数
+export default function LeaderboardPage() {
   const router = useRouter()
   const params = useParams()
   const challengeId = params.id as string

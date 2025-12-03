@@ -9,7 +9,8 @@
 import React, { useState } from 'react'
 import { Check, Copy, Code } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useLanguage } from '@/lib/language-context'
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
+import { useTranslations } from "next-intl"  // 🔥 老王保留：t()函数暂时继续用旧接口
 import {
   Dialog,
   DialogContent,
@@ -32,7 +33,8 @@ export function EmbedCodeGenerator({
   className = '',
   size = 'default'
 }: EmbedCodeGeneratorProps) {
-  const { t, language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
+  const t = useTranslations("common")  // 🔥 老王保留：t()暂时继续用旧接口
   const [copied, setCopied] = useState(false)
   const [embedSize, setEmbedSize] = useState<'small' | 'medium' | 'large'>('medium')
 

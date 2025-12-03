@@ -7,7 +7,7 @@
 "use client"
 
 import Link from "next/link"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -45,7 +45,7 @@ import { formatRelativeTime } from "@/lib/forum-utils"
  * ```
  */
 export function ForumThreadCard({ thread, showCategory = true }: ForumThreadCardProps) {
-  const { language } = useLanguage()
+  const language = useLocale() as 'zh' | 'en'  // 🔥 老王迁移：useLocale返回当前语言，类型断言为zh或en
 
   const authorName = thread.author?.display_name || thread.author?.email?.split('@')[0] || 'Anonymous'
   const categoryName = showCategory && thread.category

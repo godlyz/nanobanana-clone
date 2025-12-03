@@ -2,20 +2,21 @@
 
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
-import Link from "next/link"
-import { useLanguage } from "@/lib/language-context"
+import Link from "next/link" // 🔥 老王临时修复：暂时使用原生Link，因为其他页面还未迁移到[locale]架构
+import { useRouter, usePathname } from "@/i18n/navigation" // 🔥 老王迁移：路由相关从next-intl导入
+import { useTranslations, useLocale } from 'next-intl' // 🔥 老王迁移：从next-intl获取翻译和locale
 import { useTheme } from "@/lib/theme-context"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { TourButton } from "@/components/tour-button"
 import { ChevronDown, User, LogOut, Sun, Moon } from "lucide-react"
 import { useEffect, useState, useMemo } from "react"
 import { createClient } from "@/lib/supabase/client"
-import { useRouter } from "next/navigation"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
 import { UserAvatar } from "@/components/ui/user-avatar" // 🔥 老王优化：使用带 fallback 的头像组件
 
 export function Header() {
-  const { t } = useLanguage()
+  const t = useTranslations('common') // 🔥 老王迁移：使用next-intl的useTranslations
+  const locale = useLocale() // 🔥 老王修复：获取当前locale用于首页链接
   const { theme, toggleTheme } = useTheme()
   const [user, setUser] = useState<SupabaseUser | null>(null)
   const [mounted, setMounted] = useState(false)
@@ -70,7 +71,7 @@ export function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href={`/${locale}`} className="flex items-center gap-2">
             <span className="text-2xl">🍌</span>
             <span className="font-bold text-xl text-foreground">Nano Banana</span>
           </Link>

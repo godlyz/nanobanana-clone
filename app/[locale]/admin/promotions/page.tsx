@@ -7,7 +7,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { setRequestLocale } from 'next-intl/server'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -29,6 +28,8 @@ import {
   Pause
 } from 'lucide-react'
 import CreateRuleDialog from './create-rule-dialog'
+
+// 🔥 老王修复：Client Component不能import server-only函数
 
 // 活动规则接口
 interface PromotionRule {
@@ -66,14 +67,8 @@ interface PromotionRule {
   updated_at: string
 }
 
-export default async function PromotionsPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+// 🔥 老王修复：Client Component不能用async，移除Server Component参数
+export default function PromotionsPage() {
   const [promotions, setPromotions] = useState<PromotionRule[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

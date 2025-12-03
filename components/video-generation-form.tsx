@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Video, Loader2, AlertCircle, Coins, Plus, Info, Sparkles } from "lucide-react"
-import { useLanguage } from "@/lib/language-context"
+import { useTranslations } from "next-intl"  // 🔥 老王保留：t()函数暂时继续用旧接口
 import { ImageUploadCard, type ImageSource } from "./video/image-upload-card"
 import { HistoryImagePickerModal } from "./video/history-image-picker-modal"
 import { usePromptOptimizer } from "@/hooks/use-prompt-optimizer"
@@ -71,7 +71,7 @@ interface VideoGenerationFormProps {
 
 export function VideoGenerationForm({ onSuccess, initialValues }: VideoGenerationFormProps) {
   const router = useRouter()
-  const { t } = useLanguage()
+  const t = useTranslations("video")  // 🔥 老王修复：video相关翻译在video命名空间
 
   // 🔥 基础表单状态（支持初始值回填）
   const [params, setParams] = useState<VideoFormParams>({
@@ -238,7 +238,7 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
   const handleOptimizePrompt = async (field: "prompt" | "negativePrompt") => {
     const promptText = field === "prompt" ? params.prompt : params.negativePrompt
     if (!promptText.trim()) {
-      setError(t("video.form.errorPromptRequired"))
+      setError(t("form.errorPromptRequired"))
       return
     }
 
@@ -266,23 +266,23 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
   const validateForm = (): string | null => {
     // 提示词必填
     if (!params.prompt.trim()) {
-      return t("video.form.errorPromptRequired")
+      return t("form.errorPromptRequired")
     }
 
     // 参考图片模式验证
     if (params.generationMode === "reference-images") {
       if (referenceImages.length === 0) {
-        return t("video.form.errorReferenceImagesRequired")
+        return t("form.errorReferenceImagesRequired")
       }
       if (referenceImages.some(img => !img.url)) {
-        return t("video.form.errorReferenceImagesIncomplete")
+        return t("form.errorReferenceImagesIncomplete")
       }
     }
 
     // 首尾帧模式验证
     if (params.generationMode === "first-last-frame") {
       if (!firstFrame.url || !lastFrame.url) {
-        return t("video.form.errorFirstLastFrameRequired")
+        return t("form.errorFirstLastFrameRequired")
       }
     }
 
@@ -339,11 +339,11 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
       if (!response.ok) {
         // 处理错误
         if (data.error === "INSUFFICIENT_CREDITS") {
-          setError(t("video.form.errorInsufficientCredits"))
+          setError(t("form.errorInsufficientCredits"))
         } else if (data.error === "CONCURRENT_LIMIT_EXCEEDED") {
-          setError(t("video.form.errorConcurrentLimit"))
+          setError(t("form.errorConcurrentLimit"))
         } else {
-          setError(data.message || t("video.form.errorUnknown"))
+          setError(data.message || t("form.errorUnknown"))
         }
         return
       }
@@ -357,7 +357,7 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
 
     } catch (err: any) {
       console.error("❌ Video generation error:", err)
-      setError(t("video.form.errorNetworkError"))
+      setError(t("form.errorNetworkError"))
     } finally {
       setIsGenerating(false)
     }
@@ -370,11 +370,11 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
             <Video className="w-4 h-4" />
-            {t("video.form.title")}
+            {t("form.title")}
           </div>
-          <h1 className="text-3xl font-bold mb-2">{t("video.form.subtitle")}</h1>
+          <h1 className="text-3xl font-bold mb-2">{t("form.subtitle")}</h1>
           <p className="text-muted-foreground">
-            {t("video.form.subtitleDesc")}
+            {t("form.subtitleDesc")}
           </p>
         </div>
 
@@ -390,33 +390,33 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
         <div className="space-y-6 bg-card p-6 rounded-xl border">
           {/* 🔥 生成模式选择（Tabs） */}
           <div className="space-y-2">
-            <Label className="text-base font-medium">{t("video.form.modeLabel")}</Label>
+            <Label className="text-base font-medium">{t("form.modeLabel")}</Label>
             <Tabs value={params.generationMode} onValueChange={(v) => handleModeChange(v as GenerationMode)}>
               <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="text-to-video">{t("video.form.modeTextToVideo")}</TabsTrigger>
-                <TabsTrigger value="reference-images">{t("video.form.modeReferenceImages")}</TabsTrigger>
-                <TabsTrigger value="first-last-frame">{t("video.form.modeFirstLastFrame")}</TabsTrigger>
+                <TabsTrigger value="text-to-video">{t("form.modeTextToVideo")}</TabsTrigger>
+                <TabsTrigger value="reference-images">{t("form.modeReferenceImages")}</TabsTrigger>
+                <TabsTrigger value="first-last-frame">{t("form.modeFirstLastFrame")}</TabsTrigger>
               </TabsList>
 
               {/* 模式说明 */}
               <TabsContent value="text-to-video" className="mt-3">
                 <div className="flex items-start gap-2 p-3 rounded-lg bg-muted/50 text-sm text-muted-foreground">
                   <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  <p>{t("video.form.modeTextToVideoDesc")}</p>
+                  <p>{t("form.modeTextToVideoDesc")}</p>
                 </div>
               </TabsContent>
 
               <TabsContent value="reference-images" className="mt-3">
                 <div className="flex items-start gap-2 p-3 rounded-lg bg-muted/50 text-sm text-muted-foreground">
                   <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  <p>{t("video.form.modeReferenceImagesDesc")}</p>
+                  <p>{t("form.modeReferenceImagesDesc")}</p>
                 </div>
               </TabsContent>
 
               <TabsContent value="first-last-frame" className="mt-3">
                 <div className="flex items-start gap-2 p-3 rounded-lg bg-muted/50 text-sm text-muted-foreground">
                   <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  <p>{t("video.form.modeFirstLastFrameDesc")}</p>
+                  <p>{t("form.modeFirstLastFrameDesc")}</p>
                 </div>
               </TabsContent>
             </Tabs>
@@ -425,14 +425,14 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
           {/* 🔥 图片上传区域（根据模式显示） */}
           {params.generationMode === "reference-images" && (
             <div className="space-y-3">
-              <Label className="text-base font-medium">{t("video.form.referenceImagesLabel")}</Label>
+              <Label className="text-base font-medium">{t("form.referenceImagesLabel")}</Label>
 
               {/* 已添加的参考图片 */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {referenceImages.map((img, index) => (
                   <ImageUploadCard
                     key={index}
-                    title={t("video.form.referenceImageTitle").replace("{index}", String(index + 1))}
+                    title={t("form.referenceImageTitle").replace("{index}", String(index + 1))}
                     imageUrl={img.url}
                     imageSource={img.source}
                     onLocalUpload={(base64) => handleReferenceLocalUpload(index, base64)}
@@ -440,12 +440,12 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
                     onRemove={() => handleRemoveReferenceImage(index)}
                     disabled={isGenerating}
                     t={{
-                      uploadLocal: t("video.imageUpload.uploadLocal"),
-                      selectFromHistory: t("video.imageUpload.selectFromHistory"),
-                      remove: t("video.imageUpload.remove"),
-                      sourceLocal: t("video.imageUpload.sourceLocal"),
-                      sourceHistory: t("video.imageUpload.sourceHistory"),
-                      dragOrClick: t("video.imageUpload.dragOrClick"),
+                      uploadLocal: t("imageUpload.uploadLocal"),
+                      selectFromHistory: t("imageUpload.selectFromHistory"),
+                      remove: t("imageUpload.remove"),
+                      sourceLocal: t("imageUpload.sourceLocal"),
+                      sourceHistory: t("imageUpload.sourceHistory"),
+                      dragOrClick: t("imageUpload.dragOrClick"),
                     }}
                   />
                 ))}
@@ -460,7 +460,7 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
                   className="w-full"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  {t("video.form.addReferenceImage").replace("{count}", String(referenceImages.length))}
+                  {t("form.addReferenceImage").replace("{count}", String(referenceImages.length))}
                 </Button>
               )}
             </div>
@@ -468,11 +468,11 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
 
           {params.generationMode === "first-last-frame" && (
             <div className="space-y-3">
-              <Label className="text-base font-medium">{t("video.form.firstLastFrameLabel")}</Label>
+              <Label className="text-base font-medium">{t("form.firstLastFrameLabel")}</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* 第一帧 */}
                 <ImageUploadCard
-                  title={t("video.form.firstFrameTitle")}
+                  title={t("form.firstFrameTitle")}
                   imageUrl={firstFrame.url}
                   imageSource={firstFrame.source}
                   onLocalUpload={(base64) => handleFrameLocalUpload("first", base64)}
@@ -480,18 +480,18 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
                   onRemove={() => handleFrameRemove("first")}
                   disabled={isGenerating}
                   t={{
-                    uploadLocal: t("video.imageUpload.uploadLocal"),
-                    selectFromHistory: t("video.imageUpload.selectFromHistory"),
-                    remove: t("video.imageUpload.remove"),
-                    sourceLocal: t("video.imageUpload.sourceLocal"),
-                    sourceHistory: t("video.imageUpload.sourceHistory"),
-                    dragOrClick: t("video.imageUpload.dragOrClick"),
+                    uploadLocal: t("imageUpload.uploadLocal"),
+                    selectFromHistory: t("imageUpload.selectFromHistory"),
+                    remove: t("imageUpload.remove"),
+                    sourceLocal: t("imageUpload.sourceLocal"),
+                    sourceHistory: t("imageUpload.sourceHistory"),
+                    dragOrClick: t("imageUpload.dragOrClick"),
                   }}
                 />
 
                 {/* 最后一帧 */}
                 <ImageUploadCard
-                  title={t("video.form.lastFrameTitle")}
+                  title={t("form.lastFrameTitle")}
                   imageUrl={lastFrame.url}
                   imageSource={lastFrame.source}
                   onLocalUpload={(base64) => handleFrameLocalUpload("last", base64)}
@@ -499,12 +499,12 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
                   onRemove={() => handleFrameRemove("last")}
                   disabled={isGenerating}
                   t={{
-                    uploadLocal: t("video.imageUpload.uploadLocal"),
-                    selectFromHistory: t("video.imageUpload.selectFromHistory"),
-                    remove: t("video.imageUpload.remove"),
-                    sourceLocal: t("video.imageUpload.sourceLocal"),
-                    sourceHistory: t("video.imageUpload.sourceHistory"),
-                    dragOrClick: t("video.imageUpload.dragOrClick"),
+                    uploadLocal: t("imageUpload.uploadLocal"),
+                    selectFromHistory: t("imageUpload.selectFromHistory"),
+                    remove: t("imageUpload.remove"),
+                    sourceLocal: t("imageUpload.sourceLocal"),
+                    sourceHistory: t("imageUpload.sourceHistory"),
+                    dragOrClick: t("imageUpload.dragOrClick"),
                   }}
                 />
               </div>
@@ -514,11 +514,11 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
           {/* 提示词 */}
           <div className="space-y-2">
             <Label htmlFor="prompt" className="text-base font-medium">
-              {t("video.form.promptLabel")} <span className="text-destructive">*</span>
+              {t("form.promptLabel")} <span className="text-destructive">*</span>
             </Label>
             <Textarea
               id="prompt"
-              placeholder={t("video.form.promptPlaceholder")}
+              placeholder={t("form.promptPlaceholder")}
               value={params.prompt}
               onChange={(e) => setParams({ ...params, prompt: e.target.value })}
               rows={4}
@@ -551,11 +551,11 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
           {/* 负面提示词 */}
           <div className="space-y-2">
             <Label htmlFor="negativePrompt" className="text-base font-medium">
-              {t("video.form.negativePromptLabel")}
+              {t("form.negativePromptLabel")}
             </Label>
             <Textarea
               id="negativePrompt"
-              placeholder={t("video.form.negativePromptPlaceholder")}
+              placeholder={t("form.negativePromptPlaceholder")}
               value={params.negativePrompt}
               onChange={(e) => setParams({ ...params, negativePrompt: e.target.value })}
               rows={2}
@@ -590,7 +590,7 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
             {/* 宽高比 */}
             <div className="space-y-2">
               <Label htmlFor="aspectRatio" className="text-base font-medium">
-                {t("video.form.aspectRatioLabel")}
+                {t("form.aspectRatioLabel")}
               </Label>
               <Select
                 value={params.aspectRatio}
@@ -603,8 +603,8 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="16:9">{t("video.form.aspectRatio169")}</SelectItem>
-                  <SelectItem value="9:16">{t("video.form.aspectRatio916")}</SelectItem>
+                  <SelectItem value="16:9">{t("form.aspectRatio169")}</SelectItem>
+                  <SelectItem value="9:16">{t("form.aspectRatio916")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -612,7 +612,7 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
             {/* 分辨率 */}
             <div className="space-y-2">
               <Label htmlFor="resolution" className="text-base font-medium">
-                {t("video.form.resolutionLabel")}
+                {t("form.resolutionLabel")}
               </Label>
               <Select
                 value={params.resolution}
@@ -625,8 +625,8 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="720p">{t("video.form.resolution720p")}</SelectItem>
-                  <SelectItem value="1080p">{t("video.form.resolution1080p")}</SelectItem>
+                  <SelectItem value="720p">{t("form.resolution720p")}</SelectItem>
+                  <SelectItem value="1080p">{t("form.resolution1080p")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -634,7 +634,7 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
             {/* 时长 */}
             <div className="space-y-2">
               <Label htmlFor="duration" className="text-base font-medium">
-                {t("video.form.durationLabel")}
+                {t("form.durationLabel")}
               </Label>
               <Select
                 value={params.duration.toString()}
@@ -647,9 +647,9 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="4">{t("video.form.duration4s")}</SelectItem>
-                  <SelectItem value="6">{t("video.form.duration6s")}</SelectItem>
-                  <SelectItem value="8">{t("video.form.duration8s")}</SelectItem>
+                  <SelectItem value="4">{t("form.duration4s")}</SelectItem>
+                  <SelectItem value="6">{t("form.duration6s")}</SelectItem>
+                  <SelectItem value="8">{t("form.duration8s")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -657,7 +657,7 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
 
           {/* 🔥 老王新增：人物生成控制 */}
           <div className="space-y-2">
-            <Label htmlFor="person-generation">{t("video.form.personGenerationLabel")}</Label>
+            <Label htmlFor="person-generation">{t("form.personGenerationLabel")}</Label>
             <Select
               value={params.personGeneration}
               onValueChange={(value: "allow_all" | "allow_adult" | "dont_allow") =>
@@ -669,18 +669,18 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="dont_allow">
-                  {t("video.form.personGenerationDontAllow")}
+                  {t("form.personGenerationDontAllow")}
                 </SelectItem>
                 <SelectItem value="allow_adult">
-                  {t("video.form.personGenerationAllowAdult")}
+                  {t("form.personGenerationAllowAdult")}
                 </SelectItem>
                 <SelectItem value="allow_all">
-                  {t("video.form.personGenerationAllowAll")}
+                  {t("form.personGenerationAllowAll")}
                 </SelectItem>
               </SelectContent>
             </Select>
             <p className="text-sm text-muted-foreground">
-              {t("video.form.personGenerationDescription")}
+              {t("form.personGenerationDescription")}
             </p>
           </div>
 
@@ -688,9 +688,9 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
           <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
             <div className="flex items-center gap-2">
               <Coins className="w-5 h-5 text-primary" />
-              <span className="font-medium">{t("video.form.creditCostLabel")}</span>
+              <span className="font-medium">{t("form.creditCostLabel")}</span>
             </div>
-            <span className="text-2xl font-bold text-primary">{t("video.form.credits").replace("{count}", String(creditCost))}</span>
+            <span className="text-2xl font-bold text-primary">{t("form.credits", { count: creditCost })}</span>
           </div>
 
           {/* 提交按钮 */}
@@ -703,12 +703,12 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
             {isGenerating ? (
               <>
                 <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                {t("video.form.generating")}
+                {t("form.generating")}
               </>
             ) : (
               <>
                 <Video className="w-5 h-5 mr-2" />
-                {t("video.form.generate")}
+                {t("form.generate")}
               </>
             )}
           </Button>
@@ -724,17 +724,17 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
         }}
         onSelect={handleHistoryImageSelect}
         t={{
-          title: t("video.historyPicker.title"),
-          description: t("video.historyPicker.description"),
-          tabAll: t("video.historyPicker.tabAll"),
-          tabTextToImage: t("video.historyPicker.tabTextToImage"),
-          tabImageToImage: t("video.historyPicker.tabImageToImage"),
-          tabToolbox: t("video.historyPicker.tabToolbox"),
-          searchPlaceholder: t("video.historyPicker.searchPlaceholder"),
-          loading: t("video.historyPicker.loading"),
-          empty: t("video.historyPicker.empty"),
-          loadMore: t("video.historyPicker.loadMore"),
-          select: t("video.historyPicker.select"),
+          title: t("historyPicker.title"),
+          description: t("historyPicker.description"),
+          tabAll: t("historyPicker.tabAll"),
+          tabTextToImage: t("historyPicker.tabTextToImage"),
+          tabImageToImage: t("historyPicker.tabImageToImage"),
+          tabToolbox: t("historyPicker.tabToolbox"),
+          searchPlaceholder: t("historyPicker.searchPlaceholder"),
+          loading: t("historyPicker.loading"),
+          empty: t("historyPicker.empty"),
+          loadMore: t("historyPicker.loadMore"),
+          select: t("historyPicker.select"),
         }}
       />
 

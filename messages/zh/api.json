@@ -1,0 +1,112 @@
+{
+  "nowOpen": "现已开放",
+  "heroDescription": "通过我们简单直观的 REST API，将强大的 AI 图像编辑功能集成到您的应用中。几分钟内即可开始创建精美图像。",
+  "getApiKey": "获取 API 密钥",
+  "viewDocumentation": "查看文档",
+  "quickStart": "快速开始",
+  "quickStartDescription": "三个简单步骤开始使用 Nano Banana API",
+  "whyChoose": "为什么选择 Nano Banana API？",
+  "whyChooseDescription": "为开发者设计的强大功能",
+  "codeCopied": "代码已复制！",
+  "copyFailed": "复制失败",
+
+  "features": {
+    "fastResponse": {
+      "title": "闪电般快速",
+      "description": "全球 CDN 分发，平均响应时间低于 2 秒"
+    },
+    "highQuality": {
+      "title": "高质量输出",
+      "description": "最先进的 AI 模型，提供专业级图像生成和编辑"
+    },
+    "easyIntegration": {
+      "title": "轻松集成",
+      "description": "RESTful API 配有全面的文档和多语言 SDK"
+    },
+    "naturalLanguage": {
+      "title": "自然语言",
+      "description": "使用简单的文本描述编辑图像，无需复杂参数"
+    },
+    "enterpriseSecurity": {
+      "title": "企业级安全",
+      "description": "行业标准加密和身份验证，提供 99.9% 正常运行时间 SLA"
+    },
+    "realTimeSupport": {
+      "title": "实时支持",
+      "description": "7×24 小时技术支持和全面的 API 文档"
+    }
+  },
+
+  "auth": {
+    "title": "身份验证",
+    "step1": {
+      "title": "获取您的 API 密钥",
+      "description": "注册并从个人资料页面获取您的 API 密钥"
+    },
+    "step2": {
+      "title": "添加到请求头",
+      "description": "在所有请求的 Authorization 请求头中包含您的 API 密钥"
+    },
+    "step3": {
+      "title": "安全最佳实践",
+      "point1": "切勿在客户端代码中暴露您的 API 密钥",
+      "point2": "定期轮换密钥以增强安全性",
+      "point3": "使用环境变量存储您的密钥",
+      "point4": "在仪表板中监控您的 API 使用情况"
+    }
+  },
+
+  "tabs": {
+    "authentication": "身份验证",
+    "textToImage": "文生图",
+    "imageEdit": "图像编辑",
+    "codeExamples": "代码示例"
+  },
+
+  "textToImage": {
+    "title": "文生图",
+    "endpoint": "POST /api/v1/generate",
+    "parameters": "参数",
+    "response": "响应",
+    "param": {
+      "prompt": "要生成的图像的文本描述",
+      "style": "艺术风格（可选）：realistic（写实）、anime（动漫）、oil-painting（油画）等",
+      "width": "图像宽度（像素，默认：1024）",
+      "height": "图像高度（像素，默认：1024）"
+    }
+  },
+
+  "imageEdit": {
+    "title": "图像编辑",
+    "endpoint": "POST /api/v1/edit",
+    "parameters": "参数",
+    "response": "响应",
+    "param": {
+      "imageUrl": "要编辑的图像的 URL",
+      "prompt": "所需更改的文本描述",
+      "strength": "编辑强度，范围 0.0 到 1.0（默认：0.8）",
+      "preserveScene": "是否保留原始场景（默认：true）"
+    }
+  },
+
+  "table": {
+    "parameter": "参数",
+    "type": "类型",
+    "required": "必需",
+    "description": "描述",
+    "yes": "是",
+    "no": "否"
+  },
+
+  "codeExamples": {
+    "title": "代码示例",
+    "copy": "复制"
+  },
+
+  "cta": {
+    "title": "准备好开始了吗？",
+    "description": "加入数千名使用 Nano Banana API 的开发者",
+    "getApiKey": "获取您的 API 密钥",
+    "contactSales": "联系销售"
+  }
+}

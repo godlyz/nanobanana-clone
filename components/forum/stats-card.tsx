@@ -7,7 +7,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { TrendingUp, TrendingDown, Users, MessageSquare, FileText, BarChart3, RefreshCw } from "lucide-react"
@@ -79,7 +79,7 @@ export function ForumStatsCard({
   days = 30,
   onDataUpdate,
 }: ForumStatsCardProps) {
-  const { language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
   const [data, setData] = useState<ForumAnalytics | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isRefreshing, setIsRefreshing] = useState(false)

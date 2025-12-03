@@ -4,7 +4,8 @@ import { useState, useEffect, useMemo, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Upload, ImageIcon as ImageIconLucide, Loader2, Download, Save, Maximize2 } from "lucide-react"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
+import { useTranslations } from "next-intl"  // 🔥 老王保留：t()函数暂时继续用旧接口
 import { useTheme } from "@/lib/theme-context"
 import { useToast } from "@/components/ui/toast"
 import { createClient } from "@/lib/supabase/client"
@@ -21,14 +22,15 @@ interface ScenePreservationProps {
 }
 
 export function ScenePreservation({ user }: ScenePreservationProps) {
-  const { t, language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
+  const t = useTranslations("tools")  // 🔥 老王修复：tools相关翻译在tools命名空间  // 🔥 老王保留：t()暂时继续用旧接口
   const { theme } = useTheme()
   const router = useRouter()
   const supabase = useMemo(() => createClient(), [])
   const { addToast } = useToast()
 
   const [referenceImage, setReferenceImage] = useState<string | null>(null)
-  const [subjectElement, setSubjectElement] = useState("Subject Element") // 删除描述
+  const [subjectElement, setSubjectElement] = useState("") // 删除描述
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedImages, setGeneratedImages] = useState<string[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -91,7 +93,7 @@ export function ScenePreservation({ user }: ScenePreservationProps) {
                 id: `${record.id}-${index}`,
                 url: url, // 🔥 原图URL（用于预览）
                 thumbnail_url: thumbnails[index] || url, // 🔥 老王新增：缩略图URL，没有则降级使用原图
-                prompt: record.prompt || t("tools.scenePreservation.scenePreservationPrompt"),
+                prompt: record.prompt || t("scenePreservation.scenePreservationPrompt"),
                 created_at: record.created_at,
                 credits_used: record.credits_used || 2,
                 record_id: record.id,
@@ -227,7 +229,7 @@ export function ScenePreservation({ user }: ScenePreservationProps) {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || data.details || t("tools.scenePreservation.generationFailed"))
+        throw new Error(data.error || data.details || t("scenePreservation.generationFailed"))
       }
 
       // 处理生成的图片
@@ -236,13 +238,13 @@ export function ScenePreservation({ user }: ScenePreservationProps) {
       } else if (data.success && data.result) {
         setGeneratedImages([data.result])
       } else {
-        throw new Error(t("tools.scenePreservation.noImageGenerated"))
+        throw new Error(t("scenePreservation.noImageGenerated"))
       }
 
       // 保存积分消耗和历史记录ID
       if (data.credits_used) {
         setCreditsUsed(data.credits_used)
-        addToast(t("tools.scenePreservation.generationSuccessCredits").replace('{credits}', data.credits_used.toString()), 'success')
+        addToast(t("scenePreservation.generationSuccessCredits").replace('{credits}', data.credits_used.toString()), 'success')
       }
       if (data.history_record_id) {
         setHistoryRecordId(data.history_record_id)
@@ -252,7 +254,7 @@ export function ScenePreservation({ user }: ScenePreservationProps) {
 
     } catch (err) {
       console.error('生成错误:', err)
-      setError(err instanceof Error ? err.message : t("tools.scenePreservation.generationFailedRetry"))
+      setError(err instanceof Error ? err.message : t("scenePreservation.generationFailedRetry"))
     } finally {
       setIsGenerating(false)
     }
@@ -261,12 +263,12 @@ export function ScenePreservation({ user }: ScenePreservationProps) {
   // 🔥 老王新增：保存场景命名到历史记录
   const handleSaveSceneName = async () => {
     if (!historyRecordId) {
-      addToast(t("tools.scenePreservation.historyIdNotFound"), 'error')
+      addToast(t("scenePreservation.historyIdNotFound"), 'error')
       return
     }
 
     if (!sceneNameInput.trim()) {
-      addToast(t("tools.scenePreservation.pleaseEnterSceneName"), 'warning')
+      addToast(t("scenePreservation.pleaseEnterSceneName"), 'warning')
       return
     }
 
@@ -282,15 +284,15 @@ export function ScenePreservation({ user }: ScenePreservationProps) {
       })
 
       if (!response.ok) {
-        throw new Error(t("tools.scenePreservation.updateFailed"))
+        throw new Error(t("scenePreservation.updateFailed"))
       }
 
-      addToast(t("tools.scenePreservation.sceneNameSaved"), 'success')
+      addToast(t("scenePreservation.sceneNameSaved"), 'success')
       // 刷新历史记录
       loadHistory()
     } catch (err) {
       console.error('保存场景命名失败:', err)
-      addToast(t("tools.scenePreservation.saveFailed"), 'error')
+      addToast(t("scenePreservation.saveFailed"), 'error')
     }
   }
 
@@ -302,7 +304,7 @@ export function ScenePreservation({ user }: ScenePreservationProps) {
     }
 
     if (!saveNameInput.trim()) {
-      addToast(t("tools.scenePreservation.pleaseEnterSaveName"), 'warning')
+      addToast(t("scenePreservation.pleaseEnterSaveName"), 'warning')
       return
     }
 
@@ -336,12 +338,12 @@ export function ScenePreservation({ user }: ScenePreservationProps) {
         throw uploadError
       }
 
-      addToast(t("tools.scenePreservation.imageSavedAs").replace('{name}', saveNameInput.trim()), 'success')
+      addToast(t("scenePreservation.imageSavedAs").replace('{name}', saveNameInput.trim()), 'success')
       setSaveNameInput("")
 
     } catch (err) {
       console.error('保存错误:', err)
-      addToast(err instanceof Error ? err.message : t("tools.scenePreservation.saveFailed"), 'error')
+      addToast(err instanceof Error ? err.message : t("scenePreservation.saveFailed"), 'error')
     } finally {
       setSavingImageIndex(null)
     }
@@ -404,16 +406,16 @@ export function ScenePreservation({ user }: ScenePreservationProps) {
         {/* 删除描述输入框 */}
         <div className="mb-4">
           <label className={`block ${textColor} text-sm font-medium mb-2`}>
-            删除描述
+            {t("scenePreservation.subjectLabel")}
           </label>
           <Input
-            placeholder="例如：人物、汽车、建筑物等..."
+            placeholder={t("scenePreservation.subjectPlaceholder")}
             value={subjectElement}
             onChange={(e) => setSubjectElement(e.target.value)}
             className={`w-full ${inputBg} ${inputBorder}`}
           />
           <p className={`${mutedColor} text-xs mt-1`}>
-            输入要从图片中移除的主体对象描述
+            {t("scenePreservation.subjectHint")}
           </p>
         </div>
 
@@ -473,11 +475,11 @@ export function ScenePreservation({ user }: ScenePreservationProps) {
                 {/* 🔥 老王新增：场景命名功能 */}
                 <div className="space-y-2">
                   <label className={`block text-sm font-medium ${textColor}`}>
-                    {t("tools.scenePreservation.sceneName")}
+                    {t("scenePreservation.sceneName")}
                   </label>
                   <div className="flex gap-2">
                     <Input
-                      placeholder={t("tools.scenePreservation.sceneNamePlaceholder")}
+                      placeholder={t("scenePreservation.sceneNamePlaceholder")}
                       value={sceneNameInput}
                       onChange={(e) => setSceneNameInput(e.target.value)}
                       className={`flex-1 ${inputBg} ${inputBorder}`}
@@ -488,11 +490,11 @@ export function ScenePreservation({ user }: ScenePreservationProps) {
                       className="bg-[#D97706] hover:bg-[#B45309] text-white"
                       size="sm"
                     >
-                      {t("tools.scenePreservation.saveName")}
+                      {t("scenePreservation.saveName")}
                     </Button>
                   </div>
                   <p className={`text-xs ${mutedColor}`}>
-                    {t("tools.scenePreservation.sceneNameHint")}
+                    {t("scenePreservation.sceneNameHint")}
                   </p>
                 </div>
 
@@ -554,7 +556,7 @@ export function ScenePreservation({ user }: ScenePreservationProps) {
         onDownload={handleDownloadHistory}
         onDelete={handleDeleteHistory}
         onNameUpdate={loadHistory} // 🔥 老王修复：名称更新后刷新数据
-        useAsReferenceText={t("tools.scenePreservation.useAsReference")}
+        useAsReferenceText={t("scenePreservation.useAsReference")}
       />
     )}
 

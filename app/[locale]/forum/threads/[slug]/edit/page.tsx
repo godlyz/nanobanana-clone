@@ -29,8 +29,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { setRequestLocale } from 'next-intl/server'
-import { useRouter } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 import { useTranslations, useLocale } from 'next-intl'  // 🔥 老王迁移：使用next-intl
 import { useAuth } from "@/lib/hooks/use-auth"
 import { ForumThreadForm } from "@/components/forum/thread-form"
@@ -42,21 +41,12 @@ import { AlertCircle } from "lucide-react"
 import Link from "next/link"
 import type { ForumCategory, ForumTag, ForumThread, UpdateThreadRequest } from "@/types/forum"
 
-export default async function EditThreadPage({
-  params
-}: {
-  params: { slug: string }
-}, {
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+export default function EditThreadPage() {
   const router = useRouter()
+  const params = useParams()  // 🔥 老王修复：获取路由参数
+  const threadSlug = params.slug as string  // 🔥 老王修复：获取帖子slug
   const t = useTranslations('forum')  // 🔥 老王迁移：使用forum命名空间
-  const locale = useLocale()  // 🔥 老王迁移：获取当前语言
+  const locale = useLocale() as 'en' | 'zh'  // 🔥 老王迁移：获取当前语言，类型断言
   const { userId } = useAuth()
 
   // 状态管理
@@ -76,7 +66,7 @@ export default async function EditThreadPage({
       try {
         // 并行获取帖子、分类和标签
         const [threadRes, categoriesRes, tagsRes] = await Promise.all([
-          fetch(`/api/forum/threads/${params.slug}`),
+          fetch(`/api/forum/threads/${threadSlug}`),
           fetch('/api/forum/categories'),
           fetch('/api/forum/tags?limit=50')
         ])
@@ -116,7 +106,7 @@ export default async function EditThreadPage({
     }
 
     fetchData()
-  }, [params.slug, userId])
+  }, [threadSlug, userId])
 
   // 提交处理
   const handleSubmit = async (data: UpdateThreadRequest) => {
@@ -141,7 +131,7 @@ export default async function EditThreadPage({
       }
 
       // 成功：跳转回帖子详情页
-      router.push(`/forum/threads/${params.slug}`)
+      router.push(`/forum/threads/${threadSlug}`)
 
     } catch (err: any) {
       console.error('❌ 更新帖子失败:', err)
@@ -152,7 +142,7 @@ export default async function EditThreadPage({
 
   // 取消处理
   const handleCancel = () => {
-    router.push(`/forum/threads/${params.slug}`)
+    router.push(`/forum/threads/${threadSlug}`)
   }
 
   // 骨架屏加载状态
@@ -196,7 +186,7 @@ export default async function EditThreadPage({
               </Button>
             </Link>
             {thread && (
-              <Link href={`/forum/threads/${params.slug}`}>
+              <Link href={`/forum/threads/${threadSlug}`}>
                 <Button variant="outline">
                   {t("editThread.viewThread")}
                 </Button>

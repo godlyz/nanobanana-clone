@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react"
 import dynamic from "next/dynamic"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
@@ -64,7 +64,7 @@ export function MarkdownEditor({
   maxRows,
   disabled = false,
 }: MarkdownEditorProps) {
-  const { language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
   const [activeTab, setActiveTab] = useState<"write" | "preview">("write")
 
   // Markdown 工具函数

@@ -5,7 +5,6 @@
 "use client"
 
 import { useState } from "react"
-import { setRequestLocale } from 'next-intl/server'
 import { useRouter } from "next/navigation"
 import { useTranslations } from 'next-intl'  // 🔥 老王迁移：使用next-intl
 import { Button } from "@/components/ui/button"
@@ -32,14 +31,7 @@ import {
   ArrowLeft
 } from "lucide-react"
 
-export default async function SettingsPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+export default function SettingsPage() {
   const t = useTranslations('settings')  // 🔥 老王迁移：使用settings命名空间
   const tCommon = useTranslations('common')  // 🔥 老王迁移：公共翻译
   const router = useRouter()

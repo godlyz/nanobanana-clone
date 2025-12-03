@@ -16,9 +16,8 @@ import { useImageViewerGestures } from "@/lib/hooks/use-touch-gestures"
 export default function ImageEditorPage() {
   const [prompt, setPrompt] = useState("")
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
-  // 🔥 老王迁移：使用多个命名空间
+  // 🔥 老王迁移：使用editor命名空间
   const tEditor = useTranslations('editor')
-  const tImageEditor = useTranslations('imageEditor')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // 🔥 老王添加：Touch Gesture 支持
@@ -55,9 +54,9 @@ export default function ImageEditorPage() {
           <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-3 mb-4">
               <ImageIcon className="w-8 h-8 text-primary" />
-              <h1 className="text-4xl font-bold text-foreground">{tImageEditor("title")}</h1>
+              <h1 className="text-4xl font-bold text-foreground">{tEditor("title")}</h1>
             </div>
-            <p className="text-muted-foreground text-lg">{tImageEditor("heroDescription")}</p>
+            <p className="text-muted-foreground text-lg">{tEditor("heroDescription")}</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">

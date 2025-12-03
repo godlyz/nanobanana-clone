@@ -1,0 +1,39 @@
+{
+  "title": "Settings",
+  "description": "Manage your account settings and data privacy options",
+  "export": {
+    "title": "Export My Data",
+    "description": "Per GDPR Article 20, you can download a copy of all your personal data",
+    "includes": "Your data export includes:",
+    "profile": "Profile information",
+    "subscriptions": "Subscription and payment records",
+    "generations": "Generated image history",
+    "social": "Social interactions and comments",
+    "achievements": "Achievements and badges",
+    "button": "Export Data",
+    "exporting": "Exporting...",
+    "success": "Export successful"
+  },
+  "delete": {
+    "title": "Delete Account",
+    "description": "Permanently delete your account and all related data",
+    "warning": "Warning",
+    "warningText": "After deleting your account, all your data will be permanently deleted and cannot be recovered. This action is irreversible.",
+    "button": "Delete My Account",
+    "confirmTitle": "Confirm Account Deletion",
+    "confirmDescription": "This action will permanently delete your account and all related data. Please consider carefully before proceeding.",
+    "reasonLabel": "Reason for deletion (optional)",
+    "reasonPlaceholder": "Please tell us why you're deleting your account...",
+    "confirmLabel": "Confirm deletion",
+    "deleting": "Deleting...",
+    "confirmButton": "Confirm Account Deletion",
+    "success": "Your account has been successfully deleted"
+  },
+  "error": {
+    "exportFailed": "Data export failed",
+    "exportFailedRetry": "Data export failed, please try again later",
+    "confirmTextInvalid": "Please enter confirmation text",
+    "deleteFailed": "Account deletion failed",
+    "deleteFailedContact": "Account deletion failed, please contact support"
+  }
+}

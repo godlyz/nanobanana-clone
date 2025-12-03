@@ -752,8 +752,8 @@ export default function HistoryPage() {
           <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
             <p className={`${mutedColor} text-sm`}>
               {bulkMode
-                ? t("selectedCount").replace('{count}', selectedCount.toString())
-                : t("totalCount").replace('{count}', activeRecords.length.toString())}
+                ? t("selectedCount", { count: selectedCount.toString() })
+                : t("totalCount", { count: activeRecords.length.toString() })}
             </p>
             <div className="flex items-center gap-2">
               {bulkMode && (
@@ -779,7 +779,7 @@ export default function HistoryPage() {
 
           {bulkMode && (
             <div className={`${cardBg} border border-[#64748B]/20 rounded-lg p-4 mb-6 flex flex-wrap items-center gap-3 justify-between`}>
-              <div className={`${textColor} text-sm`}>{t("selectedItems").replace('{count}', selectedCount.toString())}</div>
+              <div className={`${textColor} text-sm`}>{t("selectedItems", { count: selectedCount.toString() })}</div>
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"

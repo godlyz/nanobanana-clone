@@ -1,0 +1,31 @@
+{
+  "title": "Welcome Back",
+  "subtitleWithEmail": "Sign in to your account using email/username or social login",
+  "identifier": "Email or Username",
+  "identifierPlaceholder": "Enter your email or username",
+  "password": "Password",
+  "passwordPlaceholder": "Enter your password",
+  "forgotPassword": "Forgot password?",
+  "graphicVerification": "Verification",
+  "signin": "Sign In",
+  "signingIn": "Signing in...",
+  "noaccount": "Don't have an account?",
+  "signup": "Sign up",
+  "useGoogle": "Continue with Google",
+  "useGithub": "Continue with GitHub",
+  "redirecting": "Redirecting...",
+  "orEmailLogin": "Or continue with email",
+  "sessionSecurityHint": "Your session will be securely stored and encrypted. We never share your login information with third parties.",
+  "success": {
+    "loggedIn": "Login successful! Redirecting..."
+  },
+  "error": {
+    "requiredFields": "Please fill in all required fields",
+    "graphicVerification": "Please complete the verification",
+    "graphicVerificationFailed": "Verification failed, please try again",
+    "loginFailed": "Login failed",
+    "loginFailedRetry": "Login failed, please try again",
+    "oauthFailed": "{provider} login failed",
+    "oauthUrlFailed": "Failed to get authorization URL"
+  }
+}

@@ -48,6 +48,7 @@ import { getTransactionDescription } from "@/lib/credit-transaction-i18n"  // �
 
 export default function ProfilePage() {
   const t = useTranslations('profile')  // 🔥 老王迁移：使用profile命名空间
+  const tCredits = useTranslations('credits')  // 🔥 老王修复：credits命名空间用于交易记录翻译
   const { theme } = useTheme()
   const [showApiKey, setShowApiKey] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
@@ -268,14 +269,14 @@ export default function ProfilePage() {
                           {t("credits.expiringWarning")}
                         </p>
                         <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
-                          {t("credits.expiringMessage").replace('{credits}', credits.expiringSoon.credits.toString())}
+                          {t("credits.expiringMessage", { credits: credits.expiringSoon.credits.toString() })}
                         </p>
                         {credits.expiringSoon.items && credits.expiringSoon.items.length > 0 && (
                           <div className="mt-3 space-y-2">
                             {credits.expiringSoon.items.map((item, index) => (
                               <div key={item.date ?? `unknown-${index}`} className="flex items-center justify-between rounded-md bg-white/70 px-3 py-2 text-xs text-amber-800 dark:bg-amber-900/40 dark:text-amber-100">
                                 <span>
-                                  {item.date ? t("credits.expiresOn").replace('{date}', formatDateOnly(item.date)) : t("credits.expiryTBD")}
+                                  {item.date ? t("credits.expiresOn", { date: formatDateOnly(item.date) }) : t("credits.expiryTBD")}
                                 </span>
                                 <span className="font-semibold">{item.credits} {t("credits.unit")}</span>
                               </div>
@@ -367,7 +368,7 @@ export default function ProfilePage() {
                       <div className="flex items-center gap-2">
                         {credits?.pagination && (
                           <span className="text-xs text-muted-foreground">
-                            {t("credits.totalRecords").replace('{count}', credits.pagination.totalCount.toString())}
+                            {t("credits.totalRecords", { count: credits.pagination.totalCount.toString() })}
                           </span>
                         )}
                       </div>
@@ -417,7 +418,7 @@ export default function ProfilePage() {
                                 </div>
                                 <div>
                                   <p className={`font-medium ${textColor} text-sm`}>
-                                    {getTransactionDescription(transaction as any, t)}
+                                    {getTransactionDescription(transaction as any, tCredits)}
                                   </p>
                                   <p className="text-xs text-muted-foreground">
                                     {formatDate(transaction.timestamp)}
@@ -452,7 +453,7 @@ export default function ProfilePage() {
                                 </>
                               ) : (
                                 <>
-                                  {t("credits.loadMore").replace('{current}', credits.pagination.currentPage.toString()).replace('{total}', credits.pagination.totalPages.toString())}
+                                  {t("credits.loadMore", { current: credits.pagination.currentPage.toString(), total: credits.pagination.totalPages.toString() })}
                                 </>
                               )}
                             </Button>
@@ -538,10 +539,10 @@ export default function ProfilePage() {
                                 </p>
                               )}
                               <div className="text-sm text-muted-foreground">
-                                {t("apiKeys.createdAt").replace('{date}', formatDate(apiKey.createdAt))}
+                                {t("apiKeys.createdAt", { date: formatDate(apiKey.createdAt) })}
                                 {apiKey.lastUsed && (
                                   <span className="ml-4">
-                                    {t("apiKeys.lastUsed").replace('{date}', formatDate(apiKey.lastUsed))}
+                                    {t("apiKeys.lastUsed", { date: formatDate(apiKey.lastUsed) })}
                                   </span>
                                 )}
                               </div>
@@ -644,7 +645,7 @@ export default function ProfilePage() {
                 <Label htmlFor="api-key-name">{t("apiKeys.dialog.nameLabel")}</Label>
                 <Input
                   id="api-key-name"
-                  placeholder={t("apiKeys.dialog.namePlaceholder").replace('{number}', (apiKeys.length + 1).toString())}
+                  placeholder={t("apiKeys.dialog.namePlaceholder", { number: (apiKeys.length + 1).toString() })}
                   value={newApiKeyName}
                   onChange={(event) => setNewApiKeyName(event.target.value)}
                   maxLength={60}

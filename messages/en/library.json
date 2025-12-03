@@ -1,0 +1,111 @@
+{
+  "subjects": {
+    "loginRequired": "Login Required",
+    "loginMessage": "Please login to access subject library",
+    "loginButton": "Login",
+    "title": "Subject Library",
+    "subtitle": "Manage your subject images for character consistency and batch creation",
+    "searchPlaceholder": "Search subject name or description...",
+    "filter": {
+      "all": "All",
+      "person": "Person",
+      "object": "Object",
+      "pet": "Pet",
+      "other": "Other"
+    },
+    "uploadButton": "Upload Subject",
+    "empty": {
+      "title": "Subject Library is Empty",
+      "message": "Upload your first subject image to start creating"
+    },
+    "uploadModal": {
+      "title": "Upload Subject",
+      "clickToUpload": "Click to upload image",
+      "name": "Name",
+      "nameRequired": "* Required",
+      "namePlaceholder": "Enter subject name",
+      "description": "Description (Optional)",
+      "descriptionPlaceholder": "Add some description for identification",
+      "type": "Type",
+      "typeRequired": "* Required",
+      "cancelButton": "Cancel",
+      "uploadingButton": "Uploading...",
+      "uploadButton": "Upload"
+    },
+    "deleteModal": {
+      "title": "Confirm Delete",
+      "message": "Cannot be recovered after deletion. Are you sure you want to delete this subject?",
+      "cancelButton": "Cancel",
+      "deleteButton": "Delete"
+    },
+    "error": {
+      "fileTooLarge": "File too large, please upload image smaller than 5MB",
+      "invalidFileType": "Please upload an image file",
+      "uploadFailed": "Upload failed, please try again",
+      "deleteFailed": "Delete failed, please try again",
+      "fetchFailed": "Failed to fetch subject library"
+    },
+    "types": {
+      "person": "Person",
+      "object": "Object",
+      "pet": "Pet",
+      "other": "Other"
+    }
+  },
+  "scenes": {
+    "loginRequired": "Login Required",
+    "loginMessage": "Please login to access scene library",
+    "loginButton": "Login",
+    "title": "Scene Library",
+    "subtitle": "Manage your scene images for scene preservation and batch creation",
+    "searchPlaceholder": "Search scene name, description or tags...",
+    "filter": {
+      "all": "All",
+      "indoor": "Indoor",
+      "outdoor": "Outdoor",
+      "abstract": "Abstract",
+      "other": "Other"
+    },
+    "uploadButton": "Upload Scene",
+    "empty": {
+      "title": "Scene Library is Empty",
+      "message": "Upload your first scene image to start creating"
+    },
+    "uploadModal": {
+      "title": "Upload Scene",
+      "clickToUpload": "Click to upload image",
+      "supportedFormats": "Supports PNG, JPG, WEBP (Max 5MB)",
+      "name": "Name",
+      "nameRequired": "* Required",
+      "namePlaceholder": "Enter scene name",
+      "description": "Description (Optional)",
+      "descriptionPlaceholder": "Add some description for identification",
+      "type": "Type",
+      "typeRequired": "* Required",
+      "tags": "Tags (Optional)",
+      "tagsPlaceholder": "Press Enter to add tags",
+      "cancelButton": "Cancel",
+      "uploadingButton": "Uploading...",
+      "uploadButton": "Upload"
+    },
+    "deleteModal": {
+      "title": "Confirm Delete",
+      "message": "Cannot be recovered after deletion. Are you sure you want to delete this scene?",
+      "cancelButton": "Cancel",
+      "deleteButton": "Delete"
+    },
+    "error": {
+      "fileTooLarge": "File too large, please upload image smaller than 5MB",
+      "invalidFileType": "Please upload an image file",
+      "uploadFailed": "Upload failed, please try again",
+      "deleteFailed": "Delete failed, please try again",
+      "fetchFailed": "Failed to fetch scene library"
+    },
+    "types": {
+      "indoor": "Indoor",
+      "outdoor": "Outdoor",
+      "abstract": "Abstract",
+      "other": "Other"
+    }
+  }
+}

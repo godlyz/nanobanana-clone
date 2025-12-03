@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Upload, X, MessageCircle, Sparkles, Image as ImageIcon, Loader2, Clock, Maximize2, RefreshCw, Download, AlertCircle } from "lucide-react"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
+import { useTranslations } from "next-intl"  // 🔥 老王保留：t()函数暂时继续用旧接口
 import { useTheme } from "@/lib/theme-context"
 import { createClient } from "@/lib/supabase/client"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
@@ -30,7 +31,8 @@ interface ChatMessage {
 }
 
 export function ChatEdit({ user }: ChatEditProps) {
-  const { t, language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
+  const t = useTranslations("tools")  // 🔥 老王修复：tools相关翻译在tools命名空间  // 🔥 老王保留：t()暂时继续用旧接口
   const { theme } = useTheme()
   const supabase = useMemo(() => createClient(), [])
 
@@ -151,7 +153,7 @@ export function ChatEdit({ user }: ChatEditProps) {
         loadHistory() // 刷新历史记录
       }
     } catch (error) {
-      console.error(t("tools.chatEdit.deleteHistoryFailed"), error)
+      console.error(t("chatEdit.deleteHistoryFailed"), error)
     }
   }
 
@@ -170,7 +172,7 @@ export function ChatEdit({ user }: ChatEditProps) {
     const assistantMessage: ChatMessage = {
       id: Date.now().toString(),
       type: "assistant",
-      content: t("tools.chatEdit.previousImage"),
+      content: t("chatEdit.previousImage"),
       image: imageUrl,
       timestamp: new Date()
     }
@@ -239,7 +241,7 @@ export function ChatEdit({ user }: ChatEditProps) {
       const loginMessage: ChatMessage = {
         id: Date.now().toString(),
         type: "assistant",
-        content: t("tools.chatEdit.loginFirst"),
+        content: t("chatEdit.loginFirst"),
         timestamp: new Date()
       }
       setChatHistory(prev => [...prev, loginMessage])
@@ -251,7 +253,7 @@ export function ChatEdit({ user }: ChatEditProps) {
       const validationMessage: ChatMessage = {
         id: Date.now().toString(),
         type: "assistant",
-        content: t("tools.chatEdit.uploadImageAndPrompt"),
+        content: t("chatEdit.uploadImageAndPrompt"),
         timestamp: new Date()
       }
       setChatHistory(prev => [...prev, validationMessage])
@@ -294,11 +296,11 @@ export function ChatEdit({ user }: ChatEditProps) {
         const generatedImageUrl = data.image || data.result
 
         // 🔥 老王重构：成功消息整合到对话内容中
-        const creditsInfo = data.credits_used ? `\n\n${t("tools.chatEdit.creditsUsed").replace('{credits}', data.credits_used.toString())}` : ""
+        const creditsInfo = data.credits_used ? `\n\n${t("chatEdit.creditsUsed").replace('{credits}', data.credits_used.toString())}` : ""
         const assistantMessage: ChatMessage = {
           id: (Date.now() + 1).toString(),
           type: "assistant",
-          content: `${data.text || t("tools.chatEdit.editComplete")}${creditsInfo}`,
+          content: `${data.text || t("chatEdit.editComplete")}${creditsInfo}`,
           image: generatedImageUrl,
           timestamp: new Date()
         }
@@ -326,7 +328,7 @@ export function ChatEdit({ user }: ChatEditProps) {
         const errorMessage: ChatMessage = {
           id: Date.now().toString(),
           type: "assistant",
-          content: `${t("tools.chatEdit.editFailedPrefix")}${data.error || t("tools.chatEdit.unknownError")}`,
+          content: `${t("chatEdit.editFailedPrefix")}${data.error || t("chatEdit.unknownError")}`,
           timestamp: new Date()
         }
         setChatHistory(prev => [...prev, errorMessage])
@@ -337,7 +339,7 @@ export function ChatEdit({ user }: ChatEditProps) {
       const errorMessage: ChatMessage = {
         id: Date.now().toString(),
         type: "assistant",
-        content: t("tools.chatEdit.networkError"),
+        content: t("chatEdit.networkError"),
         timestamp: new Date()
       }
       setChatHistory(prev => [...prev, errorMessage])
@@ -508,7 +510,7 @@ export function ChatEdit({ user }: ChatEditProps) {
                       ) : (
                         <>
                           <Sparkles className="w-3 h-3 mr-1" />
-                          {t("chatEdit.startEditing")} ({t("tools.chatEdit.costsCredits")})
+                          {t("chatEdit.startEditing")} ({t("chatEdit.costsCredits")})
                         </>
                       )}
                     </Button>

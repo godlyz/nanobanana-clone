@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react"
 import Joyride, { CallBackProps, STATUS, EVENTS, Step, Styles } from "react-joyride"
-import { useLanguage } from "./language-context"
+import { useLanguage } from "@/lib/language-context"  // 🔥 老王修复：使用兼容层的 useLanguage
 import {
   trackTourStart,
   trackTourComplete,
@@ -392,7 +392,7 @@ const getTourSteps = (type: TourType, language: "en" | "zh"): TourStep[] => {
 }
 
 export function TourProvider({ children }: { children: ReactNode }) {
-  const { language } = useLanguage()
+  const { language } = useLanguage()  // 🔥 老王修复：使用兼容层的 useLanguage（等待完整迁移到 [locale] 架构）
   const [runTour, setRunTour] = useState(false)
   const [currentTourType, setCurrentTourType] = useState<TourType>("home")
   const [steps, setSteps] = useState<TourStep[]>([])

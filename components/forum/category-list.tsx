@@ -7,7 +7,7 @@
 "use client"
 
 import Link from "next/link"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { MessageSquare, Users } from "lucide-react"
@@ -34,7 +34,7 @@ import { cn } from "@/lib/utils"
  * ```
  */
 export function ForumCategoryList({ categories, currentCategoryId }: ForumCategoryListProps) {
-  const { language, t } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
 
   if (!categories || categories.length === 0) {
     return (

@@ -5,7 +5,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { setRequestLocale } from 'next-intl/server'
 import { useRouter } from "next/navigation"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
@@ -42,14 +41,7 @@ interface FeedItem {
   created_at: string
 }
 
-export default async function FeedPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+export default function FeedPage() {
   const t = useTranslations('feed')  // 🔥 老王迁移：使用feed命名空间
   const tc = useTranslations('common')  // 🔥 老王迁移：用于common.button.retry
   const router = useRouter()

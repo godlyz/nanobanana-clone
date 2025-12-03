@@ -14,7 +14,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { setRequestLocale } from 'next-intl/server'
 import dynamic from "next/dynamic"
 import { useSearchParams } from "next/navigation"
 import { useTranslations, useLocale } from 'next-intl'  // 🔥 老王迁移：使用next-intl
@@ -58,14 +57,7 @@ const Footer = dynamic(() => import("@/components/footer").then(m => ({ default:
  * - 创建新帖子按钮
  * - 响应式布局
  */
-export default async function ForumPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+export default function ForumPage() {
   const t = useTranslations('forum')  // 🔥 老王迁移：使用forum命名空间
   const locale = useLocale()  // 🔥 老王迁移：获取当前语言（用于动态数据）
   const searchParams = useSearchParams()

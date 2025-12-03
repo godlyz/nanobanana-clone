@@ -125,6 +125,9 @@ export default async function RootLayout({
           fetchPriority="high"
         />
 
+        {/* 🔥 老王性能优化：DNS预解析，减少CSS chunk加载延迟 */}
+        <link rel="dns-prefetch" href="/_next/" />
+
         {/* 🔥 老王优化：预连接到关键域名，减少 DNS 查询和 TLS 握手时间 */}
         {/* Supabase 预连接（用户认证、数据存储、图片上传） - 桌面端优先 */}
         <link rel="preconnect" href="https://gtpvyxrgkuccgpcaeeyt.supabase.co" media="(min-width: 768px)" />

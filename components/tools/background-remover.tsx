@@ -4,7 +4,8 @@ import { useState, useEffect, useMemo, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Upload, ImageIcon as ImageIconLucide, Loader2, Download, Save } from "lucide-react"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
+import { useTranslations } from "next-intl"  // 🔥 老王保留：t()函数暂时继续用旧接口
 import { useTheme } from "@/lib/theme-context"
 import { useToast } from "@/components/ui/toast"
 import { createClient } from "@/lib/supabase/client"
@@ -20,7 +21,8 @@ interface BackgroundRemoverProps {
 }
 
 export function BackgroundRemover({ user }: BackgroundRemoverProps) {
-  const { t, language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
+  const t = useTranslations("tools")  // 🔥 老王修复：tools相关翻译在tools命名空间  // 🔥 老王保留：t()暂时继续用旧接口
   const { theme } = useTheme()
   const router = useRouter()
   const supabase = useMemo(() => createClient(), [])
@@ -177,7 +179,7 @@ export function BackgroundRemover({ user }: BackgroundRemoverProps) {
   // 生成背景移除图片
   const handleGenerate = async () => {
     if (!referenceImage) {
-      setError(t("tools.backgroundRemover.pleaseUploadImage"))
+      setError(t("backgroundRemover.pleaseUploadImage"))
       return
     }
 
@@ -208,7 +210,7 @@ export function BackgroundRemover({ user }: BackgroundRemoverProps) {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || data.details || t("tools.backgroundRemover.generateFailed"))
+        throw new Error(data.error || data.details || t("backgroundRemover.generateFailed"))
       }
 
       if (data.success && data.result) {
@@ -220,12 +222,12 @@ export function BackgroundRemover({ user }: BackgroundRemoverProps) {
         // 🔥 老王新增：生成成功后自动刷新历史记录
         setTimeout(() => loadHistory(), 1000)
       } else {
-        throw new Error(t("tools.backgroundRemover.noImageGenerated"))
+        throw new Error(t("backgroundRemover.noImageGenerated"))
       }
 
     } catch (err) {
       console.error('生成错误:', err)
-      setError(err instanceof Error ? err.message : t("tools.backgroundRemover.generateFailedRetry"))
+      setError(err instanceof Error ? err.message : t("backgroundRemover.generateFailedRetry"))
     } finally {
       setIsGenerating(false)
     }
@@ -337,7 +339,7 @@ export function BackgroundRemover({ user }: BackgroundRemoverProps) {
         <div className={`${cardBg} border ${cardBorder} rounded-lg p-6`}>
         <div className="flex items-center gap-2 mb-4">
           <ImageIconLucide className="w-5 h-5 text-[#D97706]" />
-          <h2 className={`${textColor} font-semibold`}>{t("tools.backgroundRemover.referenceImage")}</h2>
+          <h2 className={`${textColor} font-semibold`}>{t("backgroundRemover.referenceImage")}</h2>
         </div>
 
         {referenceImage ? (
@@ -357,14 +359,14 @@ export function BackgroundRemover({ user }: BackgroundRemoverProps) {
               className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
               onClick={removeReferenceImage}
             >
-              {t("tools.backgroundRemover.remove")}
+              {t("backgroundRemover.remove")}
             </Button>
           </div>
         ) : (
           <label className={`border-2 border-dashed ${cardBorder} rounded-lg p-12 flex flex-col items-center justify-center cursor-pointer hover:border-[#D97706] transition-colors mb-6`}>
             <Upload className="w-12 h-12 text-[#D97706] mb-4" />
-            <p className={`${textColor} font-medium mb-1`}>{t("tools.backgroundRemover.clickToUpload")}</p>
-            <p className={`${mutedColor} text-sm`}>{t("tools.backgroundRemover.supportedFormats")}</p>
+            <p className={`${textColor} font-medium mb-1`}>{t("backgroundRemover.clickToUpload")}</p>
+            <p className={`${mutedColor} text-sm`}>{t("backgroundRemover.supportedFormats")}</p>
             <input
               type="file"
               className="hidden"
@@ -383,10 +385,10 @@ export function BackgroundRemover({ user }: BackgroundRemoverProps) {
           {isGenerating ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              {t("tools.backgroundRemover.generating")}
+              {t("backgroundRemover.generating")}
             </>
           ) : (
-            `${t("tools.backgroundRemover.removeBackground")} (${t("tools.backgroundRemover.costsCredits")})`
+            `${t("backgroundRemover.removeBackground")} (${t("backgroundRemover.costsCredits")})`
           )}
         </Button>
 
@@ -401,7 +403,7 @@ export function BackgroundRemover({ user }: BackgroundRemoverProps) {
       <div className={`${cardBg} border ${cardBorder} rounded-lg p-6`}>
         <div className="flex items-center gap-2 mb-4">
           <ImageIconLucide className="w-5 h-5 text-[#D97706]" />
-          <h2 className={`${textColor} font-semibold`}>{t("tools.backgroundRemover.generatedResult")}</h2>
+          <h2 className={`${textColor} font-semibold`}>{t("backgroundRemover.generatedResult")}</h2>
         </div>
 
         {generatedImages.length > 0 ? (
@@ -448,7 +450,7 @@ export function BackgroundRemover({ user }: BackgroundRemoverProps) {
                 {/* 保存到Storage功能 */}
                 <div className="flex gap-2">
                   <Input
-                    placeholder={t("tools.backgroundRemover.enterSaveName")}
+                    placeholder={t("backgroundRemover.enterSaveName")}
                     value={saveNameInput}
                     onChange={(e) => setSaveNameInput(e.target.value)}
                     className={`flex-1 ${inputBg} ${inputBorder}`}
@@ -480,7 +482,7 @@ export function BackgroundRemover({ user }: BackgroundRemoverProps) {
           <div className={`border-2 border-dashed ${cardBorder} rounded-lg p-12 flex flex-col items-center justify-center`}>
             <ImageIconLucide className="w-12 h-12 text-gray-400 mb-4" />
             <p className={`${mutedColor} text-center`}>
-              {t("tools.backgroundRemover.uploadAndGenerate")}
+              {t("backgroundRemover.uploadAndGenerate")}
             </p>
           </div>
         )}

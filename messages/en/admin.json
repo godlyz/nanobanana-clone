@@ -1,0 +1,18 @@
+{
+  "admin": {
+    "login": {
+      "title": "Admin Panel Login",
+      "subtitle": "Sign in with admin account",
+      "email": "Email Address",
+      "emailPlaceholder": "admin@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "••••••••",
+      "signingIn": "Signing in...",
+      "signin": "Sign In",
+      "adminOnly": "This login page is for administrators only",
+      "visitHomepage": "To access the user portal, please visit",
+      "homepage": "Homepage",
+      "checkingStatus": "Checking login status..."
+    }
+  }
+}

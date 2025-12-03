@@ -24,8 +24,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { setRequestLocale } from 'next-intl/server'
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useParams } from "next/navigation"
 import { useTranslations, useLocale } from 'next-intl'  // 🔥 老王迁移：使用next-intl
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -48,21 +47,12 @@ import type {
   GetThreadsParams,
 } from "@/types/forum"
 
-export default async function CategoryPage({
-  params
-}: {
-  params: { slug: string }
-}, {
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+export default function CategoryPage() {
   const t = useTranslations('forum')  // 🔥 老王迁移：使用forum命名空间
   const locale = useLocale()  // 🔥 老王迁移：获取当前语言
   const searchParams = useSearchParams()
+  const params = useParams()  // 🔥 老王修复：获取路由参数
+  const categorySlug = params.slug as string  // 🔥 老王修复：获取分类slug
 
   // 状态管理
   const [category, setCategory] = useState<ForumCategory | null>(null)
@@ -89,7 +79,7 @@ export default async function CategoryPage({
         // 并行获取分类列表和当前分类
         const [categoriesRes, categoryRes] = await Promise.all([
           fetch('/api/forum/categories'),
-          fetch(`/api/forum/categories/${params.slug}`)
+          fetch(`/api/forum/categories/${categorySlug}`)
         ])
 
         // 处理分类列表
@@ -168,7 +158,7 @@ export default async function CategoryPage({
     }
 
     fetchData()
-  }, [params.slug, tagSlug, searchQuery, sort, page])
+  }, [categorySlug, tagSlug, searchQuery, sort, page])
 
   // 当前标签对象
   const currentTag = tagSlug

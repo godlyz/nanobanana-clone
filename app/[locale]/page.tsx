@@ -8,6 +8,7 @@ import { setRequestLocale } from "next-intl/server"
 import { Header } from "@/components/header"
 import { Hero } from "@/components/hero"
 import { EditorSection } from "@/components/editor-section"
+import { Showcase } from "@/components/showcase" // 🔥 老王修复LCP：Showcase改回静态导入，因为它包含首屏LCP元素
 
 // 动态导入非首屏组件（代码分割）
 const FirstVisitPrompt = dynamic(() => import("@/components/tour-button").then(m => ({ default: m.FirstVisitPrompt })), {
@@ -16,9 +17,10 @@ const FirstVisitPrompt = dynamic(() => import("@/components/tour-button").then(m
 const Features = dynamic(() => import("@/components/features").then(m => ({ default: m.Features })), {
   loading: () => <div className="min-h-[400px] flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F59E0B]"></div></div>
 })
-const Showcase = dynamic(() => import("@/components/showcase").then(m => ({ default: m.Showcase })), {
-  loading: () => <div className="min-h-[400px] flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F59E0B]"></div></div>
-})
+// 🔥 老王修复LCP：移除Showcase的动态导入，因为它包含首屏最大元素（LCP图片）
+// const Showcase = dynamic(() => import("@/components/showcase").then(m => ({ default: m.Showcase })), {
+//   loading: () => <div className="min-h-[400px] flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F59E0B]"></div></div>
+// })
 const Testimonials = dynamic(() => import("@/components/testimonials").then(m => ({ default: m.Testimonials })), {
   loading: () => <div className="min-h-[300px] flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F59E0B]"></div></div>
 })

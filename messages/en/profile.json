@@ -1,0 +1,359 @@
+{
+  "credits": {
+    "starter": {
+      "name": "Starter Pack",
+      "description": "Perfect for light usage and trying out",
+      "feature1": "100 AI generation credits",
+      "feature2": "Basic feature access",
+      "feature3": "Standard quality output",
+      "feature4": "7-day validity",
+      "badge": "Most Popular"
+    },
+    "growth": {
+      "name": "Growth Pack",
+      "description": "Suitable for moderate usage",
+      "feature1": "450 AI generation credits",
+      "feature2": "Advanced feature access",
+      "feature3": "High quality output",
+      "feature4": "30-day validity",
+      "feature5": "Priority processing queue",
+      "badge": "Best Value"
+    },
+    "professional": {
+      "name": "Professional Pack",
+      "description": "For professional users",
+      "feature1": "1000 AI generation credits",
+      "feature2": "All features access",
+      "feature3": "Ultra-high quality output",
+      "feature4": "60-day validity",
+      "feature5": "Priority processing queue",
+      "feature6": "Batch processing",
+      "badge": "Pro Recommended"
+    },
+    "enterprise": {
+      "name": "Enterprise Pack",
+      "description": "For teams and enterprises",
+      "feature1": "4200 AI generation credits",
+      "feature2": "Enterprise-level features",
+      "feature3": "Highest quality output",
+      "feature4": "90-day validity",
+      "feature5": "Dedicated customer support",
+      "feature6": "API access",
+      "feature7": "Batch processing",
+      "badge": "Enterprise Choice"
+    },
+    "transaction": {
+      "type": {
+        "register_bonus": "Registration Bonus",
+        "subscription_refill_monthly": "Monthly Subscription Refill",
+        "subscription_refill_yearly": "Annual Subscription Refill",
+        "subscription_auto_refill": "Annual Subscription Monthly Auto-Refill",
+        "package_purchase": "Credit Pack Purchase",
+        "text_to_image": "Text-to-Image Generation",
+        "image_to_image": "Image-to-Image Generation",
+        "freeze": "Credits Frozen",
+        "unfreeze": "Credits Unfrozen",
+        "admin_adjustment": "Admin Adjustment",
+        "refund": "Refund"
+      },
+      "desc": {
+        "register_bonus": "{amount} credits ({days} days validity)",
+        "subscription_refill_monthly": "{plan} plan ({amount} credits/month, {days} days validity)",
+        "subscription_refill_yearly": "{plan} plan (12 months total {amount} credits, {days} days validity)",
+        "subscription_auto_refill": "{plan} plan ({amount} credits, {days} days validity)",
+        "package_purchase": "{package} credit pack ({amount} credits, {days} days validity)",
+        "text_to_image": "Used {amount} credits",
+        "image_to_image": "Used {amount} credits",
+        "freeze": "{amount} credits (subscription upgrade, frozen until {date})",
+        "unfreeze": "Unfroze {amount} credits",
+        "admin_adjustment": "{amount} credits ({reason})",
+        "refund": "Refunded {amount} credits"
+      }
+    },
+    "plan": {
+      "basic": "Basic",
+      "pro": "Pro",
+      "max": "Max"
+    },
+    "package": {
+      "starter": "Starter",
+      "growth": "Growth",
+      "professional": "Professional",
+      "enterprise": "Enterprise"
+    }
+  },
+  "profile": {
+    "pageTitle": "Personal Center",
+    "pageDescription": "Manage your profile, subscriptions, credits, submissions, API keys and usage statistics",
+    "loading": "Loading...",
+    "pleaseLogin": "Please log in first",
+    "needLoginMessage": "You need to log in to view account information",
+    "tabs": {
+      "profile": "Profile",
+      "subscription": "Subscription",
+      "credits": "Credits",
+      "submissions": "My Submissions",
+      "stats": "Statistics",
+      "apiKeys": "API Keys"
+    },
+    "credits": {
+      "overview": "Credits Overview",
+      "current": "Current Credits",
+      "totalEarned": "Total Earned",
+      "totalUsed": "Total Used",
+      "unit": "credits",
+      "expiryTime": "Credits Expiry Time",
+      "permanent": "Permanent",
+      "costInfo": "Text-to-image costs 1 credit, image-to-image costs 2 credits",
+      "loadingInfo": "Loading credit information...",
+      "expiringWarning": "Expiry Warning",
+      "expiringMessage": "You have {credits} credits expiring within 7 days, please use them soon.",
+      "expiresOn": "Expires on {date}",
+      "expiryTBD": "Expiry date to be determined",
+      "transactionHistory": "Transaction History",
+      "totalRecords": "{count} records in total",
+      "filterAll": "All",
+      "filterEarned": "Earned",
+      "filterUsed": "Used",
+      "noTransactions": "No credit records yet",
+      "loadMore": "Load More ({current}/{total})",
+      "loadingMore": "Loading..."
+    },
+    "apiKeys": {
+      "title": "API Key Management",
+      "createNew": "Create New Key",
+      "active": "Active",
+      "inactive": "Inactive",
+      "rotate": "Rotate",
+      "rotating": "Rotating...",
+      "pause": "Pause",
+      "enable": "Enable",
+      "updating": "Updating...",
+      "createdAt": "Created at {date}",
+      "lastUsed": "Last used {date}",
+      "securityNote": "For security, historical keys can only be viewed or copied when first created.",
+      "noKeys": "No API keys yet",
+      "noKeysMessage": "Create your first API key to get started",
+      "securityTip": "Security Tip",
+      "securityMessage": "Keep your API keys safe, never expose them in code or commit to version control.",
+      "dialog": {
+        "title": "Create New API Key",
+        "description": "Customize the key name to distinguish usage scenarios. The key will only show its complete content when first created, please save it carefully.",
+        "nameLabel": "Key Name",
+        "namePlaceholder": "API Key {number}",
+        "nameHint": "For example: Production Frontend, Test Bot, etc.",
+        "cancel": "Cancel",
+        "create": "Create",
+        "creating": "Creating..."
+      }
+    },
+    "plan": {
+      "basic": "Basic",
+      "pro": "Pro",
+      "max": "Max"
+    },
+    "info": {
+      "editProfile": "Edit Profile",
+      "accountSecurity": "Account Security",
+      "lastLogin": "Last Login Time",
+      "loginIP": "Login IP Address",
+      "password": "Login Password",
+      "changePassword": "Change Password",
+      "accountStats": "Account Statistics",
+      "error": {
+        "canvasContext": "Cannot get Canvas context",
+        "cropFailed": "Cropping failed",
+        "uploadFailed": "Avatar upload failed: {error}",
+        "saveFailed": "Save failed: {error}",
+        "saveRetry": "Save failed, please try again later",
+        "invalidImage": "Please select an image file",
+        "imageTooLarge": "Image cannot exceed 5MB",
+        "readFailed": "Failed to read image, please try again",
+        "adjustCrop": "Please adjust crop area first",
+        "compressFailed": "Cropped image still exceeds 500KB, please reduce resolution or scale and try again",
+        "cropRetry": "Cropping failed, please try again"
+      },
+      "field": {
+        "email": "Email",
+        "registeredAt": "Registration Date",
+        "lastSignIn": "Last Sign-in Time",
+        "loginIP": "Login IP Address",
+        "password": "Login Password",
+        "displayName": "Display Name",
+        "avatar": "Avatar",
+        "avatarLink": "Avatar Link (optional, leave empty to use uploaded image)",
+        "location": "City / Team",
+        "bio": "Bio",
+        "zoom": "Zoom"
+      },
+      "button": {
+        "edit": "Edit Profile",
+        "changePassword": "Change Password",
+        "selectImage": "Select Image",
+        "recrop": "Re-crop",
+        "clear": "Clear",
+        "applyCrop": "Apply Crop",
+        "cancelCrop": "Cancel Crop",
+        "cancel": "Cancel",
+        "save": "Save",
+        "saving": "Saving..."
+      },
+      "status": {
+        "normal": "Account Normal",
+        "active": "Active",
+        "unknown": "Unknown"
+      },
+      "title": {
+        "accountSecurity": "Account Security",
+        "accountStats": "Account Statistics"
+      },
+      "desc": {
+        "securitySettings": "Manage your login and security settings",
+        "passwordSecurity": "Update your password regularly to protect account security"
+      },
+      "dialog": {
+        "title": "Edit Personal Profile",
+        "desc": "Updates will take effect immediately after successful save."
+      },
+      "placeholder": {
+        "displayName": "Enter display name",
+        "location": "E.g.: Shanghai / Growth Team",
+        "bio": "Introduce yourself or your current project in a few words",
+        "noAvatar": "No avatar"
+      },
+      "stats": {
+        "imagesGenerated": "Images Generated",
+        "creditsRemaining": "Credits Remaining",
+        "activeDays": "Active Days"
+      },
+      "user": {
+        "unnamed": "Unnamed User"
+      },
+      "avatar": {
+        "hint": "Supports JPG/PNG, original image ≤ 5MB, automatically compressed to within 500KB after cropping."
+      }
+    },
+    "subscription": {
+      "title": "Subscription Management",
+      "desc": "Manage your subscription plans",
+      "count": "{count} subscription(s) in total",
+      "freePlan": "Free Plan",
+      "upgradeDesc": "Upgrade to a paid plan to enjoy more features and credits",
+      "plan": {
+        "basic": "Basic",
+        "pro": "Pro",
+        "max": "Max"
+      },
+      "status": {
+        "active": "Active",
+        "frozen": "Frozen",
+        "inactive": "Inactive",
+        "expired": "Expired"
+      },
+      "billing": {
+        "yearly": "Yearly",
+        "monthly": "Monthly"
+      },
+      "field": {
+        "startDate": "Start Date",
+        "expiryDate": "Expiry Date"
+      },
+      "remaining": {
+        "months": "{count} month(s) unused"
+      },
+      "frozen": {
+        "credits": "Frozen Credits",
+        "remaining": "Frozen Remaining"
+      },
+      "unit": {
+        "credits": "credits",
+        "days": "days"
+      },
+      "button": {
+        "upgrade": "Upgrade Plan",
+        "viewPlans": "View Plans"
+      }
+    },
+    "stats": {
+      "imageGeneration": "Image Generation",
+      "apiCalls": "API Calls",
+      "creditsUsed": "Credits Used",
+      "activeDays": "Active Days",
+      "usageTrend": "Usage Trend",
+      "popularFeatures": "Most Used Features"
+    },
+    "usage": {
+      "loading": "Loading statistics...",
+      "noData": "No statistics data yet",
+      "card": {
+        "imageGeneration": "Image Generation",
+        "apiCalls": "API Calls",
+        "creditsUsed": "Credits Used",
+        "activeDays": "Active Days"
+      },
+      "desc": {
+        "monthlyGeneration": "Generated this month",
+        "monthlyCalls": "Called this month",
+        "monthlyUsed": "Used this month",
+        "sinceRegistration": "Since registration"
+      },
+      "trend": {
+        "title": "Usage Trend",
+        "7days": "7 days",
+        "30days": "30 days",
+        "90days": "90 days"
+      },
+      "popular": {
+        "title": "Most Used Features",
+        "desc": "Sorted by usage frequency",
+        "times": "times"
+      }
+    },
+    "submissions": {
+      "error": {
+        "fetchFailed": "Failed to fetch submissions list",
+        "unknown": "Unknown error",
+        "deleteFailed": "Delete failed",
+        "loadFailed": "Load failed"
+      },
+      "confirm": {
+        "delete": "Are you sure you want to delete this submission?"
+      },
+      "success": {
+        "deleted": "✅ Deleted successfully!"
+      },
+      "title": "My Submissions",
+      "count": "{count} submission(s) in total",
+      "button": {
+        "refresh": "Refresh",
+        "create": "Go Create",
+        "cancel": "Cancel",
+        "viewShowcase": "View in Showcase"
+      },
+      "empty": {
+        "message": "No submissions yet"
+      },
+      "status": {
+        "pending": "Under Review",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "category": {
+        "portrait": "Portrait",
+        "landscape": "Landscape",
+        "product": "Product",
+        "creative": "Creative",
+        "anime": "Anime"
+      },
+      "rejection": {
+        "reason": "Rejection reason:"
+      },
+      "preview": {
+        "noDescription": "No description"
+      }
+    },
+    "tab": {
+      "stats": "Usage Statistics"
+    }
+  }
+}

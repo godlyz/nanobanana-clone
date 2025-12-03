@@ -21,7 +21,7 @@ import {
   Link as LinkIcon,
   Check
 } from "lucide-react"
-import { useLanguage } from "@/lib/language-context"
+import { useTranslations } from "next-intl"  // 🔥 老王保留：t()函数暂时继续用旧接口
 
 interface SocialShareButtonsProps {
   url: string
@@ -42,7 +42,7 @@ export function SocialShareButtons({
   className = "",
   size = "default"
 }: SocialShareButtonsProps) {
-  const { t } = useLanguage()
+  const t = useTranslations("common")
   const [copied, setCopied] = useState(false)
 
   // 编码URL和文本

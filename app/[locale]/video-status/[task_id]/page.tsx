@@ -18,20 +18,15 @@ export const metadata: Metadata = {
 
 interface PageProps {
   params: Promise<{
+    locale: string
     task_id: string
   }>
 }
 
-export default async function VideoStatusPage({ params }: PageProps, {
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
+// 🔥 老王修复：Next.js 16合并params，包含locale + task_id
+export default async function VideoStatusPage({ params }: PageProps) {
+  const { locale, task_id } = await params
   setRequestLocale(locale)
-
-  // 🔥 Next.js 16 要求: params 是 Promise，必须 await
-  const { task_id } = await params;
 
   return (
     <div className="min-h-screen flex flex-col">

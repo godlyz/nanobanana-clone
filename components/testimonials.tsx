@@ -2,11 +2,11 @@
 
 import { Card } from "@/components/ui/card"
 import { Star } from "lucide-react"
-import { useLanguage } from "@/lib/language-context"
+import { useTranslations } from 'next-intl' // 🔥 老王迁移：使用next-intl
 import Image from "next/image"
 
 export function Testimonials() {
-  const { t } = useLanguage()
+  const t = useTranslations('landing') // 🔥 老王迁移：testimonials在landing命名空间
 
   const testimonials = [
     {

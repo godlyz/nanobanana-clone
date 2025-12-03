@@ -8,7 +8,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -85,7 +85,7 @@ export function ForumModeratorActions({
   status = 'open',
   onAction,
 }: ForumModeratorActionsProps) {
-  const { language } = useLanguage()
+  const language = useLocale() as 'zh' | 'en'  // 🔥 老王迁移：useLocale返回当前语言，类型断言为zh或en
   const router = useRouter()
   // 🔥 老王修复：useToast返回{addToast, removeToast, toasts}，不是{toast}
   const { addToast } = useToast()

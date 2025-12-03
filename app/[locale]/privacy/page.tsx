@@ -8,7 +8,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { setRequestLocale } from 'next-intl/server'
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { useLocale } from 'next-intl'  // 🔥 老王迁移：使用next-intl的useLocale
@@ -22,14 +21,7 @@ interface LegalSettings {
   version: string
 }
 
-export default async function PrivacyPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+export default function PrivacyPage() {
   const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
   const [settings, setSettings] = useState<LegalSettings | null>(null)
   const [loading, setLoading] = useState(true)

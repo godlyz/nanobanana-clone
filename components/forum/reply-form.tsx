@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
 import { useImageUpload } from "@/lib/hooks/use-image-upload"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -37,7 +37,7 @@ export function ForumReplyForm({
   placeholder,
   autoFocus = false
 }: ForumReplyFormProps) {
-  const { language, t } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
   const { uploadImage } = useImageUpload()
   const [content, setContent] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)

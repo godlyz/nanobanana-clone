@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
 import {
   Dialog,
   DialogContent,
@@ -47,7 +47,7 @@ export function ReportDialog({
   targetId,
   onReportSuccess,
 }: ReportDialogProps) {
-  const { language } = useLanguage()
+  const language = useLocale() as 'zh' | 'en'  // 🔥 老王迁移：useLocale返回当前语言，类型断言为zh或en
 
   const [reason, setReason] = useState<ReportReason>("spam")
   const [description, setDescription] = useState("")

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
 import { ForumReplyItem } from "./reply-item"
 import { ForumReplyForm } from "./reply-form"
 import { Button } from "@/components/ui/button"
@@ -55,7 +55,7 @@ export function ForumReplyList({
   onEditReply,
   onDeleteReply
 }: ForumReplyListProps) {
-  const { language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
   const [replyingToId, setReplyingToId] = useState<string | null>(null)
   const [showMainReplyForm, setShowMainReplyForm] = useState(false)
 

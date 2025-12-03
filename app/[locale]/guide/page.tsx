@@ -7,20 +7,12 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { setRequestLocale } from 'next-intl/server'
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 
-export default async function UserGuidePage({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+export default function UserGuidePage() {
   const [markdown, setMarkdown] = useState<string>("")
   const [loading, setLoading] = useState(true)
 

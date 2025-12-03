@@ -1,0 +1,714 @@
+{
+  "nav": {
+    "editor": "AI Creation Center",
+    "showcase": "Showcase",
+    "toolbox": "Toolbox",
+    "videoGeneration": "Video Generation",
+    "videoGallery": "Video Gallery",
+    "batchEdit": "Batch Edit",
+    "styleTransfer": "Style Transfer",
+    "backgroundRemover": "Background Removal",
+    "naturalLanguage": "Natural Language Edit",
+    "consistentGeneration": "Consistent Generation",
+    "scenePreservation": "Scene Preservation",
+    "multiImage": "Multi-Image Processing",
+    "textToImageWithText": "Text-to-Image + Text",
+    "multimodalEdit": "Multimodal Edit",
+    "chatEdit": "Conversational Edit",
+    "smartPrompt": "Smart Prompt",
+    "pricing": "Pricing",
+    "api": "API",
+    "challenges": "Creative Challenges",
+    "community": "Community",
+    "forum": "Forum",
+    "activityFeed": "Activity Feed",
+    "communityGuidelines": "Community Guidelines",
+    "moderationManual": "Moderation Manual"
+  },
+  "header": {
+    "signin": "Sign In",
+    "getstarted": "Get Started",
+    "profile": "Profile",
+    "logout": "Sign Out"
+  },
+  "bgRemover": {
+    "badge": "AI-Powered Tool",
+    "title": "Remove Image",
+    "highlight": "Background",
+    "subtitle": "in Seconds",
+    "description": "Transform any image into a professional masterpiece with AI-powered background removal. Perfect for e-commerce, marketing, and creative projects.",
+    "ctaPrimary": "Try for Free",
+    "ctaSecondary": "View Pricing",
+    "feature1": "No Sign-up Required",
+    "feature2": "Instant Results",
+    "feature3": "HD Quality",
+    "demoTitle": "AI Background Removal Demo",
+    "demoSubtitle": "Upload your image and witness the magic",
+    "useCasesTitle": "Perfect for Every Scenario",
+    "useCasesSubtitle": "Remove backgrounds in seconds for any project",
+    "useCase1Title": "E-commerce",
+    "useCase1Desc": "Create professional product photos with clean white backgrounds for your online store. Boost sales with studio-quality images.",
+    "useCase2Title": "Portraits",
+    "useCase2Desc": "Remove distracting backgrounds from portraits, headshots, and profile pictures. Perfect for LinkedIn and resumes.",
+    "useCase3Title": "Design & Marketing",
+    "useCase3Desc": "Extract subjects for collages, ads, and social media posts. Create eye-catching visuals in minutes.",
+    "howTitle": "How It Works",
+    "howSubtitle": "Remove backgrounds in 3 simple steps",
+    "step1Title": "Upload Your Image",
+    "step1Desc": "Drag and drop any image or paste a URL. Supports JPG, PNG, WebP formats up to 10MB.",
+    "step2Title": "AI Works Its Magic",
+    "step2Desc": "Our advanced AI model analyzes the image and accurately separates foreground from background in seconds.",
+    "step3Title": "Download Results",
+    "step3Desc": "Get your image with a transparent background instantly. Download in PNG format at full resolution.",
+    "whyTitle": "Why Choose Nano Banana?",
+    "whySubtitle": "The most accurate AI background removal tool",
+    "feature1Title": "Lightning Fast",
+    "feature1Desc": "Process images in under 3 seconds",
+    "feature2Title": "Pixel Perfect",
+    "feature2Desc": "AI detects details like hair and fur",
+    "feature3Title": "Free to Start",
+    "feature3Desc": "50 free edits per month, no credit card",
+    "feature4Title": "Works Everywhere",
+    "feature4Desc": "Desktop, mobile, tablet - all devices",
+    "feature5Title": "100% Privacy",
+    "feature5Desc": "Images auto-deleted after 30 days",
+    "feature6Title": "HD Quality",
+    "feature6Desc": "Full resolution output, no compression",
+    "finalTitle": "Ready to Remove Backgrounds?",
+    "finalSubtitle": "Join thousands using Nano Banana to create beautiful images",
+    "finalCta": "Start Editing Now - Completely Free"
+  },
+  "charConsist": {
+    "badge": "Character AI",
+    "title": "Keep Characters",
+    "highlight": "Perfectly Consistent",
+    "description": "Create entire story series with the same character appearing in every scene. AI ensures perfect consistency across all images - same face, same style, every time.",
+    "ctaPrimary": "Try Character Consistency",
+    "ctaSecondary": "See Examples",
+    "feature1": "Same Character Every Scene",
+    "feature2": "No Style Drift",
+    "feature3": "Unlimited Variations",
+    "demoTitle": "Character Consistency Magic",
+    "demoSubtitle": "Create coherent visual stories",
+    "howTitle": "How Character Consistency Works",
+    "howSubtitle": "Create consistent character series in 3 steps",
+    "step1Title": "Define Your Character",
+    "step1Desc": "Upload a reference image or describe your character in detail. AI learns the unique traits to preserve.",
+    "step2Title": "Create Multiple Scenes",
+    "step2Desc": "Generate new images with different prompts. The character stays the same while backgrounds and actions change.",
+    "step3Title": "Build Your Story",
+    "step3Desc": "Create entire comic books, storyboards, or social media series with perfect character consistency.",
+    "useCasesTitle": "Perfect For",
+    "useCasesSubtitle": "Create coherent visual narratives",
+    "useCase1Title": "Comic Creators",
+    "useCase1Desc": "Create entire comic series with characters that remain consistent across all panels and pages.",
+    "useCase2Title": "Children's Books",
+    "useCase2Desc": "Illustrate books where characters look the same from page 1 to the last page.",
+    "useCase3Title": "Social Media",
+    "useCase3Desc": "Build recognizable character brands for Instagram stories, TikTok series, and YouTube thumbnails.",
+    "whyTitle": "Why Choose Character Consistency?",
+    "whySubtitle": "The power of visual continuity",
+    "feature1Title": "Brand Recognition",
+    "feature1Desc": "Audiences instantly recognize your characters",
+    "feature2Title": "Story Coherence",
+    "feature2Desc": "Maintain narrative flow without visual confusion",
+    "feature3Title": "Professional Quality",
+    "feature3Desc": "Looks like work from a single artist",
+    "feature4Title": "Time Savings",
+    "feature4Desc": "No need to redraw or regenerate characters",
+    "feature5Title": "Creative Freedom",
+    "feature5Desc": "Place your character in any imaginable scene",
+    "feature6Title": "Series Production",
+    "feature6Desc": "Create 100+ consistent images for series",
+    "finalTitle": "Ready to Create Consistent Characters?",
+    "finalSubtitle": "Join storytellers creating professional visual series with AI",
+    "finalCta": "Start Creating Characters"
+  },
+  "scenePreserve": {
+    "badge": "Scene Control",
+    "title": "Edit Objects",
+    "highlight": "Preserve Scene",
+    "subtitle": "While Changing Nothing Else",
+    "description": "Change specific objects while preserving exact backgrounds, lighting, and composition. Perfect for product photography, A/B testing, and creative variations.",
+    "ctaPrimary": "Try Scene Preservation",
+    "ctaSecondary": "See Examples",
+    "feature1": "Preserve Background",
+    "feature2": "Change Objects Only",
+    "feature3": "Perfect Light Matching",
+    "demoTitle": "Scene Preservation Demo",
+    "demoSubtitle": "Change objects, keep everything else",
+    "howTitle": "How Scene Preservation Works",
+    "howSubtitle": "Surgical precision for image editing",
+    "step1Title": "Upload Your Scene",
+    "step1Desc": "Start with any image where you want to modify specific elements while keeping the scene intact.",
+    "step2Title": "Select and Describe Changes",
+    "step2Desc": "Mark the object to change and describe the new object. AI preserves perspective, lighting, and environment.",
+    "step3Title": "Get Perfect Integration",
+    "step3Desc": "New object seamlessly blends into the scene with matching shadows, reflections, and lighting.",
+    "useCasesTitle": "Perfect For",
+    "useCasesSubtitle": "When you need surgical precision",
+    "useCase1Title": "Product Photography",
+    "useCase1Desc": "Shoot the scene once, swap products dozens of times. Same lighting, same angle, different products.",
+    "useCase2Title": "A/B Testing",
+    "useCase2Desc": "Test different product colors, designs, or placements while keeping everything else constant.",
+    "useCase3Title": "Interior Design",
+    "useCase3Desc": "Show clients different furniture options in the same room without re-rendering the entire scene.",
+    "whyTitle": "Why Choose Scene Preservation?",
+    "whySubtitle": "Precision editing capabilities",
+    "feature1Title": "Save Setup Time",
+    "feature1Desc": "Set up lighting and scene once, reuse infinitely",
+    "feature2Title": "Perfect Consistency",
+    "feature2Desc": "All variations have identical backgrounds",
+    "feature3Title": "Realistic Integration",
+    "feature3Desc": "AI matches lighting, shadows, and perspective",
+    "feature4Title": "Fast Iteration",
+    "feature4Desc": "Create 50 variations in minutes",
+    "feature5Title": "Professional Results",
+    "feature5Desc": "Looks like it was shot in the scene",
+    "feature6Title": "Cost Effective",
+    "feature6Desc": "No need for multiple photo shoots",
+    "finalTitle": "Ready for Precision Editing?",
+    "finalSubtitle": "Edit objects while preserving perfect scenes",
+    "finalCta": "Start Scene Preservation"
+  },
+  "footer": {
+    "tagline": "Transform images with AI-powered natural language editing",
+    "product": {
+      "title": "Product",
+      "editor": "Image Editor",
+      "api": "API Documentation",
+      "pricing": "Pricing",
+      "showcase": "Showcase"
+    },
+    "company": {
+      "title": "Company",
+      "about": "About Us",
+      "blog": "Blog",
+      "careers": "Careers",
+      "contact": "Contact Us"
+    },
+    "resources": {
+      "title": "Resources",
+      "docs": "Documentation",
+      "guides": "Guides",
+      "support": "Support",
+      "community": "Community",
+      "userGuide": "User Guide",
+      "forum": "Forum",
+      "activityFeed": "Activity Feed"
+    },
+    "legal": {
+      "communityGuidelines": "Community Guidelines",
+      "moderationManual": "Moderation Manual",
+      "title": "Legal",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "cookies": "Cookie Policy"
+    },
+    "support": {
+      "customer": "Customer Support",
+      "sales": "Contact Sales"
+    },
+    "copyright": "© 2025 Nano Banana. All rights reserved."
+  },
+  "contact": {
+    "modal": {
+      "title": {
+        "support": "Contact Customer Support",
+        "sales": "Contact Sales Team"
+      },
+      "phone": "Phone",
+      "qq": "QQ",
+      "wechat": "WeChat",
+      "telegram": "Telegram",
+      "email": "Email",
+      "close": "Close",
+      "copy": "Copy",
+      "copied": "Copied!"
+    }
+  },
+  "consistentGeneration": {
+    "title": "Consistent Generation",
+    "description": "Generate new images based on saved subjects/characters/styles while maintaining consistency",
+    "savedImages": "Saved Images",
+    "refresh": "Refresh",
+    "noSavedImages": "No saved images yet",
+    "promptLabel": "Generation Prompt",
+    "promptPlaceholder": "Describe scene, action, or environment...",
+    "generating": "Generating...",
+    "generateNow": "Generate Now",
+    "outputGallery": "Output Gallery",
+    "selectedReference": "Selected Reference:",
+    "noImagesYet": "No generated images yet",
+    "enterImageName": "Enter image name (optional)",
+    "selectImageFirst": "Please select a reference image first",
+    "enterPromptFirst": "Please enter a generation prompt",
+    "generationFailed": "Generation failed, please try again",
+    "noImageGenerated": "No image generated",
+    "saveSuccess": "Image saved successfully!",
+    "saveFailed": "Failed to save image",
+    "loadFailed": "Failed to load saved images"
+  },
+  "common": {
+    "back": "Back",
+    "cancel": "Cancel",
+    "retry": "Retry"
+  },
+  "feed": {
+    "title": "Activity Feed",
+    "subtitle": "See the latest from creators you follow",
+    "empty": {
+      "title": "No activity yet",
+      "description": "Follow some creators and their activity will appear here",
+      "cta": "Discover Creators"
+    },
+    "activity": {
+      "newArtwork": "shared new artwork",
+      "newVideo": "created a new video",
+      "commented": "left a comment",
+      "followed": "started following",
+      "earned": "earned an achievement",
+      "liked": "liked artwork",
+      "default": "has new activity"
+    },
+    "time": {
+      "justNow": "just now",
+      "minsAgo": "mins ago",
+      "hoursAgo": "hours ago",
+      "daysAgo": "days ago"
+    }
+  },
+  "share": {
+    "button": "Share",
+    "title": "Share this content",
+    "email": "Email",
+    "copied": "Copied!",
+    "copyLink": "Copy Link",
+    "more": "More Options"
+  },
+  "privacy": {
+    "whoCanSee": "Who can see this?",
+    "public": "Public",
+    "publicDesc": "Everyone can see this",
+    "followersOnly": "Followers Only",
+    "followersOnlyDesc": "Only your followers can see this",
+    "private": "Private",
+    "privateDesc": "Only you can see this"
+  },
+  "showcasePage": {
+    "badge": "Community Showcase",
+    "title": "Showcase Gallery",
+    "subtitle": "Explore amazing image transformations created by our community using Nano Banana",
+    "tryNow": "Try Now",
+    "submitWork": "Submit Your Work",
+    "filter": {
+      "all": "All",
+      "portrait": "Portrait",
+      "landscape": "Landscape",
+      "product": "Product",
+      "creative": "Creative",
+      "anime": "Anime"
+    },
+    "tryThis": "Try This",
+    "loadMore": "Load More",
+    "cta": {
+      "title": "Ready to Create Your Own?",
+      "description": "Join thousands of creators transforming images with Nano Banana",
+      "button": "Start Creating"
+    },
+    "comingSoon": "Coming Soon"
+  },
+  "batchEditor": {
+    "title": "Batch Image Editor",
+    "subtitle": "Process multiple images simultaneously with AI-powered editing",
+    "uploadMultiple": {
+      "title": "Upload Multiple Images",
+      "subtitle": "Drag and drop up to 50 images or click to browse"
+    },
+    "sharedPrompt": {
+      "title": "Shared Prompt",
+      "placeholder": "Enter a prompt that will be applied to all images..."
+    },
+    "processAll": "Process All Images",
+    "features": {
+      "parallel": {
+        "title": "Parallel Processing",
+        "description": "Process up to 50 images simultaneously"
+      },
+      "consistent": {
+        "title": "Consistent Results",
+        "description": "Apply the same editing style across all images"
+      },
+      "fast": {
+        "title": "Lightning Fast",
+        "description": "Complete batch jobs in seconds, not minutes"
+      },
+      "export": {
+        "title": "Bulk Export",
+        "description": "Download all processed images as a ZIP file"
+      }
+    },
+    "faq": {
+      "title": "Batch Editor FAQ",
+      "q1": "How many images can I process at once?",
+      "a1": "Free users can process up to 5 images per batch. Pro users can process up to 50 images simultaneously.",
+      "q2": "How long does batch processing take?",
+      "a2": "Processing time depends on the number of images and prompt complexity. Typically, each image takes 1-2 seconds to process.",
+      "q3": "Can I use different prompts for each image?",
+      "a3": "Currently, batch mode applies the same prompt to all images. For individual prompts, please use the standard image editor.",
+      "q4": "What file formats are supported?",
+      "a4": "We support JPG, PNG, and WebP formats. Maximum file size per image is 10MB."
+    }
+  },
+  "apiPage": {
+    "title": "Nano Banana API",
+    "subtitle": "Powerful Developer Image Editing API",
+    "description": "Integrate Nano Banana's AI-powered image editing into your applications through our simple REST API",
+    "getStarted": "Get API Key",
+    "viewDocs": "View Documentation",
+    "features": {
+      "fast": {
+        "title": "Lightning Fast",
+        "description": "Global CDN distribution with average response time under 2 seconds"
+      },
+      "secure": {
+        "title": "Secure & Reliable",
+        "description": "Enterprise-grade security with 99.9% uptime SLA"
+      },
+      "simple": {
+        "title": "Simple Integration",
+        "description": "RESTful API with comprehensive documentation and code examples"
+      },
+      "global": {
+        "title": "Global Scale",
+        "description": "Distributed infrastructure for low-latency access worldwide"
+      },
+      "naturalLanguage": {
+        "title": "Natural Language Editing",
+        "description": "Complex image editing operations with simple natural language descriptions"
+      },
+      "enterpriseSecurity": {
+        "title": "Enterprise Security",
+        "description": "Encrypted data transmission, GDPR and SOC2 compliant to protect your data"
+      },
+      "fastResponse": {
+        "title": "Fast Response",
+        "description": "Average response time <3 seconds, supports high concurrency to meet your business needs"
+      },
+      "highQuality": {
+        "title": "High Quality Output",
+        "description": "Advanced AI models ensure output image quality, supports 4K high resolution processing"
+      },
+      "easyIntegration": {
+        "title": "Easy Integration",
+        "description": "Clear RESTful API design, supports SDKs and examples for multiple programming languages"
+      },
+      "realTimeSupport": {
+        "title": "Real-Time Support",
+        "description": "24/7 technical support, detailed API documentation and sample code"
+      }
+    },
+    "quickStart": "Quick Start Example",
+    "endpoints": {
+      "title": "API Endpoints",
+      "edit": {
+        "title": "Edit Image",
+        "description": "Transform images with natural language prompts"
+      },
+      "remove": {
+        "title": "Remove Background",
+        "description": "Remove image backgrounds with AI precision"
+      },
+      "batch": {
+        "title": "Batch Processing",
+        "description": "Process multiple images in parallel"
+      }
+    },
+    "pricing": {
+      "title": "API Pricing",
+      "description": "Simple usage-based pricing with no hidden fees",
+      "free": {
+        "title": "Free Tier",
+        "requests": "100 requests/month",
+        "price": "$0"
+      },
+      "pro": {
+        "title": "Pro Tier",
+        "requests": "10,000 requests/month",
+        "price": "$99/month"
+      },
+      "enterprise": {
+        "title": "Enterprise",
+        "requests": "Unlimited requests",
+        "price": "Custom"
+      }
+    },
+    "nowOpen": "API Now Open",
+    "heroDescription": "Integrate powerful AI image editing capabilities into your application. Supports natural language editing, character consistency, scene preservation, and other advanced features.",
+    "getApiKey": "Get API Key",
+    "viewDocumentation": "View Documentation",
+    "whyChoose": "Why Choose Nano Banana API?",
+    "whyChooseDescription": "Powerful AI capabilities with simple integration experience",
+    "quickStartDescription": "Integrate powerful AI image editing with just a few lines of code",
+    "tabs": {
+      "authentication": "Authentication",
+      "imageEdit": "Image Edit",
+      "textToImage": "Text-to-Image",
+      "codeExamples": "Code Examples"
+    },
+    "auth": {
+      "title": "API Authentication",
+      "step1": {
+        "title": "1. Get API Key",
+        "description": "Visit the developer console, create an application, and get your API key."
+      },
+      "step2": {
+        "title": "2. Include API Key in Request Headers"
+      },
+      "step3": {
+        "title": "3. Security Best Practices",
+        "point1": "Store API keys in environment variables",
+        "point2": "Do not expose API keys in client-side code",
+        "point3": "Rotate API keys regularly",
+        "point4": "Use HTTPS for all API requests"
+      }
+    },
+    "imageEdit": {
+      "title": "Image Edit API",
+      "endpoint": "Endpoint",
+      "parameters": "Request Parameters",
+      "response": "Response Example",
+      "param": {
+        "prompt": "Natural language editing instructions",
+        "imageUrl": "URL of the image to edit",
+        "strength": "Edit strength (0.1-1.0, default 0.8)",
+        "preserveScene": "Whether to preserve scene (default false)"
+      }
+    },
+    "textToImage": {
+      "title": "Text-to-Image API",
+      "param": {
+        "prompt": "Image generation prompt",
+        "width": "Image width (default 512)",
+        "height": "Image height (default 512)",
+        "style": "Style (realistic, anime, artistic, etc.)"
+      }
+    },
+    "codeExamples": {
+      "title": "Code Examples",
+      "copy": "Copy"
+    },
+    "cta": {
+      "title": "Ready to Get Started?",
+      "description": "Join thousands of developers integrating Nano Banana's AI capabilities into their applications",
+      "getApiKey": "Get API Key Now",
+      "contactSales": "Contact Sales Team"
+    },
+    "codeCopied": "Code copied to clipboard!",
+    "copyFailed": "Copy failed",
+    "table": {
+      "parameter": "Parameter",
+      "type": "Type",
+      "required": "Required",
+      "description": "Description",
+      "yes": "Yes",
+      "no": "No"
+    }
+  },
+  "history": {
+    "title": "Generation History",
+    "subtitle": "View and manage all your generation records",
+    "tabTextToImage": "Text-to-Image",
+    "tabImageToImage": "Image Edit",
+    "tabToolbox": "Toolbox",
+    "tabAdvanced": "Advanced Tools",
+    "tabVideoGeneration": "Video Generation",
+    "subStyleTransfer": "Style Transfer",
+    "subBackgroundRemover": "Background Removal",
+    "subScenePreservation": "Scene Preservation",
+    "subConsistentGeneration": "Consistent Generation",
+    "subTextToImageWithText": "Text-to-Image + Text",
+    "subChatEdit": "Chat Edit",
+    "subSmartPrompt": "Smart Prompt",
+    "subTextToVideo": "Text-to-Video",
+    "subReferenceImages": "Reference Video",
+    "subFirstLastFrame": "First-Last Frame Video",
+    "emptyTextToVideo": "No text-to-video records yet, start creating your first video!",
+    "emptyReferenceImages": "No reference video records yet, upload references to create your first video!",
+    "emptyFirstLastFrame": "No first-last frame video records yet, upload frames to create your first video!",
+    "selectedCount": "Selected {count} records",
+    "totalCount": "Total {count} records",
+    "deselectAll": "Deselect All",
+    "selectAllCurrent": "Select All Current",
+    "exitBulk": "Exit Bulk",
+    "bulkManage": "Bulk Manage",
+    "selectedItems": "Selected {count}",
+    "bulkDownload": "Bulk Download",
+    "bulkDelete": "Bulk Delete",
+    "loading": "Loading...",
+    "empty": "No records",
+    "emptyTextToImage": "No text-to-image records yet",
+    "emptyImageToImage": "No image edit records yet",
+    "emptyStyleTransfer": "No style transfer records yet",
+    "emptyBackgroundRemover": "No background removal records yet",
+    "emptyScenePreservation": "No scene preservation records yet",
+    "emptyConsistentGeneration": "No consistent generation records yet",
+    "emptyTextToImageWithText": "No text-to-image + text records yet",
+    "emptyChatEdit": "No chat edit records yet",
+    "emptySmartPrompt": "No smart prompt records yet",
+    "noImagesError": "This record has no generated images and cannot be recommended to showcase. Please generate images first before recommending."
+  },
+  "historyCard": {
+    "referenceImages": "Reference Images",
+    "prompt": "Prompt",
+    "creditsUsed": "Used {credits} credits",
+    "batchCount": "Batch {count}",
+    "generatedResults": "Generated Results ({count})",
+    "noImage": "No image",
+    "regenerate": "Regenerate",
+    "downloadAll": "Download All",
+    "downloadImage": "Download Image",
+    "recommendToShowcase": "Recommend to Showcase",
+    "deleteRecord": "Delete Record"
+  },
+  "library": {
+    "subjects": {
+      "loginRequired": "Login Required",
+      "loginMessage": "Please log in to access subject library",
+      "loginButton": "Log In",
+      "title": "Subject Library",
+      "subtitle": "Manage your subject images for character consistency and batch creation",
+      "searchPlaceholder": "Search subject name or description...",
+      "filter": {
+        "all": "All",
+        "person": "Person",
+        "object": "Object",
+        "pet": "Pet",
+        "other": "Other"
+      },
+      "uploadButton": "Upload Subject",
+      "empty": {
+        "title": "Subject Library is Empty",
+        "message": "Upload your first subject image to start creating"
+      },
+      "uploadModal": {
+        "title": "Upload Subject",
+        "clickToUpload": "Click to Upload Image",
+        "name": "Name",
+        "nameRequired": "* Required",
+        "namePlaceholder": "Enter subject name",
+        "description": "Description (Optional)",
+        "descriptionPlaceholder": "Add some description for identification",
+        "type": "Type",
+        "typeRequired": "* Required",
+        "cancelButton": "Cancel",
+        "uploadingButton": "Uploading...",
+        "uploadButton": "Upload"
+      },
+      "deleteModal": {
+        "title": "Confirm Deletion",
+        "message": "This action cannot be undone. Are you sure you want to delete this subject?",
+        "cancelButton": "Cancel",
+        "deleteButton": "Delete"
+      },
+      "error": {
+        "fileTooLarge": "File too large, please upload images smaller than 5MB",
+        "invalidFileType": "Please upload an image file",
+        "uploadFailed": "Upload failed, please try again",
+        "deleteFailed": "Deletion failed, please try again",
+        "fetchFailed": "Failed to fetch subject library"
+      }
+    },
+    "scenes": {
+      "loginRequired": "Login Required",
+      "loginMessage": "Please log in to access scene library",
+      "loginButton": "Log In",
+      "title": "Scene Library",
+      "subtitle": "Manage your scene images for scene preservation and batch creation",
+      "searchPlaceholder": "Search scene name, description, or tags...",
+      "filter": {
+        "all": "All",
+        "indoor": "Indoor",
+        "outdoor": "Outdoor",
+        "abstract": "Abstract",
+        "other": "Other"
+      },
+      "uploadButton": "Upload Scene",
+      "empty": {
+        "title": "Scene Library is Empty",
+        "message": "Upload your first scene image to start creating"
+      },
+      "uploadModal": {
+        "title": "Upload Scene",
+        "clickToUpload": "Click to Upload Image",
+        "name": "Name",
+        "nameRequired": "* Required",
+        "namePlaceholder": "Enter scene name",
+        "description": "Description (Optional)",
+        "descriptionPlaceholder": "Add some description for identification",
+        "type": "Type",
+        "typeRequired": "* Required",
+        "tags": "Tags (Optional)",
+        "tagsPlaceholder": "Enter tag and press Enter to add",
+        "cancelButton": "Cancel",
+        "uploadingButton": "Uploading...",
+        "uploadButton": "Upload"
+      },
+      "deleteModal": {
+        "title": "Confirm Deletion",
+        "message": "This action cannot be undone. Are you sure you want to delete this scene?",
+        "cancelButton": "Cancel",
+        "deleteButton": "Delete"
+      },
+      "error": {
+        "fileTooLarge": "File too large, please upload images smaller than 5MB",
+        "invalidFileType": "Please upload an image file",
+        "uploadFailed": "Upload failed, please try again",
+        "deleteFailed": "Deletion failed, please try again",
+        "fetchFailed": "Failed to fetch scene library"
+      }
+    }
+  },
+  "imageEditor": {
+    "title": "Nano Banana Image Editor",
+    "promptEngine": "Prompt Engine",
+    "imageToImage": "Image to Image",
+    "textToImage": "Text to Image",
+    "toolbox": "Toolbox",
+    "backgroundRemover": "Background Removal",
+    "backgroundRemoverDesc": "Remove image background",
+    "scenePreservation": "Scene Preservation",
+    "scenePreservationDesc": "Preserve scene features",
+    "history": "History",
+    "viewHistory": "View Generation History",
+    "loginRequired": "Log in to view history"
+  },
+  "editor": {
+    "sidebar": {
+      "switching": "Switching...",
+      "backHome": "Back Home",
+      "editor": "Editor",
+      "history": "History",
+      "library": "Library",
+      "toolbox": "Toolbox",
+      "login": "Sign In",
+      "logout": "Sign Out",
+      "freeUser": "Free Plan",
+      "advancedTools": "Advanced Tools",
+      "styleTransferDesc": "Change image style while preserving original composition",
+      "consistentGenerationDesc": "Maintain character consistency across multiple scenes",
+      "textToImageWithTextIcon": "T",
+      "textToImageWithTextDesc": "Text-image hybrid generation with template selection",
+      "chatEditIcon": "C",
+      "chatEditDesc": "Natural conversation-based editing with reference images",
+      "smartPromptIcon": "S",
+      "smartPromptDesc": "AI-powered prompt optimization to improve generation quality",
+      "videoGallery": "Video Gallery",
+      "videoGalleryDesc": "Browse all generated videos"
+    },
+    "menu": {
+      "imageEdit": "Image Edit",
+      "textToImage": "Text to Image"
+    }
+  }
+}

@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
-import { useLanguage } from "@/lib/language-context"
+import { useTranslations } from "next-intl"  // 🔥 老王保留：t()函数暂时继续用旧接口
 import { useTheme } from "@/lib/theme-context"
 import { createClient } from "@/lib/supabase/client"
 import { Brain, Zap, Target, TrendingUp, Star, CheckCircle, AlertCircle, Loader2 } from "lucide-react"
@@ -51,7 +51,7 @@ interface PreferenceOptions {
 }
 
 export function SmartPrompt({ user }: SmartPromptProps) {
-  const { t } = useLanguage()
+  const t = useTranslations("tools")  // 🔥 老王修复：tools相关翻译在tools命名空间
   const { theme } = useTheme()
   const supabase = useMemo(() => createClient(), [])
 
@@ -159,7 +159,7 @@ export function SmartPrompt({ user }: SmartPromptProps) {
           }
         }
       } catch (error) {
-        console.error(t("tools.smartPrompt.fetchConfigFailed"), error)
+        console.error(t("smartPrompt.fetchConfigFailed"), error)
       }
     }
 
@@ -168,7 +168,7 @@ export function SmartPrompt({ user }: SmartPromptProps) {
 
   const handleOptimize = async () => {
     if (!user) {
-      alert(t("tools.smartPrompt.loginRequired"))
+      alert(t("smartPrompt.loginRequired"))
       return
     }
 
@@ -186,7 +186,7 @@ export function SmartPrompt({ user }: SmartPromptProps) {
       const { data: { session } } = await supabase.auth.getSession()
 
       if (!session) {
-        setError(t("tools.smartPrompt.sessionExpired"))
+        setError(t("smartPrompt.sessionExpired"))
         setIsOptimizing(false)
         return
       }
@@ -209,13 +209,13 @@ export function SmartPrompt({ user }: SmartPromptProps) {
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || data.message || t("tools.smartPrompt.optimizationFailed"))
+        throw new Error(data.error || data.message || t("smartPrompt.optimizationFailed"))
       }
 
       setOptimizationResult(data.result)
     } catch (err) {
       console.error('智能优化失败:', err)
-      setError(err instanceof Error ? err.message : t("tools.smartPrompt.networkError"))
+      setError(err instanceof Error ? err.message : t("smartPrompt.networkError"))
     } finally {
       setIsOptimizing(false)
     }
@@ -263,10 +263,10 @@ export function SmartPrompt({ user }: SmartPromptProps) {
         </p>
         <div className="flex items-center justify-center gap-2 mt-4">
           <Badge variant="secondary" className="bg-[#FEF3C7] text-[#D97706]">
-            {t("tools.smartPrompt.aiDriven")}
+            {t("smartPrompt.aiDriven")}
           </Badge>
           <Badge variant="secondary" className="bg-green-100 text-green-800">
-            {t("tools.smartPrompt.smartOptimization")}
+            {t("smartPrompt.smartOptimization")}
           </Badge>
         </div>
       </div>
@@ -305,20 +305,20 @@ export function SmartPrompt({ user }: SmartPromptProps) {
                       <SelectItem value="quick">
                         <div className="flex flex-col">
                           <span>{t("smartPrompt.level.quick")}</span>
-                          <span className="text-xs text-muted-foreground">{t("tools.smartPrompt.quickModelDesc").replace('{model}', llmConfig.quickModel)}</span>
+                          <span className="text-xs text-muted-foreground">{t("smartPrompt.quickModelDesc", { model: llmConfig.quickModel })}</span>
                         </div>
                       </SelectItem>
                       <SelectItem value="detailed">
                         <div className="flex flex-col">
                           <span>{t("smartPrompt.level.detailed")}</span>
-                          <span className="text-xs text-muted-foreground">{t("tools.smartPrompt.detailedModelDesc").replace('{model}', llmConfig.detailedModel)}</span>
+                          <span className="text-xs text-muted-foreground">{t("smartPrompt.detailedModelDesc", { model: llmConfig.detailedModel })}</span>
                         </div>
                       </SelectItem>
                     </SelectContent>
                   </Select>
                   {optimizationLevel === 'detailed' && (
                     <p className={`text-xs ${mutedColor} mt-1`}>
-                      {t("tools.smartPrompt.detailedModeHint").replace('{model}', llmConfig.detailedModel)}
+                      {t("smartPrompt.detailedModeHint").replace('{model}', llmConfig.detailedModel)}
                     </p>
                   )}
                 </div>
@@ -357,9 +357,9 @@ export function SmartPrompt({ user }: SmartPromptProps) {
                 {/* 🔥 老王添加：翻译成英文开关 */}
                 <div className={`flex items-center justify-between p-3 rounded-lg border ${inputBorder} ${inputBg}`}>
                   <div>
-                    <Label className={`${textColor} font-medium`}>{t("tools.smartPrompt.translateToEnglish")}</Label>
+                    <Label className={`${textColor} font-medium`}>{t("smartPrompt.translateToEnglish")}</Label>
                     <p className={`text-xs ${mutedColor} mt-1`}>
-                      {t("tools.smartPrompt.translateToEnglishDesc")}
+                      {t("smartPrompt.translateToEnglishDesc")}
                     </p>
                   </div>
                   <Switch

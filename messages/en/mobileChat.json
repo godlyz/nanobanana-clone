@@ -1,0 +1,10 @@
+{
+  "title": "Mobile Chat Editor",
+  "description": "Edit your images through natural language conversation",
+  "upload": "Upload Image",
+  "uploadMockup": "Click or drag image here",
+  "preview": "Preview",
+  "chat": "Chat",
+  "placeholder": "Describe the edits you want...",
+  "startChat": "Start Chat"
+}

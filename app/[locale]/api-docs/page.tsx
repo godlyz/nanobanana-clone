@@ -7,7 +7,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { setRequestLocale } from 'next-intl/server'
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -23,14 +22,7 @@ import {
 import Link from "next/link"
 import { ContactModal } from "@/components/contact-modal"
 
-export default async function APIDocsPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+export default function APIDocsPage() {
   const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
   const [activeEndpoint, setActiveEndpoint] = useState("image-edit")
   const [copiedCode, setCopiedCode] = useState<string | null>(null)

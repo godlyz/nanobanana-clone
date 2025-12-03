@@ -7,21 +7,13 @@
 "use client"
 
 import Link from "next/link"
-import { setRequestLocale } from 'next-intl/server'
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Video, CheckCircle } from "lucide-react"
 import { useTranslations } from 'next-intl'  // 🔥 老王迁移：使用next-intl
 
-export default async function VideoGenerationPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+export default function VideoGenerationPage() {
   const t = useTranslations('videoGeneration')  // 🔥 老王迁移：使用videoGeneration命名空间
 
   return (

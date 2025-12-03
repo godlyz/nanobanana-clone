@@ -1,10 +1,10 @@
 "use client"
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { useLanguage } from "@/lib/language-context"
+import { useTranslations } from 'next-intl' // 🔥 老王迁移：使用next-intl
 
 export function FAQ() {
-  const { t } = useLanguage()
+  const t = useTranslations('landing') // 🔥 老王迁移：faq在landing命名空间
 
   const faqs = [
     {

@@ -49,7 +49,8 @@ type SubscriptionStatus = {
 }
 
 export default function PricingPage() {
-  const t = useTranslations() // 🔥 老王迁移：pricing和credits命名空间
+  const tPricing = useTranslations('pricing') // 🔥 老王修复：拆分命名空间
+  const tCredits = useTranslations('credits')
   const locale = useLocale() // 🔥 老王迁移：使用locale替代language
   const router = useRouter()
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly")
@@ -177,74 +178,74 @@ export default function PricingPage() {
   const plans = [
     {
       id: "basic",
-      name: t("pricing.basic.name"),
+      name: tPricing("basic.name"),
       monthlyPrice: "$12.00",
       yearlyPrice: "$144.00",
       yearlyOriginalPrice: "$180.00",
       credits: billingPeriod === "monthly"
-        ? t("pricing.basic.creditsMonthly")
-        : t("pricing.basic.creditsYearly"),
-      description: t("pricing.basic.description"),
+        ? tPricing("basic.creditsMonthly")
+        : tPricing("basic.creditsYearly"),
+      description: tPricing("basic.description"),
       features: [
-        t("pricing.basic.feature1"),
-        t("pricing.basic.feature2"),
-        t("pricing.basic.feature3"),
-        t("pricing.basic.feature4"),
-        t("pricing.basic.feature5"),
-        t("pricing.basic.feature6"),
-        t("pricing.basic.feature7"), // 🔥 老王Day3添加：视频生成积分消耗说明
+        tPricing("basic.feature1"),
+        tPricing("basic.feature2"),
+        tPricing("basic.feature3"),
+        tPricing("basic.feature4"),
+        tPricing("basic.feature5"),
+        tPricing("basic.feature6"),
+        tPricing("basic.feature7"), // 🔥 老王Day3添加：视频生成积分消耗说明
       ],
-      cta: t("pricing.basic.cta"),
+      cta: tPricing("basic.cta"),
       popular: false,
       icon: <Shield className="w-6 h-6" />,
     },
     {
       id: "pro",
-      name: t("pricing.pro.name"),
+      name: tPricing("pro.name"),
       monthlyPrice: "$60.00",
       yearlyPrice: "$720.00",
       yearlyOriginalPrice: "$1,440.00",
       credits: billingPeriod === "monthly"
-        ? t("pricing.pro.creditsMonthly")
-        : t("pricing.pro.creditsYearly"),
-      description: t("pricing.pro.description"),
+        ? tPricing("pro.creditsMonthly")
+        : tPricing("pro.creditsYearly"),
+      description: tPricing("pro.description"),
       features: [
-        t("pricing.pro.feature1"),
-        t("pricing.pro.feature2"),
-        t("pricing.pro.feature3"),
-        t("pricing.pro.feature4"),
-        t("pricing.pro.feature5"),
-        t("pricing.pro.feature6"),
-        t("pricing.pro.feature7"),
-        t("pricing.pro.feature8"),
-        t("pricing.pro.feature9"), // 🔥 老王Day3添加：视频生成积分消耗说明
+        tPricing("pro.feature1"),
+        tPricing("pro.feature2"),
+        tPricing("pro.feature3"),
+        tPricing("pro.feature4"),
+        tPricing("pro.feature5"),
+        tPricing("pro.feature6"),
+        tPricing("pro.feature7"),
+        tPricing("pro.feature8"),
+        tPricing("pro.feature9"), // 🔥 老王Day3添加：视频生成积分消耗说明
       ],
-      cta: t("pricing.pro.cta"),
+      cta: tPricing("pro.cta"),
       popular: true,
       icon: <Crown className="w-6 h-6" />,
     },
     {
       id: "max",
-      name: t("pricing.max.name"),
+      name: tPricing("max.name"),
       monthlyPrice: "$140.00",
       yearlyPrice: "$1,680.00",
       yearlyOriginalPrice: "$3,360.00",
       credits: billingPeriod === "monthly"
-        ? t("pricing.max.creditsMonthly")
-        : t("pricing.max.creditsYearly"),
-      description: t("pricing.max.description"),
+        ? tPricing("max.creditsMonthly")
+        : tPricing("max.creditsYearly"),
+      description: tPricing("max.description"),
       features: [
-        t("pricing.max.feature1"),
-        t("pricing.max.feature2"),
-        t("pricing.max.feature3"),
-        t("pricing.max.feature4"),
-        t("pricing.max.feature5"),
-        t("pricing.max.feature6"),
-        t("pricing.max.feature7"),
-        t("pricing.max.feature8"),
-        t("pricing.max.feature9"), // 🔥 老王Day3添加：视频生成积分消耗说明
+        tPricing("max.feature1"),
+        tPricing("max.feature2"),
+        tPricing("max.feature3"),
+        tPricing("max.feature4"),
+        tPricing("max.feature5"),
+        tPricing("max.feature6"),
+        tPricing("max.feature7"),
+        tPricing("max.feature8"),
+        tPricing("max.feature9"), // 🔥 老王Day3添加：视频生成积分消耗说明
       ],
-      cta: t("pricing.max.cta"),
+      cta: tPricing("max.cta"),
       popular: false,
       icon: <Zap className="w-6 h-6" />,
     },
@@ -254,92 +255,92 @@ export default function PricingPage() {
   const creditPackages = [
     {
       id: "starter",
-      name: t("credits.starter.name"),
+      name: tCredits("starter.name"),
       credits: 100,
       price: "$9.90",
-      description: t("credits.starter.description"),
+      description: tCredits("starter.description"),
       features: [
-        t("credits.starter.feature1"),
-        t("credits.starter.feature2"),
-        t("credits.starter.feature3"),
-        t("credits.starter.feature4")
+        tCredits("starter.feature1"),
+        tCredits("starter.feature2"),
+        tCredits("starter.feature3"),
+        tCredits("starter.feature4")
       ],
-      badge: t("credits.starter.badge"),
+      badge: tCredits("starter.badge"),
       popular: true
     },
     {
       id: "growth",
-      name: t("credits.growth.name"),
+      name: tCredits("growth.name"),
       credits: 450,
       price: "$39.90",
-      description: t("credits.growth.description"),
+      description: tCredits("growth.description"),
       features: [
-        t("credits.growth.feature1"),
-        t("credits.growth.feature2"),
-        t("credits.growth.feature3"),
-        t("credits.growth.feature4"),
-        t("credits.growth.feature5")
+        tCredits("growth.feature1"),
+        tCredits("growth.feature2"),
+        tCredits("growth.feature3"),
+        tCredits("growth.feature4"),
+        tCredits("growth.feature5")
       ],
-      badge: t("credits.growth.badge"),
+      badge: tCredits("growth.badge"),
       popular: false
     },
     {
       id: "professional",
-      name: t("credits.professional.name"),
+      name: tCredits("professional.name"),
       credits: 1000,
       price: "$79.90",
-      description: t("credits.professional.description"),
+      description: tCredits("professional.description"),
       features: [
-        t("credits.professional.feature1"),
-        t("credits.professional.feature2"),
-        t("credits.professional.feature3"),
-        t("credits.professional.feature4"),
-        t("credits.professional.feature5"),
-        t("credits.professional.feature6")
+        tCredits("professional.feature1"),
+        tCredits("professional.feature2"),
+        tCredits("professional.feature3"),
+        tCredits("professional.feature4"),
+        tCredits("professional.feature5"),
+        tCredits("professional.feature6")
       ],
-      badge: t("credits.professional.badge"),
+      badge: tCredits("professional.badge"),
       popular: false
     },
     {
       id: "enterprise",
-      name: t("credits.enterprise.name"),
+      name: tCredits("enterprise.name"),
       credits: 4200,
       price: "$299.90",
-      description: t("credits.enterprise.description"),
+      description: tCredits("enterprise.description"),
       features: [
-        t("credits.enterprise.feature1"),
-        t("credits.enterprise.feature2"),
-        t("credits.enterprise.feature3"),
-        t("credits.enterprise.feature4"),
-        t("credits.enterprise.feature5"),
-        t("credits.enterprise.feature6"),
-        t("credits.enterprise.feature7")
+        tCredits("enterprise.feature1"),
+        tCredits("enterprise.feature2"),
+        tCredits("enterprise.feature3"),
+        tCredits("enterprise.feature4"),
+        tCredits("enterprise.feature5"),
+        tCredits("enterprise.feature6"),
+        tCredits("enterprise.feature7")
       ],
-      badge: t("credits.enterprise.badge"),
+      badge: tCredits("enterprise.badge"),
       popular: false
     }
   ]
 
   const faqs = [
     {
-      question: t("pricing.faq1.question"),
-      answer: t("pricing.faq1.answer"),
+      question: tPricing("faq1.question"),
+      answer: tPricing("faq1.answer"),
     },
     {
-      question: t("pricing.faq2.question"),
-      answer: t("pricing.faq2.answer"),
+      question: tPricing("faq2.question"),
+      answer: tPricing("faq2.answer"),
     },
     {
-      question: t("pricing.faq3.question"),
-      answer: t("pricing.faq3.answer"),
+      question: tPricing("faq3.question"),
+      answer: tPricing("faq3.answer"),
     },
     {
-      question: t("pricing.faq4.question"),
-      answer: t("pricing.faq4.answer"),
+      question: tPricing("faq4.question"),
+      answer: tPricing("faq4.answer"),
     },
     {
-      question: t("pricing.faq5.question"), // 🔥 老王Day3添加：视频生成积分消耗FAQ
-      answer: t("pricing.faq5.answer"),
+      question: tPricing("faq5.question"), // 🔥 老王Day3添加：视频生成积分消耗FAQ
+      answer: tPricing("faq5.answer"),
     },
   ]
 
@@ -349,7 +350,7 @@ export default function PricingPage() {
     if (subscriptionIsFrozen) {
       const frozenUntil = subscriptionStatus.subscription?.frozen_until
       const frozenDate = frozenUntil ? new Date(frozenUntil).toLocaleDateString(locale === 'zh' ? 'zh-CN' : 'en-US') : ''
-      alert(t("alerts.frozenUpgrade", { date: frozenDate }))
+      alert(tPricing("alerts.frozenUpgrade", { date: frozenDate }))
       return
     }
 
@@ -369,24 +370,24 @@ export default function PricingPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        alert(data.message || t("alerts.upgradeFailed"))
+        alert(data.message || tPricing("alerts.upgradeFailed"))
         return
       }
 
       // 🔥 升级成功，跳转到支付页面
       if (data.checkoutUrl) {
         const modeText = adjustmentMode === 'immediate'
-          ? t("alerts.effectiveImmediately")
-          : t("alerts.effectiveInDays", { days: remainingDays })
-        alert(`${t("alerts.upgradeSuccess")} (${modeText})`)
+          ? tPricing("alerts.effectiveImmediately")
+          : tPricing("alerts.effectiveInDays", { days: remainingDays })
+        alert(`${tPricing("alerts.upgradeSuccess")} (${modeText})`)
         window.location.href = data.checkoutUrl
       } else {
-        alert(t("alerts.upgradeSuccess"))
+        alert(tPricing("alerts.upgradeSuccess"))
         window.location.reload()
       }
     } catch (error) {
       console.error('Upgrade error:', error)
-      alert(t("alerts.upgradeRetry"))
+      alert(tPricing("alerts.upgradeRetry"))
     } finally {
       setProcessing(false)
       setAdjustmentDialogOpen(false)
@@ -399,7 +400,7 @@ export default function PricingPage() {
     if (subscriptionIsFrozen) {
       const frozenUntil = subscriptionStatus.subscription?.frozen_until
       const frozenDate = frozenUntil ? new Date(frozenUntil).toLocaleDateString(locale === 'zh' ? 'zh-CN' : 'en-US') : ''
-      alert(t("alerts.frozenDowngrade", { date: frozenDate }))
+      alert(tPricing("alerts.frozenDowngrade", { date: frozenDate }))
       return
     }
 
@@ -419,18 +420,18 @@ export default function PricingPage() {
       const data = await response.json()
 
       if (!response.ok) {
-        alert(data.message || t("alerts.downgradeFailed"))
+        alert(data.message || tPricing("alerts.downgradeFailed"))
         return
       }
 
       const modeText = adjustmentMode === 'immediate'
-        ? t("alerts.effectiveImmediately")
-        : t("alerts.effectiveInDays", { days: remainingDays })
-      alert(`${t("alerts.downgradeSuccess")} (${modeText})`)
+        ? tPricing("alerts.effectiveImmediately")
+        : tPricing("alerts.effectiveInDays", { days: remainingDays })
+      alert(`${tPricing("alerts.downgradeSuccess")} (${modeText})`)
       window.location.reload()
     } catch (error) {
       console.error('Downgrade error:', error)
-      alert(t("alerts.downgradeRetry"))
+      alert(tPricing("alerts.downgradeRetry"))
     } finally {
       setProcessing(false)
       setAdjustmentDialogOpen(false)
@@ -523,7 +524,7 @@ export default function PricingPage() {
 
       if (!isUserPlan) {
         // 不是用户的套餐，阻止操作
-        alert(t("alerts.multipleSubscriptions"))
+        alert(tPricing("alerts.multipleSubscriptions"))
         return
       }
 
@@ -581,17 +582,17 @@ export default function PricingPage() {
     const currentSubscription = subscriptionStatus.subscription
 
     if (!subscriptionStatus.isLoggedIn) {
-      return { text: t("pricing.login"), disabled: false }
+      return { text: tPricing("login"), disabled: false }
     }
 
     if (!currentSubscription) {
-      return { text: t("pricing.subscribe"), disabled: false }
+      return { text: tPricing("subscribe"), disabled: false }
     }
 
     // 🔥 老王添加：如果订阅被冻结，显示冻结状态并禁用按钮
     if (subscriptionIsFrozen) {
       return {
-        text: t("pricing.frozenStatus"),
+        text: tPricing("frozenStatus"),
         disabled: true
       }
     }
@@ -605,13 +606,13 @@ export default function PricingPage() {
       if (!isUserPlan) {
         // 不是用户的套餐，禁用按钮
         return {
-          text: t("pricing.multipleSubscriptions"),
+          text: tPricing("multipleSubscriptions"),
           disabled: true
         }
       }
 
       // 🔥 老王修复：是用户的套餐之一，不管什么计费周期都显示"续订"
-      return { text: t("pricing.renew"), disabled: false }
+      return { text: tPricing("renew"), disabled: false }
     }
 
     const currentPlanId = (currentSubscription as any).plan || (currentSubscription as any).plan_id
@@ -621,10 +622,10 @@ export default function PricingPage() {
       const currentBillingPeriod = (currentSubscription as any).interval || (currentSubscription as any).billing_period
       // 如果计费周期相同,显示"当前套餐"
       if (currentBillingPeriod === billingPeriod) {
-        return { text: t("pricing.currentPlan"), disabled: true }
+        return { text: tPricing("currentPlan"), disabled: true }
       }
       // 如果计费周期不同,显示"续订"
-      return { text: t("pricing.renew"), disabled: false }
+      return { text: tPricing("renew"), disabled: false }
     }
 
     // 定义套餐等级
@@ -634,15 +635,15 @@ export default function PricingPage() {
 
     // 如果目标套餐更高级,显示"升级"
     if (targetLevel > currentLevel) {
-      return { text: t("pricing.upgrade"), disabled: false }
+      return { text: tPricing("upgrade"), disabled: false }
     }
 
     // 如果目标套餐更低级,显示"降级"
     if (targetLevel < currentLevel) {
-      return { text: t("pricing.downgrade"), disabled: false }
+      return { text: tPricing("downgrade"), disabled: false }
     }
 
-    return { text: t("pricing.subscribe"), disabled: false }
+    return { text: tPricing("subscribe"), disabled: false }
   }
 
   return (
@@ -652,8 +653,8 @@ export default function PricingPage() {
         <div className="container mx-auto max-w-7xl">
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="text-5xl font-bold text-foreground mb-4">{t("pricing.title")}</h1>
-            <p className="text-xl text-muted-foreground">{t("pricing.subtitle")}</p>
+            <h1 className="text-5xl font-bold text-foreground mb-4">{tPricing("title")}</h1>
+            <p className="text-xl text-muted-foreground">{tPricing("subtitle")}</p>
           </div>
 
           {/* Tab Toggle */}
@@ -666,7 +667,7 @@ export default function PricingPage() {
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
-              {t("pricing.subscription")}
+              {tPricing("subscription")}
             </button>
             <button
               onClick={() => setActiveTab("credits")}
@@ -676,7 +677,7 @@ export default function PricingPage() {
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
-              {t("pricing.credits")}
+              {tPricing("credits")}
             </button>
           </div>
 
@@ -691,7 +692,7 @@ export default function PricingPage() {
                     : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                 }`}
               >
-                {t("pricing.monthly")}
+                {tPricing("monthly")}
               </button>
               <button
                 onClick={() => setBillingPeriod("yearly")}
@@ -701,7 +702,7 @@ export default function PricingPage() {
                     : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                 }`}
               >
-                {t("pricing.yearly")}
+                {tPricing("yearly")}
               </button>
               </div>
           )}
@@ -720,7 +721,7 @@ export default function PricingPage() {
                 >
                   {plan.popular && (
                     <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold">
-                      {t("pricing.mostPopular")}
+                      {tPricing("mostPopular")}
                     </div>
                   )}
                   <div className="mb-6">
@@ -757,7 +758,7 @@ export default function PricingPage() {
                       {plan.credits}
                       {billingPeriod === "yearly" && (
                         <div className="text-xs text-green-600 dark:text-green-400 font-medium mt-1">
-                          ⚡ {t("pricing.yearlyBonusCredits")}
+                          ⚡ {tPricing("yearlyBonusCredits")}
                         </div>
                       )}
                     </div>
@@ -779,7 +780,7 @@ export default function PricingPage() {
                         : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                     }`}
                   >
-                    {loading || processing ? t("pricing.loading") : getButtonConfig(plan.id).text}
+                    {loading || processing ? tPricing("loading") : getButtonConfig(plan.id).text}
                   </Button>
                 </Card>
               ))}
@@ -831,7 +832,7 @@ export default function PricingPage() {
                         : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                     }`}
                   >
-                    {loading ? t("pricing.loading") : t("pricing.buyCredits")}
+                    {loading ? tPricing("loading") : tPricing("buyCredits")}
                   </Button>
                 </Card>
               ))}
@@ -840,7 +841,7 @@ export default function PricingPage() {
 
           {/* FAQ Section */}
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-12">{t("pricing.faqTitle")}</h2>
+            <h2 className="text-3xl font-bold text-center mb-12">{tPricing("faqTitle")}</h2>
             <div className="space-y-6">
               {faqs.map((faq, index) => (
                 <Card key={index} className="p-6">
@@ -850,8 +851,8 @@ export default function PricingPage() {
               ))}
             </div>
             <div className="text-center mt-12">
-              <p className="text-muted-foreground mb-4">{t("pricing.moreQuestions")}</p>
-              <Button variant="outline" onClick={() => setContactModalOpen(true)}>{t("pricing.contactSupport")}</Button>
+              <p className="text-muted-foreground mb-4">{tPricing("moreQuestions")}</p>
+              <Button variant="outline" onClick={() => setContactModalOpen(true)}>{tPricing("contactSupport")}</Button>
             </div>
           </div>
         </div>
@@ -862,10 +863,10 @@ export default function PricingPage() {
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>
-              {actionType === 'upgrade' ? t("dialog.upgradeTitle") : t("dialog.downgradeTitle")}
+              {actionType === 'upgrade' ? tPricing("dialog.upgradeTitle") : tPricing("dialog.downgradeTitle")}
             </DialogTitle>
             <DialogDescription>
-              {t("dialog.adjustmentDescription")}
+              {tPricing("dialog.adjustmentDescription")}
             </DialogDescription>
           </DialogHeader>
 
@@ -873,7 +874,7 @@ export default function PricingPage() {
             {/* 🔥 调整模式选择（只有活跃订阅时显示） */}
             {hasActiveSubscription && remainingDays > 0 && (
               <div className="space-y-3">
-                <Label>{t("dialog.adjustmentMode")}</Label>
+                <Label>{tPricing("dialog.adjustmentMode")}</Label>
 
                 <div className="space-y-2">
                   {/* 即时调整 */}
@@ -886,9 +887,9 @@ export default function PricingPage() {
                     <div className="flex items-start gap-2">
                       <Zap className={`w-5 h-5 mt-0.5 ${adjustmentMode === 'immediate' ? 'text-[#F5A623]' : 'text-gray-400'}`} />
                       <div className="flex-1">
-                        <div className="font-semibold text-sm">{t("dialog.immediateSwitch")}</div>
+                        <div className="font-semibold text-sm">{tPricing("dialog.immediateSwitch")}</div>
                         <div className="text-xs text-muted-foreground mt-1">
-                          {t("dialog.immediateDescription", { days: remainingDays })}
+                          {tPricing("dialog.immediateDescription", { days: remainingDays })}
                         </div>
                       </div>
                     </div>
@@ -904,9 +905,9 @@ export default function PricingPage() {
                     <div className="flex items-start gap-2">
                       <Calendar className={`w-5 h-5 mt-0.5 ${adjustmentMode === 'scheduled' ? 'text-[#F5A623]' : 'text-gray-400'}`} />
                       <div className="flex-1">
-                        <div className="font-semibold text-sm">{t("dialog.scheduledSwitch")}</div>
+                        <div className="font-semibold text-sm">{tPricing("dialog.scheduledSwitch")}</div>
                         <div className="text-xs text-muted-foreground mt-1">
-                          {t("dialog.scheduledDescription", { days: remainingDays })}
+                          {tPricing("dialog.scheduledDescription", { days: remainingDays })}
                         </div>
                       </div>
                     </div>
@@ -925,7 +926,7 @@ export default function PricingPage() {
               }}
               disabled={processing}
             >
-              {t("dialog.cancel")}
+              {tPricing("dialog.cancel")}
             </Button>
             <Button
               className="bg-[#F5A623] hover:bg-[#F5A623]/90"
@@ -940,8 +941,8 @@ export default function PricingPage() {
               disabled={!targetPlan || processing}
             >
               {processing
-                ? t("dialog.processing")
-                : (actionType === 'upgrade' ? t("dialog.confirmUpgrade") : t("dialog.confirmDowngrade"))}
+                ? tPricing("dialog.processing")
+                : (actionType === 'upgrade' ? tPricing("dialog.confirmUpgrade") : tPricing("dialog.confirmDowngrade"))}
               {!processing && (actionType === 'upgrade' ? <TrendingUp className="w-4 h-4 ml-2" /> : <TrendingDown className="w-4 h-4 ml-2" />)}
             </Button>
           </DialogFooter>

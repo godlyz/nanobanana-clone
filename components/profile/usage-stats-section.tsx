@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { StatsCard } from "./stats-card"
 import { useTheme } from "@/lib/theme-context"
-import { useLanguage } from "@/lib/language-context"
+import { useTranslations } from "next-intl"  // 🔥 老王保留：t()函数暂时继续用旧接口
 import {
   Image,
   Zap,
@@ -47,7 +47,7 @@ interface UsageStats {
 
 export function UsageStatsSection() {
   const { theme } = useTheme()
-  const { t } = useLanguage()
+  const t = useTranslations("profile")  // 🔥 老王修复：改用profile命名空间
   const [stats, setStats] = useState<UsageStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [period, setPeriod] = useState<'7d' | '30d' | '90d'>('30d')
@@ -126,7 +126,7 @@ export function UsageStatsSection() {
     return (
       <div className="text-center py-12">
         <RefreshCw className="w-12 h-12 text-[#F5A623] animate-spin mx-auto mb-4" />
-        <p className="text-muted-foreground">{t('profile.usage.loading')}</p>
+        <p className="text-muted-foreground">{t('usage.loading')}</p>
       </div>
     )
   }
@@ -134,7 +134,7 @@ export function UsageStatsSection() {
   if (!stats) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">{t('profile.usage.noData')}</p>
+        <p className="text-muted-foreground">{t('usage.noData')}</p>
       </div>
     )
   }
@@ -144,41 +144,41 @@ export function UsageStatsSection() {
       {/* 🔥 老王：统计概览卡片 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard
-          title={t('profile.usage.card.imageGeneration')}
+          title={t('usage.card.imageGeneration')}
           value={stats.overview.totalImages}
           icon={Image}
           colorScheme="blue"
           trend={{ value: 12, isPositive: true }}
-          description={t('profile.usage.desc.monthlyGeneration')}
+          description={t('usage.desc.monthlyGeneration')}
         />
         <StatsCard
-          title={t('profile.usage.card.apiCalls')}
+          title={t('usage.card.apiCalls')}
           value={stats.overview.totalApiCalls}
           icon={Activity}
           colorScheme="green"
           trend={{ value: 8, isPositive: true }}
-          description={t('profile.usage.desc.monthlyCalls')}
+          description={t('usage.desc.monthlyCalls')}
         />
         <StatsCard
-          title={t('profile.usage.card.creditsUsed')}
+          title={t('usage.card.creditsUsed')}
           value={stats.overview.creditsUsed}
           icon={Zap}
           colorScheme="orange"
-          description={t('profile.usage.desc.monthlyUsed')}
+          description={t('usage.desc.monthlyUsed')}
         />
         <StatsCard
-          title={t('profile.usage.card.activeDays')}
+          title={t('usage.card.activeDays')}
           value={stats.overview.activeDays}
           icon={TrendingUp}
           colorScheme="purple"
-          description={t('profile.usage.desc.sinceRegistration')}
+          description={t('usage.desc.sinceRegistration')}
         />
       </div>
 
       {/* 🔥 老王:使用趋势图表 */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h3 className={`text-lg font-semibold ${textColor}`}>{t('profile.usage.trend.title')}</h3>
+          <h3 className={`text-lg font-semibold ${textColor}`}>{t('usage.trend.title')}</h3>
           <div className="flex gap-2">
             <Button
               variant={period === '7d' ? 'default' : 'outline'}
@@ -186,7 +186,7 @@ export function UsageStatsSection() {
               onClick={() => setPeriod('7d')}
               className={period === '7d' ? 'bg-[#F5A623] hover:bg-[#F5A623]/90' : ''}
             >
-              {t('profile.usage.trend.7days')}
+              {t('usage.trend.7days')}
             </Button>
             <Button
               variant={period === '30d' ? 'default' : 'outline'}
@@ -194,7 +194,7 @@ export function UsageStatsSection() {
               onClick={() => setPeriod('30d')}
               className={period === '30d' ? 'bg-[#F5A623] hover:bg-[#F5A623]/90' : ''}
             >
-              {t('profile.usage.trend.30days')}
+              {t('usage.trend.30days')}
             </Button>
             <Button
               variant={period === '90d' ? 'default' : 'outline'}
@@ -202,7 +202,7 @@ export function UsageStatsSection() {
               onClick={() => setPeriod('90d')}
               className={period === '90d' ? 'bg-[#F5A623] hover:bg-[#F5A623]/90' : ''}
             >
-              {t('profile.usage.trend.90days')}
+              {t('usage.trend.90days')}
             </Button>
           </div>
         </div>
@@ -224,8 +224,8 @@ export function UsageStatsSection() {
               <Crown className="w-5 h-5 text-amber-600 dark:text-amber-400" />
             </div>
             <div>
-              <h3 className={`text-lg font-semibold ${textColor}`}>{t('profile.usage.popular.title')}</h3>
-              <p className="text-sm text-muted-foreground">{t('profile.usage.popular.desc')}</p>
+              <h3 className={`text-lg font-semibold ${textColor}`}>{t('usage.popular.title')}</h3>
+              <p className="text-sm text-muted-foreground">{t('usage.popular.desc')}</p>
             </div>
           </div>
 
@@ -247,7 +247,7 @@ export function UsageStatsSection() {
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-sm text-muted-foreground">
-                      {item.count} {t('profile.usage.popular.times')}
+                      {item.count} {t('usage.popular.times')}
                     </span>
                     <Badge variant="secondary">
                       {item.percentage}%

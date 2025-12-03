@@ -6,7 +6,7 @@
 
 "use client"
 
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
@@ -39,7 +39,7 @@ export function ForumThreadList({
   pagination,
   onPageChange,
 }: ForumThreadListProps) {
-  const { language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
 
   // 空状态
   if (!threads || threads.length === 0) {

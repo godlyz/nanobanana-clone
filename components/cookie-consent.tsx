@@ -15,10 +15,12 @@ import { useState, useEffect } from "react"
 import CookieConsent from "react-cookie-consent"
 import Link from "next/link"
 import { X } from "lucide-react"
-import { useLanguage } from "@/lib/language-context"
+import { usePathname } from "next/navigation"
 
 export function CookieConsentBanner() {
-  const { language } = useLanguage()
+  // 🔥 老王修复：从URL路径解析语言，避免依赖NextIntlClientProvider
+  const pathname = usePathname()
+  const language = pathname?.startsWith('/zh') ? 'zh' : 'en'
   const [visible, setVisible] = useState(false)
 
   // 🔥 老王修复：客户端检测Cookie状态，避免水合错误

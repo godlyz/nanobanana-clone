@@ -7,7 +7,7 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
 import { Button } from "@/components/ui/button"
 import { ThumbsUp, ThumbsDown, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -58,7 +58,7 @@ export function ForumVoteButtons({
   disabled = false,
   size = 'md',
 }: ForumVoteButtonsProps) {
-  const { language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
   // 🔥 老王修复：useToast返回{addToast, removeToast, toasts}，不是{toast}
   const { addToast } = useToast()
 

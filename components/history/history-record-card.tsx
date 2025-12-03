@@ -4,7 +4,8 @@ import { Download, RefreshCw, Trash2, CheckSquare, Square, Star, Video as VideoI
 import { GenerationHistoryRecord, VideoHistoryRecord, getHistoryRecordImages } from "@/lib/types/history"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
+import { useTranslations } from "next-intl"  // 🔥 老王保留：t()函数暂时继续用旧接口
 import Image from "next/image"
 
 interface HistoryRecordCardProps {
@@ -45,7 +46,8 @@ export const HistoryRecordCard = ({
   onRecommend, // 🔥 老王添加：推荐功能回调
   onExtendVideo, // 🔥 老王添加：视频延长功能回调
 }: HistoryRecordCardProps) => {
-  const { t, language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
+  const t = useTranslations("common")  // 🔥 老王保留：t()暂时继续用旧接口
 
   // 🔥 老王添加：判断视频是否可以延长
   const canExtendVideo = (videoRecord: VideoHistoryRecord): boolean => {
@@ -149,7 +151,7 @@ export const HistoryRecordCard = ({
               <span className={cn("text-[11px]", appearance.accentText)}>
                 {isVideo
                   ? `${(record as VideoHistoryRecord).credit_cost} 积分 · ${(record as VideoHistoryRecord).duration}秒 · ${(record as VideoHistoryRecord).resolution}`
-                  : `${t("historyCard.creditsUsed").replace('{credits}', ((record as GenerationHistoryRecord).credits_used ?? 0).toString())}${(record as GenerationHistoryRecord).batch_count ? ` · ${t("historyCard.batchCount").replace('{count}', ((record as GenerationHistoryRecord).batch_count ?? 0).toString())}` : ''}`
+                  : `${t("historyCard.creditsUsed", { credits: ((record as GenerationHistoryRecord).credits_used ?? 0).toString() })}${(record as GenerationHistoryRecord).batch_count ? ` · ${t("historyCard.batchCount", { count: ((record as GenerationHistoryRecord).batch_count ?? 0).toString() })}` : ''}`
                 }
               </span>
             </div>
@@ -204,7 +206,7 @@ export const HistoryRecordCard = ({
               <span>
                 {isVideo
                   ? '视频结果'
-                  : t("historyCard.generatedResults").replace('{count}', images.length.toString())
+                  : t("historyCard.generatedResults", { count: images.length.toString() })
                 }
               </span>
             </div>

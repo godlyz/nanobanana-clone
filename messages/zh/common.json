@@ -1,0 +1,714 @@
+{
+  "nav": {
+    "editor": "AI创作中心",
+    "showcase": "案例展示",
+    "toolbox": "工具箱",
+    "videoGeneration": "视频生成",
+    "videoGallery": "视频影廊",
+    "batchEdit": "批量编辑",
+    "styleTransfer": "风格迁移",
+    "backgroundRemover": "背景移除",
+    "naturalLanguage": "自然语言编辑",
+    "consistentGeneration": "一致性出图",
+    "scenePreservation": "场景保留",
+    "multiImage": "多图处理",
+    "textToImageWithText": "文生图+文本",
+    "multimodalEdit": "图文交织编辑",
+    "chatEdit": "对话式编辑",
+    "smartPrompt": "智能提示词",
+    "pricing": "定价",
+    "api": "API",
+    "challenges": "创意挑战",
+    "community": "社区",
+    "forum": "论坛",
+    "activityFeed": "活动流",
+    "communityGuidelines": "社区规范",
+    "moderationManual": "审核员手册"
+  },
+  "header": {
+    "signin": "登录",
+    "getstarted": "立即启动",
+    "profile": "个人信息",
+    "logout": "退出登录"
+  },
+  "bgRemover": {
+    "badge": "AI驱动工具",
+    "title": "移除图像",
+    "highlight": "背景",
+    "subtitle": "几秒完成",
+    "description": "使用AI驱动的背景移除功能，将任何图像转变为专业杰作。非常适合电商、营销和创意项目。",
+    "ctaPrimary": "免费试用",
+    "ctaSecondary": "查看定价",
+    "feature1": "无需注册",
+    "feature2": "即时结果",
+    "feature3": "高清质量",
+    "demoTitle": "AI背景移除演示",
+    "demoSubtitle": "上传您的图片，见证神奇效果",
+    "useCasesTitle": "适用于各种场景",
+    "useCasesSubtitle": "几秒内为任何项目移除背景",
+    "useCase1Title": "电子商务",
+    "useCase1Desc": "为您的在线商店创建具有干净白色背景的专业产品照片。通过工作室品质的图像提升销售额。",
+    "useCase2Title": "人像",
+    "useCase2Desc": "从人像、头像和个人资料图片中移除干扰性背景。非常适合LinkedIn和简历。",
+    "useCase3Title": "设计与营销",
+    "useCase3Desc": "为拼贴、广告和社交媒体帖子提取主题。几分钟内创建引人注目的视觉效果。",
+    "howTitle": "工作原理",
+    "howSubtitle": "3个简单步骤移除背景",
+    "step1Title": "上传您的图片",
+    "step1Desc": "拖放任何图片或粘贴URL。支持JPG、PNG、WebP格式，最大10MB。",
+    "step2Title": "AI施展魔法",
+    "step2Desc": "我们的高级AI模型分析图片，在几秒钟内准确地将前景与背景分离。",
+    "step3Title": "下载结果",
+    "step3Desc": "即时获取具有透明背景的图片。以PNG格式下载，保持完整分辨率。",
+    "whyTitle": "为什么选择Nano Banana？",
+    "whySubtitle": "最准确的AI背景移除工具",
+    "feature1Title": "闪电般快速",
+    "feature1Desc": "3秒内处理图片",
+    "feature2Title": "像素完美",
+    "feature2Desc": "AI检测头发和毛皮等细节",
+    "feature3Title": "免费起步",
+    "feature3Desc": "每月50次免费编辑，无需信用卡",
+    "feature4Title": "随处可用",
+    "feature4Desc": "台式机、手机、平板 - 所有设备",
+    "feature5Title": "100%隐私",
+    "feature5Desc": "图片30天后自动删除",
+    "feature6Title": "高清质量",
+    "feature6Desc": "全分辨率输出，无压缩",
+    "finalTitle": "准备好移除背景了吗？",
+    "finalSubtitle": "加入数千名使用Nano Banana创建精美图像的用户",
+    "finalCta": "立即开始编辑 - 完全免费"
+  },
+  "charConsist": {
+    "badge": "角色AI",
+    "title": "保持角色",
+    "highlight": "完美一致",
+    "description": "创建整个故事系列，同一个角色出现在每个场景中。AI确保所有图像的完美一致性 - 相同的面孔、相同的风格、每次都是。",
+    "ctaPrimary": "试用角色一致性",
+    "ctaSecondary": "查看示例",
+    "feature1": "每个场景相同角色",
+    "feature2": "无风格漂移",
+    "feature3": "无限变化",
+    "demoTitle": "角色一致性魔法",
+    "demoSubtitle": "创建连贯的视觉故事",
+    "howTitle": "角色一致性如何工作",
+    "howSubtitle": "3步创建一致的角色系列",
+    "step1Title": "定义您的角色",
+    "step1Desc": "上传参考图片或详细描述您的角色。AI学习要保持的独特特征。",
+    "step2Title": "创建多个场景",
+    "step2Desc": "使用不同的提示词生成新图像。角色保持相同，背景和动作改变。",
+    "step3Title": "构建您的故事",
+    "step3Desc": "创建整个漫画书、故事板或社交媒体系列，保持完美的角色一致性。",
+    "useCasesTitle": "完美适用于",
+    "useCasesSubtitle": "创建连贯的视觉叙事",
+    "useCase1Title": "漫画创作者",
+    "useCase1Desc": "创建整个漫画系列，角色在所有面板和页面上保持一致。",
+    "useCase2Title": "儿童读物",
+    "useCase2Desc": "插图书籍，角色从第1页到最后一页看起来相同。",
+    "useCase3Title": "社交媒体",
+    "useCase3Desc": "为Instagram故事、TikTok系列、YouTube缩略图建立可识别的角色品牌。",
+    "whyTitle": "为什么选择角色一致性？",
+    "whySubtitle": "视觉连续性的力量",
+    "feature1Title": "品牌识别",
+    "feature1Desc": "观众立即识别您的角色",
+    "feature2Title": "故事连贯性",
+    "feature2Desc": "保持叙事流程，不会产生视觉混乱",
+    "feature3Title": "专业品质",
+    "feature3Desc": "看起来像来自单一艺术家的作品",
+    "feature4Title": "节省时间",
+    "feature4Desc": "无需重新绘制或重新生成角色",
+    "feature5Title": "创作自由",
+    "feature5Desc": "将您的角色放置在任何可想象的场景中",
+    "feature6Title": "系列制作",
+    "feature6Desc": "为系列创建100+一致的图像",
+    "finalTitle": "准备好创建一致的角色了吗？",
+    "finalSubtitle": "加入使用AI创建专业视觉系列的讲故事者",
+    "finalCta": "开始创建角色"
+  },
+  "scenePreserve": {
+    "badge": "场景控制",
+    "title": "编辑对象",
+    "highlight": "保留场景",
+    "subtitle": "同时不改变",
+    "description": "更改特定对象，同时保留精确的背景、光线和构图。非常适合产品摄影、A/B测试和创意变化。",
+    "ctaPrimary": "试用场景保留",
+    "ctaSecondary": "查看示例",
+    "feature1": "保留背景",
+    "feature2": "仅更改对象",
+    "feature3": "完美光线匹配",
+    "demoTitle": "场景保留演示",
+    "demoSubtitle": "更改对象，保留其他一切",
+    "howTitle": "场景保留如何工作",
+    "howSubtitle": "图像编辑的外科手术精度",
+    "step1Title": "上传您的场景",
+    "step1Desc": "从任何您想要修改特定元素同时保持场景完整的图像开始。",
+    "step2Title": "选择并描述更改",
+    "step2Desc": "标记要更改的对象并描述新对象。AI保留透视、光线和环境。",
+    "step3Title": "获得完美集成",
+    "step3Desc": "新对象无缝融入场景，具有匹配的阴影、反射和照明。",
+    "useCasesTitle": "完美适用于",
+    "useCasesSubtitle": "当您需要外科手术精度时",
+    "useCase1Title": "产品摄影",
+    "useCase1Desc": "拍摄一次场景，交换数十次产品。相同的照明、相同的角度、不同的产品。",
+    "useCase2Title": "A/B测试",
+    "useCase2Desc": "测试不同的产品颜色、设计或放置，同时保持其他一切相同。",
+    "useCase3Title": "室内设计",
+    "useCase3Desc": "向客户展示同一房间中的不同家具选项，无需重新渲染整个场景。",
+    "whyTitle": "为什么选择场景保留？",
+    "whySubtitle": "精确编辑能力",
+    "feature1Title": "节省设置时间",
+    "feature1Desc": "设置一次照明和场景，无限次重复使用",
+    "feature2Title": "完美一致性",
+    "feature2Desc": "所有变化都有相同的背景",
+    "feature3Title": "逼真集成",
+    "feature3Desc": "AI匹配照明、阴影和透视",
+    "feature4Title": "快速迭代",
+    "feature4Desc": "几分钟内创建50个变化",
+    "feature5Title": "专业结果",
+    "feature5Desc": "看起来像在场景中拍摄的",
+    "feature6Title": "成本效益",
+    "feature6Desc": "无需多次拍摄",
+    "finalTitle": "准备好进行精确编辑了吗？",
+    "finalSubtitle": "编辑对象同时保留完美场景",
+    "finalCta": "开始场景保留"
+  },
+  "footer": {
+    "tagline": "用 AI 驱动的自然语言编辑转换图像",
+    "product": {
+      "title": "产品",
+      "editor": "图像编辑器",
+      "api": "API 文档",
+      "pricing": "定价",
+      "showcase": "案例展示"
+    },
+    "company": {
+      "title": "公司",
+      "about": "关于我们",
+      "blog": "博客",
+      "careers": "招聘",
+      "contact": "联系我们"
+    },
+    "resources": {
+      "title": "资源",
+      "docs": "文档",
+      "guides": "指南",
+      "support": "支持",
+      "community": "社区",
+      "userGuide": "用户指南",
+      "forum": "论坛",
+      "activityFeed": "活动流"
+    },
+    "legal": {
+      "communityGuidelines": "社区规范",
+      "moderationManual": "审核员手册",
+      "title": "法律",
+      "privacy": "隐私政策",
+      "terms": "服务条款",
+      "cookies": "Cookie 政策"
+    },
+    "support": {
+      "customer": "客服支持",
+      "sales": "联系销售"
+    },
+    "copyright": "© 2025 Nano Banana. 保留所有权利."
+  },
+  "contact": {
+    "modal": {
+      "title": {
+        "support": "联系客服",
+        "sales": "联系销售团队"
+      },
+      "phone": "电话",
+      "qq": "QQ",
+      "wechat": "微信",
+      "telegram": "Telegram",
+      "email": "邮箱",
+      "close": "关闭",
+      "copy": "复制",
+      "copied": "已复制！"
+    }
+  },
+  "consistentGeneration": {
+    "title": "一致性出图",
+    "description": "基于已保存的主体/角色/风格生成新图片，保持一致性",
+    "savedImages": "已保存图片",
+    "refresh": "刷新",
+    "noSavedImages": "还没有保存的图片",
+    "promptLabel": "生成提示词",
+    "promptPlaceholder": "描述场景、动作或环境...",
+    "generating": "生成中...",
+    "generateNow": "立即生成",
+    "outputGallery": "输出画廊",
+    "selectedReference": "选中的参考图：",
+    "noImagesYet": "还没有生成的图片",
+    "enterImageName": "输入图片名称（可选）",
+    "selectImageFirst": "请先选择一个参考图片",
+    "enterPromptFirst": "请输入生成提示词",
+    "generationFailed": "生成失败，请重试",
+    "noImageGenerated": "没有生成图片",
+    "saveSuccess": "图片保存成功！",
+    "saveFailed": "保存图片失败",
+    "loadFailed": "加载已保存图片失败"
+  },
+  "common": {
+    "back": "返回",
+    "cancel": "取消",
+    "retry": "重试"
+  },
+  "feed": {
+    "title": "动态信息流",
+    "subtitle": "查看您关注的创作者的最新动态",
+    "empty": {
+      "title": "暂无动态",
+      "description": "关注一些创作者，他们的动态将显示在这里",
+      "cta": "发现创作者"
+    },
+    "activity": {
+      "newArtwork": "分享了新作品",
+      "newVideo": "创建了新视频",
+      "commented": "发表了评论",
+      "followed": "开始关注",
+      "earned": "获得了成就",
+      "liked": "点赞了作品",
+      "default": "有了新动态"
+    },
+    "time": {
+      "justNow": "刚刚",
+      "minsAgo": "分钟前",
+      "hoursAgo": "小时前",
+      "daysAgo": "天前"
+    }
+  },
+  "share": {
+    "button": "分享",
+    "title": "分享此内容",
+    "email": "邮件",
+    "copied": "已复制！",
+    "copyLink": "复制链接",
+    "more": "更多选项"
+  },
+  "privacy": {
+    "whoCanSee": "谁可以看到这个？",
+    "public": "公开",
+    "publicDesc": "所有人都可以看到",
+    "followersOnly": "仅关注者",
+    "followersOnlyDesc": "只有你的关注者可以看到",
+    "private": "私密",
+    "privateDesc": "只有你自己可以看到"
+  },
+  "showcasePage": {
+    "badge": "社区精选",
+    "title": "案例展示画廊",
+    "subtitle": "探索我们社区使用 Nano Banana 创建的惊人图像转换",
+    "tryNow": "立即试用",
+    "submitWork": "提交您的作品",
+    "filter": {
+      "all": "全部",
+      "portrait": "肖像",
+      "landscape": "风景",
+      "product": "产品",
+      "creative": "创意",
+      "anime": "动漫"
+    },
+    "tryThis": "试试这个",
+    "loadMore": "加载更多",
+    "cta": {
+      "title": "准备创建您自己的作品？",
+      "description": "加入数千名使用 Nano Banana 转换图像的创作者",
+      "button": "开始创作"
+    },
+    "comingSoon": "即将推出"
+  },
+  "batchEditor": {
+    "title": "批量图像编辑器",
+    "subtitle": "使用 AI 驱动的编辑同时处理多张图像",
+    "uploadMultiple": {
+      "title": "上传多张图像",
+      "subtitle": "拖放最多 50 张图像或点击浏览"
+    },
+    "sharedPrompt": {
+      "title": "共享提示词",
+      "placeholder": "输入将应用于所有图像的提示词..."
+    },
+    "processAll": "处理所有图像",
+    "features": {
+      "parallel": {
+        "title": "并行处理",
+        "description": "同时处理最多 50 张图像"
+      },
+      "consistent": {
+        "title": "一致的结果",
+        "description": "在所有图像上应用相同的编辑风格"
+      },
+      "fast": {
+        "title": "闪电般快速",
+        "description": "在几秒钟内完成批量作业，而不是几分钟"
+      },
+      "export": {
+        "title": "批量导出",
+        "description": "将所有处理过的图像下载为 ZIP 文件"
+      }
+    },
+    "faq": {
+      "title": "批量编辑器常见问题",
+      "q1": "我一次可以处理多少张图像？",
+      "a1": "免费用户每批最多可以处理 5 张图像。专业版用户可以同时处理最多 50 张图像。",
+      "q2": "批量处理需要多长时间？",
+      "a2": "处理时间取决于图像数量和提示词的复杂性。通常，每张图像需要 1-2 秒来处理。",
+      "q3": "我可以为每张图像使用不同的提示词吗？",
+      "a3": "目前，批量模式对所有图像应用相同的提示词。对于单独的提示词，请使用标准图像编辑器。",
+      "q4": "支持哪些文件格式？",
+      "a4": "我们支持 JPG、PNG 和 WebP 格式。每张图像的最大文件大小为 10MB。"
+    }
+  },
+  "apiPage": {
+    "title": "Nano Banana API",
+    "subtitle": "强大的开发者图像编辑 API",
+    "description": "通过我们简单的 REST API 将 Nano Banana 的 AI 驱动图像编辑集成到您的应用程序中",
+    "getStarted": "获取 API 密钥",
+    "viewDocs": "查看文档",
+    "features": {
+      "fast": {
+        "title": "闪电般快速",
+        "description": "全球 CDN 分发，平均响应时间低于 2 秒"
+      },
+      "secure": {
+        "title": "安全可靠",
+        "description": "企业级安全性，99.9% 正常运行时间 SLA"
+      },
+      "simple": {
+        "title": "简单集成",
+        "description": "RESTful API，配有全面的文档和代码示例"
+      },
+      "global": {
+        "title": "全球规模",
+        "description": "分布式基础设施，全球低延迟访问"
+      },
+      "naturalLanguage": {
+        "title": "自然语言编辑",
+        "description": "使用简单的自然语言描述即可完成复杂的图像编辑操作"
+      },
+      "enterpriseSecurity": {
+        "title": "企业级安全",
+        "description": "数据加密传输，符合GDPR和SOC2标准，保护您的数据安全"
+      },
+      "fastResponse": {
+        "title": "快速响应",
+        "description": "平均响应时间<3秒，支持高并发处理，满足您的业务需求"
+      },
+      "highQuality": {
+        "title": "高质量输出",
+        "description": "先进的AI模型确保输出图像质量，支持4K高分辨率处理"
+      },
+      "easyIntegration": {
+        "title": "易于集成",
+        "description": "清晰的RESTful API设计，支持多种编程语言的SDK和示例"
+      },
+      "realTimeSupport": {
+        "title": "实时支持",
+        "description": "7x24小时技术支持，详细的API文档和示例代码"
+      }
+    },
+    "quickStart": "快速入门示例",
+    "endpoints": {
+      "title": "API 端点",
+      "edit": {
+        "title": "编辑图像",
+        "description": "用自然语言提示转换图像"
+      },
+      "remove": {
+        "title": "移除背景",
+        "description": "使用 AI 精度移除图像背景"
+      },
+      "batch": {
+        "title": "批量处理",
+        "description": "并行处理多张图像"
+      }
+    },
+    "pricing": {
+      "title": "API 定价",
+      "description": "简单的基于使用量的定价，无隐藏费用",
+      "free": {
+        "title": "免费套餐",
+        "requests": "100 次请求/月",
+        "price": "¥0"
+      },
+      "pro": {
+        "title": "专业版套餐",
+        "requests": "10,000 次请求/月",
+        "price": "¥699/月"
+      },
+      "enterprise": {
+        "title": "企业版",
+        "requests": "无限请求",
+        "price": "定制"
+      }
+    },
+    "nowOpen": "API 现已开放",
+    "heroDescription": "将强大的AI图像编辑能力集成到您的应用中。支持自然语言编辑、角色一致性、场景保留等高级功能。",
+    "getApiKey": "获取API密钥",
+    "viewDocumentation": "查看文档",
+    "whyChoose": "为什么选择 Nano Banana API？",
+    "whyChooseDescription": "强大的AI能力，简单的集成体验",
+    "quickStartDescription": "几行代码即可集成强大的AI图像编辑功能",
+    "tabs": {
+      "authentication": "认证",
+      "imageEdit": "图像编辑",
+      "textToImage": "文生图",
+      "codeExamples": "代码示例"
+    },
+    "auth": {
+      "title": "API 认证",
+      "step1": {
+        "title": "1. 获取API密钥",
+        "description": "访问开发者控制台，创建应用并获取您的API密钥。"
+      },
+      "step2": {
+        "title": "2. 在请求头中包含API密钥"
+      },
+      "step3": {
+        "title": "3. 安全最佳实践",
+        "point1": "将API密钥存储在环境变量中",
+        "point2": "不要在客户端代码中暴露API密钥",
+        "point3": "定期轮换API密钥",
+        "point4": "使用HTTPS进行所有API请求"
+      }
+    },
+    "imageEdit": {
+      "title": "图像编辑API",
+      "endpoint": "端点",
+      "parameters": "请求参数",
+      "response": "响应示例",
+      "param": {
+        "prompt": "自然语言描述的编辑指令",
+        "imageUrl": "要编辑的图像URL",
+        "strength": "编辑强度 (0.1-1.0, 默认0.8)",
+        "preserveScene": "是否保留场景 (默认false)"
+      }
+    },
+    "textToImage": {
+      "title": "文生图API",
+      "param": {
+        "prompt": "图像生成提示词",
+        "width": "图像宽度 (默认512)",
+        "height": "图像高度 (默认512)",
+        "style": "风格 (realistic, anime, artistic等)"
+      }
+    },
+    "codeExamples": {
+      "title": "代码示例",
+      "copy": "复制"
+    },
+    "cta": {
+      "title": "准备开始了吗？",
+      "description": "加入数千名开发者，将Nano Banana的AI能力集成到您的应用中",
+      "getApiKey": "立即获取API密钥",
+      "contactSales": "联系销售团队"
+    },
+    "codeCopied": "代码已复制到剪贴板！",
+    "copyFailed": "复制失败",
+    "table": {
+      "parameter": "参数",
+      "type": "类型",
+      "required": "必需",
+      "description": "描述",
+      "yes": "是",
+      "no": "否"
+    }
+  },
+  "history": {
+    "title": "生成历史",
+    "subtitle": "查看和管理您的所有生成记录",
+    "tabTextToImage": "文生图",
+    "tabImageToImage": "图片编辑",
+    "tabToolbox": "工具箱",
+    "tabAdvanced": "高级工具",
+    "tabVideoGeneration": "视频生成",
+    "subStyleTransfer": "风格迁移",
+    "subBackgroundRemover": "背景移除",
+    "subScenePreservation": "场景保留",
+    "subConsistentGeneration": "一致性生成",
+    "subTextToImageWithText": "图文交织",
+    "subChatEdit": "对话编辑",
+    "subSmartPrompt": "智能提示词",
+    "subTextToVideo": "文生视频",
+    "subReferenceImages": "参考图视频",
+    "subFirstLastFrame": "首尾帧视频",
+    "emptyTextToVideo": "还没有文生视频记录，开始创建您的第一个视频吧！",
+    "emptyReferenceImages": "还没有参考图视频记录，上传参考图创建您的第一个视频吧！",
+    "emptyFirstLastFrame": "还没有首尾帧视频记录，上传首尾帧创建您的第一个视频吧！",
+    "selectedCount": "已选择 {count} 条记录",
+    "totalCount": "共 {count} 条记录",
+    "deselectAll": "取消全选",
+    "selectAllCurrent": "全选当前",
+    "exitBulk": "退出批量",
+    "bulkManage": "批量管理",
+    "selectedItems": "已选 {count} 条",
+    "bulkDownload": "批量下载",
+    "bulkDelete": "批量删除",
+    "loading": "加载中...",
+    "empty": "暂无记录",
+    "emptyTextToImage": "还没有文生图记录",
+    "emptyImageToImage": "还没有图片编辑记录",
+    "emptyStyleTransfer": "还没有风格迁移记录",
+    "emptyBackgroundRemover": "还没有背景移除记录",
+    "emptyScenePreservation": "还没有场景保留记录",
+    "emptyConsistentGeneration": "还没有一致性生成记录",
+    "emptyTextToImageWithText": "还没有图文交织记录",
+    "emptyChatEdit": "还没有对话编辑记录",
+    "emptySmartPrompt": "还没有智能提示词记录",
+    "noImagesError": "该记录还没有生成图片，无法推荐到案例展示。请先生成图片后再尝试推荐。"
+  },
+  "historyCard": {
+    "referenceImages": "参考图片",
+    "prompt": "提示词",
+    "creditsUsed": "消耗 {credits} 积分",
+    "batchCount": "批量 {count} 张",
+    "generatedResults": "生成结果 ({count})",
+    "noImage": "暂无图片",
+    "regenerate": "重新生成",
+    "downloadAll": "下载全部",
+    "downloadImage": "下载图片",
+    "recommendToShowcase": "推荐到案例",
+    "deleteRecord": "删除记录"
+  },
+  "library": {
+    "subjects": {
+      "loginRequired": "需要登录",
+      "loginMessage": "请登录以访问主体库",
+      "loginButton": "登录",
+      "title": "主体库",
+      "subtitle": "管理您的主体图像，用于角色一致性保持和批量创作",
+      "searchPlaceholder": "搜索主体名称或描述...",
+      "filter": {
+        "all": "全部",
+        "person": "人物",
+        "object": "物体",
+        "pet": "宠物",
+        "other": "其他"
+      },
+      "uploadButton": "上传主体",
+      "empty": {
+        "title": "主体库为空",
+        "message": "上传您的第一个主体图像以开始创作"
+      },
+      "uploadModal": {
+        "title": "上传主体",
+        "clickToUpload": "点击上传图片",
+        "name": "名称",
+        "nameRequired": "* 必填",
+        "namePlaceholder": "输入主体名称",
+        "description": "描述（可选）",
+        "descriptionPlaceholder": "添加一些描述以便识别",
+        "type": "类型",
+        "typeRequired": "* 必填",
+        "cancelButton": "取消",
+        "uploadingButton": "上传中...",
+        "uploadButton": "上传"
+      },
+      "deleteModal": {
+        "title": "确认删除",
+        "message": "删除后无法恢复，确定要删除这个主体吗？",
+        "cancelButton": "取消",
+        "deleteButton": "删除"
+      },
+      "error": {
+        "fileTooLarge": "文件过大，请上传小于5MB的图片",
+        "invalidFileType": "请上传图片文件",
+        "uploadFailed": "上传失败，请重试",
+        "deleteFailed": "删除失败，请重试",
+        "fetchFailed": "获取主体库失败"
+      }
+    },
+    "scenes": {
+      "loginRequired": "需要登录",
+      "loginMessage": "请登录以访问场景库",
+      "loginButton": "登录",
+      "title": "场景库",
+      "subtitle": "管理您的场景图像，用于场景保留和批量创作",
+      "searchPlaceholder": "搜索场景名称、描述或标签...",
+      "filter": {
+        "all": "全部",
+        "indoor": "室内",
+        "outdoor": "室外",
+        "abstract": "抽象",
+        "other": "其他"
+      },
+      "uploadButton": "上传场景",
+      "empty": {
+        "title": "场景库为空",
+        "message": "上传您的第一个场景图像以开始创作"
+      },
+      "uploadModal": {
+        "title": "上传场景",
+        "clickToUpload": "点击上传图片",
+        "name": "名称",
+        "nameRequired": "* 必填",
+        "namePlaceholder": "输入场景名称",
+        "description": "描述（可选）",
+        "descriptionPlaceholder": "添加一些描述以便识别",
+        "type": "类型",
+        "typeRequired": "* 必填",
+        "tags": "标签（可选）",
+        "tagsPlaceholder": "输入标签后按回车添加",
+        "cancelButton": "取消",
+        "uploadingButton": "上传中...",
+        "uploadButton": "上传"
+      },
+      "deleteModal": {
+        "title": "确认删除",
+        "message": "删除后无法恢复，确定要删除这个场景吗？",
+        "cancelButton": "取消",
+        "deleteButton": "删除"
+      },
+      "error": {
+        "fileTooLarge": "文件过大，请上传小于5MB的图片",
+        "invalidFileType": "请上传图片文件",
+        "uploadFailed": "上传失败，请重试",
+        "deleteFailed": "删除失败，请重试",
+        "fetchFailed": "获取场景库失败"
+      }
+    }
+  },
+  "imageEditor": {
+    "title": "Nano Banana 图像编辑器",
+    "promptEngine": "提示词引擎",
+    "imageToImage": "图像到图像",
+    "textToImage": "文本到图像",
+    "toolbox": "工具箱",
+    "backgroundRemover": "背景移除",
+    "backgroundRemoverDesc": "移除图像背景",
+    "scenePreservation": "场景保留",
+    "scenePreservationDesc": "保留场景特征",
+    "history": "历史记录",
+    "viewHistory": "查看生成历史",
+    "loginRequired": "登录查看历史"
+  },
+  "editor": {
+    "sidebar": {
+      "switching": "切换中...",
+      "backHome": "返回首页",
+      "editor": "编辑器",
+      "history": "历史记录",
+      "library": "素材库",
+      "toolbox": "工具箱",
+      "login": "登录",
+      "logout": "登出",
+      "freeUser": "免费用户",
+      "advancedTools": "高级工具",
+      "styleTransferDesc": "在保留原始构图的同时改变图像风格",
+      "consistentGenerationDesc": "在多个场景中保持角色一致性",
+      "textToImageWithTextIcon": "T",
+      "textToImageWithTextDesc": "文本-图像混合生成，支持模板选择",
+      "chatEditIcon": "C",
+      "chatEditDesc": "基于自然对话的编辑，支持参考图像",
+      "smartPromptIcon": "S",
+      "smartPromptDesc": "AI 驱动的提示词优化，提高生成质量",
+      "videoGallery": "视频画廊",
+      "videoGalleryDesc": "浏览所有生成的视频"
+    },
+    "menu": {
+      "imageEdit": "图像编辑",
+      "textToImage": "文本到图像"
+    }
+  }
+}

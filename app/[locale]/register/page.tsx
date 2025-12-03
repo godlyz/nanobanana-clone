@@ -7,7 +7,6 @@
 "use client"
 
 import { Header } from "@/components/header"
-import { setRequestLocale } from 'next-intl/server'
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,14 +18,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Mail, Lock, User, CheckCircle2, XCircle, Loader2 } from "lucide-react"
 
-export default async function RegisterPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+export default function RegisterPage() {
   const t = useTranslations('register')  // 🔥 老王迁移：使用register命名空间
   const router = useRouter()
 

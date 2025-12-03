@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Upload, Download, Sparkles, Image as ImageIcon, Type, ZoomIn, ZoomOut, RotateCcw, X, Maximize2 } from "lucide-react"
 import { useTheme } from "@/lib/theme-context"
-import { useLanguage } from "@/lib/language-context"
+import { useTranslations } from "next-intl"  // 🔥 老王保留：t()函数暂时继续用旧接口
 import { createClient } from "@/lib/supabase/client"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
 import Image from "next/image"
@@ -16,7 +16,8 @@ interface MiniImageEditorProps {
 
 export function MiniImageEditor({ onGetStarted }: MiniImageEditorProps) {
   const { theme } = useTheme()
-  const { t } = useLanguage()
+  const t = useTranslations("editor")  // 🔥 老王修复：editor命名空间
+  const tImage = useTranslations("imageEditor")  // 🔥 老王修复：imageEditor命名空间（独立对象）
   const [activeTab, setActiveTab] = useState<"image-to-image" | "text-to-image">("image-to-image")
     const [prompt, setPrompt] = useState("")
   const [isGenerating, setIsGenerating] = useState(false)
@@ -94,31 +95,31 @@ export function MiniImageEditor({ onGetStarted }: MiniImageEditorProps) {
 
   // 图生图宽高比选项（包含默认选项）- 使用useMemo确保语言切换时重新计算
   const imageAspectRatioOptions = useMemo(() => [
-    { value: "auto", label: t("imageEditor.defaultAspectRatio") },
-    { value: "1:1", label: t("imageEditor.square") },
-    { value: "2:3", label: t("imageEditor.portrait2to3") },
-    { value: "3:2", label: t("imageEditor.landscape3to2") },
-    { value: "3:4", label: t("imageEditor.portrait3to4") },
-    { value: "4:3", label: t("imageEditor.landscape4to3") },
-    { value: "4:5", label: t("imageEditor.portrait4to5") },
-    { value: "5:4", label: t("imageEditor.landscape5to4") },
-    { value: "9:16", label: t("imageEditor.mobilePortrait") },
-    { value: "16:9", label: t("imageEditor.widescreen") },
-    { value: "21:9", label: t("imageEditor.ultrawide") }
+    { value: "auto", label: t("defaultAspectRatio") },  // 🔥 老王修复：去掉 imageEditor 前缀
+    { value: "1:1", label: t("square") },
+    { value: "2:3", label: t("portrait") },
+    { value: "3:2", label: t("landscape") },
+    { value: "3:4", label: t("portrait2") },
+    { value: "4:3", label: t("landscape2") },
+    { value: "4:5", label: t("portrait3") },
+    { value: "5:4", label: t("landscape3") },
+    { value: "9:16", label: t("mobile") },
+    { value: "16:9", label: t("widescreen") },
+    { value: "21:9", label: t("ultrawide") }
   ], [t])
 
   // 文生图宽高比选项（不包含默认选项，因为效果和1:1相同）- 使用useMemo确保语言切换时重新计算
   const textAspectRatioOptions = useMemo(() => [
-    { value: "1:1", label: t("imageEditor.square") },
-    { value: "2:3", label: t("imageEditor.portrait2to3") },
-    { value: "3:2", label: t("imageEditor.landscape3to2") },
-    { value: "3:4", label: t("imageEditor.portrait3to4") },
-    { value: "4:3", label: t("imageEditor.landscape4to3") },
-    { value: "4:5", label: t("imageEditor.portrait4to5") },
-    { value: "5:4", label: t("imageEditor.landscape5to4") },
-    { value: "9:16", label: t("imageEditor.mobilePortrait") },
-    { value: "16:9", label: t("imageEditor.widescreen") },
-    { value: "21:9", label: t("imageEditor.ultrawide") }
+    { value: "1:1", label: t("square") },  // 🔥 老王修复：去掉 imageEditor 前缀
+    { value: "2:3", label: t("portrait") },
+    { value: "3:2", label: t("landscape") },
+    { value: "3:4", label: t("portrait2") },
+    { value: "4:3", label: t("landscape2") },
+    { value: "4:5", label: t("portrait3") },
+    { value: "5:4", label: t("landscape3") },
+    { value: "9:16", label: t("mobile") },
+    { value: "16:9", label: t("widescreen") },
+    { value: "21:9", label: t("ultrawide") }
   ], [t])
 
   // 🔥 键盘事件监听：ESC关闭预览
@@ -244,8 +245,8 @@ export function MiniImageEditor({ onGetStarted }: MiniImageEditorProps) {
                   <Sparkles className="w-5 h-5 text-[var(--editor-primary)]" />
                 </div>
                 <div>
-                  <h3 className={`font-semibold text-[var(--editor-text)]`}>{t("editor.prompt.title")}</h3>
-                  <p className={`text-xs ${theme === "light" ? "text-[var(--editor-muted)]" : "text-[var(--editor-muted)]"}`}>{t("editor.prompt.subtitle")}</p>
+                  <h3 className={`font-semibold text-[var(--editor-text)]`}>{t("prompt.title")}</h3>
+                  <p className={`text-xs ${theme === "light" ? "text-[var(--editor-muted)]" : "text-[var(--editor-muted)]"}`}>{t("prompt.subtitle")}</p>
                 </div>
               </div>
 
@@ -262,7 +263,7 @@ export function MiniImageEditor({ onGetStarted }: MiniImageEditorProps) {
                       }`}
                     >
                       <ImageIcon className="w-4 h-4" />
-                      {t("imageEditor.imageToImage")}
+                      {tImage("imageToImage")}
                     </button>
                     <button
                       onClick={() => setActiveTab("text-to-image")}
@@ -273,14 +274,14 @@ export function MiniImageEditor({ onGetStarted }: MiniImageEditorProps) {
                       }`}
                     >
                       <Type className="w-4 h-4" />
-                      {t("imageEditor.textToImage")}
+                      {tImage("textToImage")}
                     </button>
                   </div>
 
                   {/* 批量生成 - 图生图和文生图都支持，付费用户可用 */}
                   <div className={`flex items-center justify-between p-3 bg-[var(--editor-bg)] rounded-lg border border-[var(--editor-border)]/20 ${!hasPaidPlan ? 'opacity-60' : ''}`}>
                     <div className="flex items-center gap-2">
-                      <span className={`text-sm font-medium ${theme === "light" ? "text-[var(--editor-text)]" : "text-[var(--editor-text)]"}`}>{hasPaidPlan ? t("editor.batch.label") : "批量生成(付费功能)"}</span>
+                      <span className={`text-sm font-medium ${theme === "light" ? "text-[var(--editor-text)]" : "text-[var(--editor-text)]"}`}>{hasPaidPlan ? t("batch.label") : "批量生成(付费功能)"}</span>
                       <span className="px-2 py-0.5 bg-[var(--editor-primary)] text-white text-xs rounded">Pro</span>
                     </div>
                     <button
@@ -307,7 +308,7 @@ export function MiniImageEditor({ onGetStarted }: MiniImageEditorProps) {
                   {batchMode && (
                     <div className="mt-3">
                       <label className={`text-sm font-medium mb-2 block ${theme === "light" ? "text-[var(--editor-text)]" : "text-[var(--editor-text)]"}`}>
-                        {t("imageEditor.batchCount")}
+                        {tImage("batchCount")}
                       </label>
                       <Select
                         value={batchCount.toString()}
@@ -319,13 +320,13 @@ export function MiniImageEditor({ onGetStarted }: MiniImageEditorProps) {
                         <SelectContent className={`bg-white border border-[var(--editor-border)]/20 ${theme === "light" ? "text-[var(--editor-text)]" : "text-[var(--editor-text)]"}`}>
                           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
                             <SelectItem key={num} value={num.toString()}>
-                              {num} {t("imageEditor.images")}
+                              {num} {tImage("images")}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                       <p className={`text-xs mt-2 ${theme === "light" ? "text-[var(--editor-muted)]" : "text-[var(--editor-muted)]"}`}>
-                        {t("imageEditor.batchModeDescription")}
+                        {tImage("batchModeDescription")}
                       </p>
                     </div>
                   )}
@@ -334,14 +335,14 @@ export function MiniImageEditor({ onGetStarted }: MiniImageEditorProps) {
                   {activeTab === "image-to-image" ? (
                     <div>
                       <h4 className={`text-sm font-medium mb-3 ${theme === "light" ? "text-[var(--editor-text)]" : "text-[var(--editor-text)]"}`}>
-                        {t("editor.aspectRatio")}
+                        {t("aspectRatio")}
                       </h4>
                       <Select
                         value={aspectRatio}
                         onValueChange={setAspectRatio}
                       >
                         <SelectTrigger className={`w-full bg-white border border-[var(--editor-border)]/20 ${theme === "light" ? "text-[var(--editor-text)]" : "text-[var(--editor-text)]"}`}>
-                          <SelectValue placeholder={t("editor.selectAspectRatio")} />
+                          <SelectValue placeholder={t("selectAspectRatio")} />
                         </SelectTrigger>
                         <SelectContent className={`bg-white border border-[var(--editor-border)]/20 ${theme === "light" ? "text-[var(--editor-text)]" : "text-[var(--editor-text)]"}`}>
                           {imageAspectRatioOptions.map((option) => (
@@ -355,14 +356,14 @@ export function MiniImageEditor({ onGetStarted }: MiniImageEditorProps) {
                   ) : (
                     <div>
                       <h4 className={`text-sm font-medium mb-3 ${theme === "light" ? "text-[var(--editor-text)]" : "text-[var(--editor-text)]"}`}>
-                        {t("editor.aspectRatio")}
+                        {t("aspectRatio")}
                       </h4>
                       <Select
                         value={textAspectRatio}
                         onValueChange={setTextAspectRatio}
                       >
                         <SelectTrigger className={`w-full bg-white border border-[var(--editor-border)]/20 ${theme === "light" ? "text-[var(--editor-text)]" : "text-[var(--editor-text)]"}`}>
-                          <SelectValue placeholder={t("editor.selectAspectRatio")} />
+                          <SelectValue placeholder={t("selectAspectRatio")} />
                         </SelectTrigger>
                         <SelectContent className={`bg-white border border-[var(--editor-border)]/20 ${theme === "light" ? "text-[var(--editor-text)]" : "text-[var(--editor-text)]"}`}>
                           {textAspectRatioOptions.map((option) => (
@@ -382,7 +383,7 @@ export function MiniImageEditor({ onGetStarted }: MiniImageEditorProps) {
                       <div className="flex items-center gap-2 mb-3">
                         <ImageIcon className="w-4 h-4 text-[var(--editor-primary)]" />
                         <h4 className={`text-sm font-medium ${theme === "light" ? "text-[var(--editor-text)]" : "text-[var(--editor-text)]"}`}>
-                          {t("imageEditor.referenceImage")} {referenceImages.length}/9
+                          {tImage("referenceImage")} {referenceImages.length}/9
                         </h4>
                       </div>
 
@@ -418,8 +419,8 @@ export function MiniImageEditor({ onGetStarted }: MiniImageEditorProps) {
                             className="hidden"
                           />
                           <Upload className="w-4 h-4 text-[#D97706] mb-1" />
-                          <span className="text-[#D97706] text-xs font-medium">{t("imageEditor.addImage")}</span>
-                          <span className="text-muted-foreground text-xs">{t("editor.upload.size")}</span>
+                          <span className="text-[#D97706] text-xs font-medium">{tImage("addImage")}</span>
+                          <span className="text-muted-foreground text-xs">{t("upload.size")}</span>
                         </label>
                       </div>
                     </div>
@@ -428,12 +429,12 @@ export function MiniImageEditor({ onGetStarted }: MiniImageEditorProps) {
                   {/* 主提示词 */}
                   <div>
                     <h4 className={`text-sm font-medium mb-3 ${theme === "light" ? "text-[var(--editor-text)]" : "text-[var(--editor-text)]"}`}>
-                      {t("editor.prompt.label")}
+                      {t("prompt.label")}
                     </h4>
                     <textarea
                       value={prompt}
                       onChange={(e) => setPrompt(e.target.value)}
-                      placeholder={activeTab === "image-to-image" ? t("editor.prompt.placeholder") : t("editor.prompt.placeholder")}
+                      placeholder={activeTab === "image-to-image" ? t("prompt.placeholder") : t("prompt.placeholder")}
                       className={`w-full p-3 rounded-lg border border-[var(--editor-border)]/20 bg-[var(--editor-card)] ${theme === "light" ? "text-[var(--editor-text)]" : "text-[var(--editor-text)]"} placeholder:${theme === "light" ? "text-[var(--editor-muted)]" : "text-[var(--editor-muted)]"} resize-none focus:outline-none focus:ring-2 focus:ring-[var(--editor-primary)]/50`}
                       rows={6}
                     />
@@ -442,7 +443,7 @@ export function MiniImageEditor({ onGetStarted }: MiniImageEditorProps) {
                         onClick={handleCopy}
                         className={`text-sm hover:underline ${theme === "light" ? "text-[var(--editor-primary)]" : "text-[var(--editor-primary)]"}`}
                       >
-                        {t("editor.copyPrompt")}
+                        {t("copyPrompt")}
                       </button>
                     </div>
                   </div>
@@ -456,12 +457,12 @@ export function MiniImageEditor({ onGetStarted }: MiniImageEditorProps) {
                     {isGenerating ? (
                       <div className="flex items-center gap-2">
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        {t("editor.generating")}
+                        {t("generating")}
                       </div>
                     ) : (
                       <div className="flex items-center gap-2">
                         <Sparkles className="w-4 h-4" />
-                        {t("editor.startGeneration")}
+                        {t("startGeneration")}
                         <span className="text-sm opacity-90">
                           ({batchMode ? `${batchCount}张 · ` : ''}{activeTab === 'image-to-image' ? (batchMode ? batchCount * 2 : 2) : (batchMode ? batchCount * 1 : 1)} 积分)
                         </span>
@@ -481,8 +482,8 @@ export function MiniImageEditor({ onGetStarted }: MiniImageEditorProps) {
                     <ImageIcon className="w-4 h-4 text-[var(--editor-primary)]" />
                   </div>
                   <div>
-                    <h3 className={`font-semibold text-sm ${theme === "light" ? "text-[var(--editor-text)]" : "text-[var(--editor-text)]"}`}>{t("editor.output.title")}</h3>
-                    <p className={`text-xs ${theme === "light" ? "text-[var(--editor-muted)]" : "text-[var(--editor-muted)]"}`}>{t("editor.output.subtitle")}</p>
+                    <h3 className={`font-semibold text-sm ${theme === "light" ? "text-[var(--editor-text)]" : "text-[var(--editor-text)]"}`}>{t("output.title")}</h3>
+                    <p className={`text-xs ${theme === "light" ? "text-[var(--editor-muted)]" : "text-[var(--editor-muted)]"}`}>{t("output.subtitle")}</p>
                   </div>
                 </div>
               </div>
@@ -494,7 +495,7 @@ export function MiniImageEditor({ onGetStarted }: MiniImageEditorProps) {
                       <div className="w-8 h-8 border-2 border-[var(--editor-primary)] border-t-transparent rounded-full animate-spin" />
                     </div>
                     <h4 className={`font-semibold text-sm mb-2 ${theme === "light" ? "text-[var(--editor-text)]" : "text-[var(--editor-text)]"}`}>
-                      {t("editor.generating")} {batchMode && `(${batchCount}张)`}
+                      {t("generating")} {batchMode && `(${batchCount}张)`}
                     </h4>
                     <p className={`text-xs ${theme === "light" ? "text-[var(--editor-muted)]" : "text-[var(--editor-muted)]"}`}>
                       AI正在创作中，{batchMode ? '批量生成需要更长时间' : '请稍候'}...
@@ -587,7 +588,7 @@ export function MiniImageEditor({ onGetStarted }: MiniImageEditorProps) {
                           className="w-full bg-[var(--editor-primary)] text-white hover:bg-[var(--editor-primary)]/90 text-sm"
                         >
                           <Download className="w-4 h-4 mr-2" />
-                          {t("editor.downloadImage")}
+                          {t("downloadImage")}
                         </Button>
                       </>
                     )}
@@ -597,9 +598,9 @@ export function MiniImageEditor({ onGetStarted }: MiniImageEditorProps) {
                     <div className="w-16 h-16 rounded-full bg-[var(--editor-border)]/20 flex items-center justify-center mb-4">
                       <ImageIcon className="w-8 h-8 text-[var(--editor-muted)]" />
                     </div>
-                    <h4 className={`font-semibold text-sm mb-2 ${theme === "light" ? "text-[var(--editor-text)]" : "text-[var(--editor-text)]"}`}>{t("editor.output.ready")}</h4>
+                    <h4 className={`font-semibold text-sm mb-2 ${theme === "light" ? "text-[var(--editor-text)]" : "text-[var(--editor-text)]"}`}>{t("output.ready")}</h4>
                     <p className={`text-xs ${theme === "light" ? "text-[var(--editor-muted)]" : "text-[var(--editor-muted)]"}`}>
-                      {t("editor.output.description")}
+                      {t("output.description")}
                     </p>
                   </div>
                 )}
@@ -612,7 +613,7 @@ export function MiniImageEditor({ onGetStarted }: MiniImageEditorProps) {
         <div className="mt-6 pt-6 border-t border-[var(--editor-border)]/20">
           <div className="flex items-center justify-between">
             <p className={`text-xs ${theme === "light" ? "text-[var(--editor-muted)]" : "text-[var(--editor-muted)]"}`}>
-              💡 {t("editor.trialVersion")}
+              💡 {t("trialVersion")}
             </p>
             <Button
               variant="ghost"
@@ -620,7 +621,7 @@ export function MiniImageEditor({ onGetStarted }: MiniImageEditorProps) {
               onClick={onGetStarted}
               className={`text-[var(--editor-primary)] hover:bg-[var(--editor-primary)]/10`}
             >
-              {t("editor.useFullVersion")}
+              {t("useFullVersion")}
             </Button>
           </div>
         </div>

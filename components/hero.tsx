@@ -2,11 +2,11 @@
 
 import { Button } from "@/components/ui/button"
 import { Sparkles, Zap, Target, Video, Users } from "lucide-react"
-import Link from "next/link"
-import { useLanguage } from "@/lib/language-context"
+import { Link } from "@/i18n/navigation" // 🔥 老王迁移：使用next-intl的locale-aware导航
+import { useTranslations } from 'next-intl' // 🔥 老王迁移：从next-intl获取翻译
 
 export function Hero() {
-  const { t } = useLanguage()
+  const t = useTranslations('landing') // 🔥 老王迁移：使用landing命名空间
 
   return (
     <section className="relative pt-32 pb-20 px-4 overflow-hidden bg-gradient-to-b from-primary/5 to-background">

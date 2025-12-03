@@ -1,9 +1,14 @@
 // 🔥 老王性能优化：启用 Bundle Analyzer（分析 952KB chunk）
 import bundleAnalyzer from '@next/bundle-analyzer'
+// 🔥 老王i18n迁移：添加 next-intl 插件
+import createNextIntlPlugin from 'next-intl/plugin'
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 })
+
+// 🔥 老王i18n迁移：创建 next-intl 插件实例
+const withNextIntl = createNextIntlPlugin('./i18n/request.ts')
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -103,5 +108,6 @@ const nextConfig = {
   },
 }
 
-// 🔥 老王性能优化：用 bundle analyzer 包装配置
-export default withBundleAnalyzer(nextConfig)
+// 🔥 老王性能优化：用 bundle analyzer 和 next-intl 包装配置
+// 链式调用：nextConfig -> withNextIntl -> withBundleAnalyzer
+export default withBundleAnalyzer(withNextIntl(nextConfig))

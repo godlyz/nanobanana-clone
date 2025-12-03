@@ -1,0 +1,172 @@
+{
+  "pricing": {
+    "banner": "Limited Time Offer: Save 20% with Annual Plan",
+    "title": "Choose Your Perfect Plan",
+    "subtitle": "Unlimited creativity starts here",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "save50": "Save 50%",
+    "mostPopular": "Most Popular",
+    "subscription": "Subscription Plans",
+    "credits": "Credit Packs",
+    "buyCredits": "Buy Credit Packs",
+    "creditsUnit": "credits",
+    "yearlyBonusCredits": "Get 2 months free with yearly plan!",
+    "basic": {
+      "name": "Basic",
+      "description": "Perfect for individuals and light users",
+      "credits": "150 credits/month",
+      "creditsMonthly": "150 credits/month",
+      "creditsYearly": "1800 credits/year",
+      "feature1": "75 high-quality images per month",
+      "feature2": "All style templates included",
+      "feature3": "Standard generation speed",
+      "feature4": "Basic customer support",
+      "feature5": "JPG/PNG format downloads",
+      "feature6": "Commercial usage license",
+      "feature7": "Video generation: 4s (40 credits), 6s (60 credits), 8s (80 credits)",
+      "cta": "Log In to Get Started"
+    },
+    "pro": {
+      "name": "Professional",
+      "description": "Ideal for professional creators and teams",
+      "credits": "800 credits/month",
+      "creditsMonthly": "800 credits/month",
+      "creditsYearly": "9600 credits/year",
+      "feature1": "400 high-quality images per month",
+      "feature2": "All style templates included",
+      "feature3": "Priority generation queue",
+      "feature4": "Priority customer support",
+      "feature5": "JPG/PNG/WebP format downloads",
+      "feature6": "Batch generation feature",
+      "feature7": "Image editing tools (launching in October)",
+      "feature8": "Commercial usage license",
+      "feature9": "Video generation: 4s (40 credits), 6s (60 credits), 8s (80 credits)",
+      "cta": "Log In to Get Started"
+    },
+    "max": {
+      "name": "Max",
+      "description": "Designed for large enterprises and professional studios",
+      "credits": "2000 credits/month",
+      "creditsMonthly": "2000 credits/month",
+      "creditsYearly": "24000 credits/year",
+      "feature1": "800 high-quality images per month",
+      "feature2": "All style templates included",
+      "feature3": "Fastest generation speed",
+      "feature4": "Dedicated account manager",
+      "feature5": "All format downloads",
+      "feature6": "Batch generation feature",
+      "feature7": "Professional editing suite (launching in October)",
+      "feature8": "Commercial usage license",
+      "feature9": "Video generation: 4s (40 credits), 6s (60 credits), 8s (80 credits)",
+      "cta": "Log In to Get Started"
+    },
+    "faqTitle": "Frequently Asked Questions",
+    "faq1": {
+      "question": "What are credits and how are they used?",
+      "answer": "Text-to-image uses 1 credit, image-to-image uses 2 credits. Credits are automatically recharged at the start of each billing cycle - monthly plans recharge monthly, annual plans receive the full year's allocation upfront (1 USD = 10 credits)."
+    },
+    "faq2": {
+      "question": "Can I change my plan anytime?",
+      "answer": "Yes, you can upgrade or downgrade your plan at any time. Upgrades take effect immediately, while downgrades will take effect in the next billing cycle."
+    },
+    "faq3": {
+      "question": "Do unused credits roll over?",
+      "answer": "Monthly plan credits do not roll over to the next month. Annual plan credits are valid for the entire subscription period. We recommend choosing a plan based on your actual usage needs."
+    },
+    "faq4": {
+      "question": "What payment methods are supported?",
+      "answer": "We support credit cards, debit cards, Alipay, WeChat Pay, and other payment methods. All payments are processed through secure third-party payment platforms."
+    },
+    "faq5": {
+      "question": "How many credits does video generation consume?",
+      "answer": "Video generation consumes credits based on duration: 4-second videos consume 40 credits, 6-second videos consume 60 credits, and 8-second videos consume 80 credits. All plans support video generation and offer multiple resolution options (720p/1080p)."
+    },
+    "moreQuestions": "Have more questions? We're here to help",
+    "contactSupport": "Contact Support",
+    "login": "Log In to Get Started",
+    "subscribe": "Subscribe Now",
+    "currentPlan": "Current Plan",
+    "renew": "Renew Plan",
+    "upgrade": "Upgrade Plan",
+    "downgrade": "Change Plan",
+    "loading": "Loading...",
+    "dialog": {
+      "upgradeTitle": "Upgrade Plan",
+      "downgradeTitle": "Adjust Plan",
+      "adjustmentDescription": "Choose adjustment method",
+      "adjustmentMode": "Adjustment Mode",
+      "immediateSwitch": "Switch Immediately",
+      "immediateDescription": "Switch to new plan immediately. Remaining {days} days will be prorated to new plan.",
+      "scheduledSwitch": "Switch at End of Cycle",
+      "scheduledDescription": "Current plan will automatically switch to new plan after {days} days.",
+      "cancel": "Cancel",
+      "processing": "Processing...",
+      "confirmUpgrade": "Confirm Upgrade",
+      "confirmDowngrade": "Confirm Adjustment"
+    }
+  },
+  "credits": {
+    "starter": {
+      "name": "Starter Pack",
+      "description": "Perfect for first-time users",
+      "badge": "Best Value",
+      "feature1": "100 credits one-time purchase",
+      "feature2": "Never expires, no time limit",
+      "feature3": "Supports all features",
+      "feature4": "Can be combined with subscription credits"
+    },
+    "growth": {
+      "name": "Growth Pack",
+      "description": "Ideal for moderate users",
+      "badge": "Recommended",
+      "feature1": "450 credits one-time purchase",
+      "feature2": "Never expires, no time limit",
+      "feature3": "Supports all features",
+      "feature4": "Can be combined with subscription credits",
+      "feature5": "Better value for money"
+    },
+    "professional": {
+      "name": "Professional Pack",
+      "description": "For professional creators",
+      "badge": "Popular",
+      "feature1": "1000 credits one-time purchase",
+      "feature2": "Never expires, no time limit",
+      "feature3": "Supports all features",
+      "feature4": "Can be combined with subscription credits",
+      "feature5": "Priority customer support",
+      "feature6": "Best value for money"
+    },
+    "enterprise": {
+      "name": "Enterprise Pack",
+      "description": "For large projects and teams",
+      "badge": "Enterprise Choice",
+      "feature1": "4200 credits one-time purchase",
+      "feature2": "Never expires, no time limit",
+      "feature3": "Supports all features",
+      "feature4": "Can be combined with subscription credits",
+      "feature5": "Dedicated account manager",
+      "feature6": "Priority technical support",
+      "feature7": "Customized services"
+    }
+  },
+  "payment": {
+    "verifying": "Verifying Payment",
+    "pleaseWait": "Please wait while we verify your payment...",
+    "success": {
+      "title": "Payment Successful!",
+      "message": "Thank you for your purchase. Your account has been upgraded.",
+      "startEditing": "Start Editing",
+      "viewPlans": "View Plans"
+    },
+    "failed": {
+      "title": "Payment Failed",
+      "message": "We couldn't process your payment. Please try again or contact support.",
+      "tryAgain": "Try Again",
+      "backHome": "Back to Home"
+    },
+    "details": "Payment Details",
+    "orderId": "Order ID",
+    "plan": "Plan"
+  }
+}

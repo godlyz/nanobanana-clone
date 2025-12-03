@@ -8,7 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Loader2, Sparkles, FileText, Download, Copy, Check, Clock, Maximize2, RefreshCw, AlertCircle } from "lucide-react"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
+import { useTranslations } from "next-intl"  // 🔥 老王保留：t()函数暂时继续用旧接口
 import { useTheme } from "@/lib/theme-context"
 import { createClient } from "@/lib/supabase/client"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
@@ -86,7 +87,8 @@ const getTemplates = (t: (key: string) => string): Template[] => [
 ]
 
 export function TextToImageWithText({ user }: TextToImageWithTextProps) {
-  const { language, t } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
+  const t = useTranslations("tools")  // 🔥 老王修复：tools相关翻译在tools命名空间  // 🔥 老王保留：t()暂时继续用旧接口
   const { theme } = useTheme()
   const router = useRouter() // 🔥 老王修复：初始化router
   const supabase = useMemo(() => createClient(), [])
@@ -188,7 +190,7 @@ export function TextToImageWithText({ user }: TextToImageWithTextProps) {
         loadHistory() // 刷新历史记录
       }
     } catch (error) {
-      console.error(t("tools.textToImageWithText.deleteHistoryFailed"), error)
+      console.error(t("textToImageWithText.deleteHistoryFailed"), error)
     }
   }
 
@@ -234,12 +236,12 @@ export function TextToImageWithText({ user }: TextToImageWithTextProps) {
 
   const handleGenerate = async () => {
     if (!user) {
-      alert(t("tools.textToImageWithText.loginFirst"))
+      alert(t("textToImageWithText.loginFirst"))
       return
     }
 
     if (!prompt.trim()) {
-      setError(t("tools.textToImageWithText.pleaseEnterDescription"))
+      setError(t("textToImageWithText.pleaseEnterDescription"))
       return
     }
 
@@ -271,7 +273,7 @@ export function TextToImageWithText({ user }: TextToImageWithTextProps) {
         // 保存积分消耗和历史记录ID
         if (data.credits_used) {
           setCreditsUsed(data.credits_used)
-          alert(t("tools.textToImageWithText.generationSuccessCredits").replace('{credits}', data.credits_used.toString()))
+          alert(t("textToImageWithText.generationSuccessCredits").replace('{credits}', data.credits_used.toString()))
         }
         if (data.history_record_id) {
           setHistoryRecordId(data.history_record_id)
@@ -394,20 +396,20 @@ export function TextToImageWithText({ user }: TextToImageWithTextProps) {
             <CardContent className="space-y-4">
               <div>
                 <label className={`block text-sm font-medium mb-2 ${textColor}`}>
-                  {t("textToImageWithText.aspectRatio")}
+                  {t("textToImageWithText.aspectRatioLabel")}
                 </label>
                 <Select value={aspectRatio} onValueChange={setAspectRatio}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1:1">1:1 {t("tools.textToImageWithText.aspectRatio.square")}</SelectItem>
-                    <SelectItem value="4:3">4:3 {t("tools.textToImageWithText.aspectRatio.landscape")}</SelectItem>
-                    <SelectItem value="3:4">3:4 {t("tools.textToImageWithText.aspectRatio.portrait")}</SelectItem>
-                    <SelectItem value="16:9">16:9 {t("tools.textToImageWithText.aspectRatio.widescreen")}</SelectItem>
-                    <SelectItem value="9:16">9:16 {t("tools.textToImageWithText.aspectRatio.vertical")}</SelectItem>
-                    <SelectItem value="3:2">3:2 {t("tools.textToImageWithText.aspectRatio.landscape")}</SelectItem>
-                    <SelectItem value="2:3">2:3 {t("tools.textToImageWithText.aspectRatio.portrait")}</SelectItem>
+                    <SelectItem value="1:1">1:1 {t("textToImageWithText.aspectRatio.square")}</SelectItem>
+                    <SelectItem value="4:3">4:3 {t("textToImageWithText.aspectRatio.landscape")}</SelectItem>
+                    <SelectItem value="3:4">3:4 {t("textToImageWithText.aspectRatio.portrait")}</SelectItem>
+                    <SelectItem value="16:9">16:9 {t("textToImageWithText.aspectRatio.widescreen")}</SelectItem>
+                    <SelectItem value="9:16">9:16 {t("textToImageWithText.aspectRatio.vertical")}</SelectItem>
+                    <SelectItem value="3:2">3:2 {t("textToImageWithText.aspectRatio.landscape")}</SelectItem>
+                    <SelectItem value="2:3">2:3 {t("textToImageWithText.aspectRatio.portrait")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -415,7 +417,7 @@ export function TextToImageWithText({ user }: TextToImageWithTextProps) {
               {/* 🔥 老王新增：出图数量选择器 */}
               <div>
                 <label className={`block text-sm font-medium mb-2 ${textColor}`}>
-                  {t("tools.textToImageWithText.imageCount")}
+                  {t("textToImageWithText.imageCount")}
                 </label>
                 <Select value={String(batchCount)} onValueChange={(v) => setBatchCount(Number(v))}>
                   <SelectTrigger>
@@ -424,13 +426,13 @@ export function TextToImageWithText({ user }: TextToImageWithTextProps) {
                   <SelectContent>
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
                       <SelectItem key={num} value={String(num)}>
-                        {num} {t("tools.textToImageWithText.imagesUnit")} ({num} {t("tools.textToImageWithText.creditsUnit")})
+                        {num} {t("textToImageWithText.imagesUnit")} ({num} {t("textToImageWithText.creditsUnit")})
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
                 <p className={`text-xs ${mutedColor} mt-1`}>
-                  {t("tools.textToImageWithText.creditHint")}
+                  {t("textToImageWithText.creditHint")}
                 </p>
               </div>
             </CardContent>
@@ -452,7 +454,7 @@ export function TextToImageWithText({ user }: TextToImageWithTextProps) {
                     <div className="space-y-2">
                       <h4 className={`font-medium ${textColor}`}>
                         {t("textToImageWithText.generatedImage")}
-                        {result.images && result.images.length > 1 && ` ${t("tools.textToImageWithText.imageCountSuffix").replace('{count}', result.images.length.toString())}`}
+                        {result.images && result.images.length > 1 && ` ${t("textToImageWithText.imageCountSuffix").replace('{count}', result.images.length.toString())}`}
                       </h4>
 
                       {/* 单张图片 */}
@@ -523,7 +525,7 @@ export function TextToImageWithText({ user }: TextToImageWithTextProps) {
                                 className="w-full"
                               >
                                 <Download className="w-3 h-3 mr-1" />
-                                {t("tools.textToImageWithText.download")}
+                                {t("textToImageWithText.download")}
                               </Button>
                             </div>
                           ))}
@@ -636,7 +638,7 @@ export function TextToImageWithText({ user }: TextToImageWithTextProps) {
                 ) : (
                   <>
                     <Sparkles className="w-4 h-4 mr-2" />
-                    {t("textToImageWithText.generateContent")} ({language === 'zh' ? `消耗 ${batchCount} ${t("tools.textToImageWithText.creditsUnit")}` : `Costs ${batchCount} ${batchCount === 1 ? t("tools.textToImageWithText.creditUnit") : t("tools.textToImageWithText.creditsUnit")}`})
+                    {t("textToImageWithText.generateContent")} ({language === 'zh' ? `消耗 ${batchCount} ${t("textToImageWithText.creditsUnit")}` : `Costs ${batchCount} ${batchCount === 1 ? t("textToImageWithText.creditUnit") : t("textToImageWithText.creditsUnit")}`})
                   </>
                 )}
               </Button>
@@ -660,7 +662,7 @@ export function TextToImageWithText({ user }: TextToImageWithTextProps) {
           onRegenerate={handleRegenerate}
           onDownload={handleDownloadHistory}
           onDelete={handleDeleteHistory}
-          useAsReferenceText={t("tools.textToImageWithText.useAsReference")}
+          useAsReferenceText={t("textToImageWithText.useAsReference")}
         />
       )}
 

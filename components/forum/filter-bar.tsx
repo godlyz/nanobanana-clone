@@ -8,7 +8,7 @@
 
 import { useCallback } from "react"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
@@ -46,7 +46,7 @@ export function ForumFilterBar({
   tags = [],
   showStatusFilter = false,
 }: ForumFilterBarProps) {
-  const { language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()

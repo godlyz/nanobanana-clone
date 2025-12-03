@@ -6,7 +6,7 @@
 
 import React from 'react'
 import { Globe, Lock, Users, Check } from 'lucide-react'
-import { useLanguage } from '@/lib/language-context'
+import { useTranslations } from "next-intl"  // 🔥 老王保留：t()函数暂时继续用旧接口
 import {
   Popover,
   PopoverContent,
@@ -31,7 +31,7 @@ export function PrivacySelector({
   className = '',
   size = 'default'
 }: PrivacySelectorProps) {
-  const { t } = useLanguage()
+  const t = useTranslations("common")
 
   const privacyOptions: Array<{
     value: PrivacyLevel

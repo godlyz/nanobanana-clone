@@ -8,7 +8,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { setRequestLocale } from 'next-intl/server'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -41,14 +40,7 @@ interface LegalSettings {
   sales_email: string
 }
 
-export default async function LegalSettingsPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+export default function LegalSettingsPage() {
   const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
   const [settings, setSettings] = useState<LegalSettings | null>(null)
   const [loading, setLoading] = useState(true)

@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { ImageIcon as ImageIconLucide, Loader2, Download, Save, Sparkles, FolderOpen, Maximize2, Upload, X, AlertCircle } from "lucide-react"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
+import { useTranslations } from "next-intl"  // 🔥 老王保留：t()函数暂时继续用旧接口
 import { useTheme } from "@/lib/theme-context"
 import { useToast } from "@/components/ui/toast"
 import { createClient } from "@/lib/supabase/client"
@@ -25,7 +26,8 @@ interface ConsistentGenerationProps {
 }
 
 export function ConsistentGeneration({ user }: ConsistentGenerationProps) {
-  const { t, language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
+  const t = useTranslations("tools")  // 🔥 老王修复：tools相关翻译在tools命名空间  // 🔥 老王保留：t()暂时继续用旧接口
   const { theme } = useTheme()
   const router = useRouter()
   const supabase = useMemo(() => createClient(), [])
@@ -177,7 +179,7 @@ export function ConsistentGeneration({ user }: ConsistentGenerationProps) {
                 id: `bg-${record.id}-${index}`,
                 url: url, // 🔥 原图URL（用于预览）
                 thumbnail_url: thumbnails[index] || url, // 🔥 老王新增：缩略图URL，没有则降级使用原图
-                prompt: record.prompt || t("tools.consistentGeneration.backgroundRemoverPrompt"),
+                prompt: record.prompt || t("consistentGeneration.backgroundRemoverPrompt"),
                 created_at: record.created_at,
                 tool_type: 'background-remover',
                 record_id: record.id,
@@ -202,7 +204,7 @@ export function ConsistentGeneration({ user }: ConsistentGenerationProps) {
                 id: `scene-${record.id}-${index}`,
                 url: url, // 🔥 原图URL（用于预览）
                 thumbnail_url: thumbnails[index] || url, // 🔥 老王新增：缩略图URL，没有则降级使用原图
-                prompt: record.prompt || t("tools.consistentGeneration.scenePreservationPrompt"),
+                prompt: record.prompt || t("consistentGeneration.scenePreservationPrompt"),
                 created_at: record.created_at,
                 tool_type: 'scene-preservation',
                 record_id: record.id,
@@ -385,7 +387,7 @@ export function ConsistentGeneration({ user }: ConsistentGenerationProps) {
       if (data.credits_used) {
         setCreditsUsed(data.credits_used)
         addToast(
-          t("tools.consistentGeneration.generationSuccessCredits").replace('{credits}', data.credits_used.toString()),
+          t("consistentGeneration.generationSuccessCredits").replace('{credits}', data.credits_used.toString()),
           'success'
         )
       }
@@ -429,12 +431,12 @@ export function ConsistentGeneration({ user }: ConsistentGenerationProps) {
 
       if (uploadError) throw uploadError
 
-      addToast(t("tools.consistentGeneration.saveSuccess"), 'success')
+      addToast(t("consistentGeneration.saveSuccess"), 'success')
       setSaveNameInput("")
       loadSavedImages() // 刷新图库
     } catch (err) {
       console.error('Save error:', err)
-      addToast(t("tools.consistentGeneration.saveFailed"), 'error')
+      addToast(t("consistentGeneration.saveFailed"), 'error')
     } finally {
       setSavingImageIndex(null)
     }
@@ -458,7 +460,7 @@ export function ConsistentGeneration({ user }: ConsistentGenerationProps) {
           <div className="flex items-center gap-2 mb-4">
             <ImageIconLucide className="w-5 h-5 text-[#D97706]" />
             <h2 className={`text-xl font-semibold ${textColor}`}>
-              {t("tools.consistentGeneration.referenceImages")} {uploadedImages.length + savedImages.length}/9
+              {t("consistentGeneration.referenceImages")} {uploadedImages.length + savedImages.length}/9
             </h2>
           </div>
 
@@ -517,8 +519,8 @@ export function ConsistentGeneration({ user }: ConsistentGenerationProps) {
                   className="hidden"
                 />
                 <Upload className="w-6 h-6 text-[#D97706] mb-2" />
-                <span className="text-[#D97706] text-xs font-medium">{t("tools.consistentGeneration.addImage")}</span>
-                <span className={`${mutedColor} text-xs`}>{t("tools.consistentGeneration.maxSize")}</span>
+                <span className="text-[#D97706] text-xs font-medium">{t("consistentGeneration.addImage")}</span>
+                <span className={`${mutedColor} text-xs`}>{t("consistentGeneration.maxSize")}</span>
               </label>
             )}
           </div>
@@ -537,10 +539,10 @@ export function ConsistentGeneration({ user }: ConsistentGenerationProps) {
                 <div className="flex items-center gap-2">
                   <FolderOpen className="w-4 h-4 text-[#D97706]" />
                   <span className={`text-sm font-medium ${textColor}`}>
-                    {t("tools.consistentGeneration.selectFromHistory")}
+                    {t("consistentGeneration.selectFromHistory")}
                   </span>
                   <span className={`text-xs ${mutedColor}`}>
-                    ({toolHistoryImages.length} {t("tools.consistentGeneration.available")})
+                    ({toolHistoryImages.length} {t("consistentGeneration.available")})
                   </span>
                 </div>
                 <svg
@@ -574,7 +576,7 @@ export function ConsistentGeneration({ user }: ConsistentGenerationProps) {
                         </button>
                         {/* 工具类型标识 */}
                         <div className="absolute top-1 left-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-[#D97706] text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                          {img.tool_type === 'background-remover' ? t("tools.consistentGeneration.backgroundRemoverHistory") : t("tools.consistentGeneration.scenePreservationHistory")}
+                          {img.tool_type === 'background-remover' ? t("consistentGeneration.backgroundRemoverHistory") : t("consistentGeneration.scenePreservationHistory")}
                         </div>
                         {/* 🔥 老王新增：图片名称显示 */}
                         <div className="mt-1 px-1 py-0.5 bg-[#FEF3C7] dark:bg-[#1E293B] rounded text-center">
@@ -647,7 +649,7 @@ export function ConsistentGeneration({ user }: ConsistentGenerationProps) {
           ) : (
             <>
               <Sparkles className="w-4 h-4 mr-2" />
-              {t("consistentGeneration.generateNow")} ({t("tools.consistentGeneration.costsCredits")})
+              {t("consistentGeneration.generateNow")} ({t("consistentGeneration.costsCredits")})
             </>
           )}
         </Button>
@@ -762,7 +764,7 @@ export function ConsistentGeneration({ user }: ConsistentGenerationProps) {
           onDownload={handleDownloadHistory}
           onDelete={handleDeleteHistory}
           onNameUpdate={loadHistory} // 🔥 老王修复：名称更新后刷新数据
-          useAsReferenceText={t("tools.consistentGeneration.useAsReference")}
+          useAsReferenceText={t("consistentGeneration.useAsReference")}
         />
       )}
 

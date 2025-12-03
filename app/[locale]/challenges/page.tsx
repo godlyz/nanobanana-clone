@@ -7,11 +7,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { setRequestLocale } from 'next-intl/server'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Header } from '@/components/header'
+import { Footer } from '@/components/footer'
 import {
   Trophy,
   Calendar,
@@ -68,15 +69,12 @@ const statusMap: Record<string, { label: string; color: string; icon: React.Reac
   }
 }
 
-export default async function ChallengesPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+export default function ChallengesPage() {
   const router = useRouter()
+  const pathname = usePathname()
+  // 从路径中提取locale (例如: /en/challenges -> en)
+  const locale = pathname.split('/')[1]
+
   const [challenges, setChallenges] = useState<Challenge[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -219,8 +217,10 @@ export default async function ChallengesPage({
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* 页面标题 */}
+    <>
+      <Header />
+      <div className="container mx-auto px-4 py-8 pt-24">
+        {/* 页面标题 */}
       <div className="mb-8">
         <div className="flex items-center space-x-3 mb-2">
           <Trophy className="w-8 h-8 text-blue-500" />
@@ -375,6 +375,8 @@ export default async function ChallengesPage({
           </p>
         </div>
       )}
-    </div>
+      </div>
+      <Footer />
+    </>
   )
 }

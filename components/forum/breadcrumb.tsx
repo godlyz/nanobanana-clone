@@ -7,7 +7,7 @@
 "use client"
 
 import Link from "next/link"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -62,7 +62,7 @@ export function ForumBreadcrumb({
   searchQuery,
   customPath,
 }: ForumBreadcrumbProps) {
-  const { language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
 
   // 自动生成面包屑项目
   const breadcrumbItems: BreadcrumbItem[] = items || (() => {

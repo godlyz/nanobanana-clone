@@ -1,0 +1,172 @@
+{
+  "pricing": {
+    "banner": "限时优惠：年付可省 20%",
+    "title": "选择您的完美计划",
+    "subtitle": "无限创意从这里开始",
+    "monthly": "按月付费",
+    "yearly": "按年付费",
+    "save50": "立省 50%",
+    "mostPopular": "最受欢迎",
+    "subscription": "订阅计划",
+    "credits": "积分包",
+    "buyCredits": "购买积分包",
+    "creditsUnit": "积分",
+    "yearlyBonusCredits": "年付送2个月，超值优惠！",
+    "basic": {
+      "name": "基础版",
+      "description": "适合个人和轻度用户",
+      "credits": "150 积分/月",
+      "creditsMonthly": "150 积分/月",
+      "creditsYearly": "1800 积分/年",
+      "feature1": "每月 75 张高质量图像",
+      "feature2": "包含所有风格模板",
+      "feature3": "标准生成速度",
+      "feature4": "基础客户支持",
+      "feature5": "JPG/PNG 格式下载",
+      "feature6": "商业使用许可",
+      "feature7": "视频生成：4秒（40积分）、6秒（60积分）、8秒（80积分）",
+      "cta": "登录开始使用"
+    },
+    "pro": {
+      "name": "专业版",
+      "description": "适合专业创作者和团队",
+      "credits": "800 积分/月",
+      "creditsMonthly": "800 积分/月",
+      "creditsYearly": "9600 积分/年",
+      "feature1": "每月 400 张高质量图像",
+      "feature2": "包含所有风格模板",
+      "feature3": "优先生成队列",
+      "feature4": "优先客户支持",
+      "feature5": "JPG/PNG/WebP 格式下载",
+      "feature6": "批量生成功能",
+      "feature7": "图像编辑工具（10月上线）",
+      "feature8": "商业使用许可",
+      "feature9": "视频生成：4秒（40积分）、6秒（60积分）、8秒（80积分）",
+      "cta": "登录开始使用"
+    },
+    "max": {
+      "name": "旗舰版",
+      "description": "为大型企业和专业工作室设计",
+      "credits": "2000 积分/月",
+      "creditsMonthly": "2000 积分/月",
+      "creditsYearly": "24000 积分/年",
+      "feature1": "每月 800 张高质量图像",
+      "feature2": "包含所有风格模板",
+      "feature3": "最快生成速度",
+      "feature4": "专属客户经理",
+      "feature5": "所有格式下载",
+      "feature6": "批量生成功能",
+      "feature7": "专业编辑套件（10月上线）",
+      "feature8": "商业使用许可",
+      "feature9": "视频生成：4秒（40积分）、6秒（60积分）、8秒（80积分）",
+      "cta": "登录开始使用"
+    },
+    "faqTitle": "常见问题",
+    "faq1": {
+      "question": "什么是积分，如何使用？",
+      "answer": "文生图使用1积分，图生图使用2积分。积分会在每个计费周期开始时自动充值 - 月度计划每月充值，年度计划一次性充值全年额度（1美元=10积分）。"
+    },
+    "faq2": {
+      "question": "我可以随时更改计划吗？",
+      "answer": "可以，您可以随时升级或降级计划。升级立即生效，降级将在下个计费周期生效。"
+    },
+    "faq3": {
+      "question": "未使用的积分会累积吗？",
+      "answer": "月度计划的积分不会累积到下个月。年度计划的积分在整个订阅期内有效。我们建议根据实际使用需求选择计划。"
+    },
+    "faq4": {
+      "question": "支持哪些支付方式？",
+      "answer": "我们支持信用卡、借记卡、支付宝、微信支付等多种支付方式。所有支付都通过安全的第三方支付平台处理。"
+    },
+    "faq5": {
+      "question": "视频生成消耗多少积分？",
+      "answer": "视频生成根据时长消耗积分：4秒视频消耗40积分，6秒视频消耗60积分，8秒视频消耗80积分。所有套餐均支持视频生成功能，并提供多种分辨率选项（720p/1080p）。"
+    },
+    "moreQuestions": "还有更多问题？我们随时为您服务",
+    "contactSupport": "联系客服",
+    "login": "登录开始使用",
+    "subscribe": "立即订阅",
+    "currentPlan": "当前套餐",
+    "renew": "续订套餐",
+    "upgrade": "升级套餐",
+    "downgrade": "更换套餐",
+    "loading": "加载中...",
+    "dialog": {
+      "upgradeTitle": "升级套餐",
+      "downgradeTitle": "调整套餐",
+      "adjustmentDescription": "选择套餐调整方式",
+      "adjustmentMode": "调整方式",
+      "immediateSwitch": "立即切换",
+      "immediateDescription": "立即切换到新套餐，剩余 {days} 天的订阅费用将按比例计入新套餐。",
+      "scheduledSwitch": "周期结束后切换",
+      "scheduledDescription": "当前套餐在 {days} 天后到期时自动切换到新套餐。",
+      "cancel": "取消",
+      "processing": "处理中...",
+      "confirmUpgrade": "确认升级",
+      "confirmDowngrade": "确认调整"
+    }
+  },
+  "credits": {
+    "starter": {
+      "name": "入门包",
+      "description": "适合初次尝试的用户",
+      "badge": "最超值",
+      "feature1": "100 积分一次性充值",
+      "feature2": "永久有效，无过期时间",
+      "feature3": "支持所有功能",
+      "feature4": "可叠加订阅积分使用"
+    },
+    "growth": {
+      "name": "成长包",
+      "description": "适合中度使用者",
+      "badge": "推荐",
+      "feature1": "450 积分一次性充值",
+      "feature2": "永久有效，无过期时间",
+      "feature3": "支持所有功能",
+      "feature4": "可叠加订阅积分使用",
+      "feature5": "更高性价比"
+    },
+    "professional": {
+      "name": "专业包",
+      "description": "适合专业创作者",
+      "badge": "热门",
+      "feature1": "1000 积分一次性充值",
+      "feature2": "永久有效，无过期时间",
+      "feature3": "支持所有功能",
+      "feature4": "可叠加订阅积分使用",
+      "feature5": "优先客户支持",
+      "feature6": "最佳性价比"
+    },
+    "enterprise": {
+      "name": "企业包",
+      "description": "适合大型项目和团队",
+      "badge": "企业首选",
+      "feature1": "4200 积分一次性充值",
+      "feature2": "永久有效，无过期时间",
+      "feature3": "支持所有功能",
+      "feature4": "可叠加订阅积分使用",
+      "feature5": "专属客户经理",
+      "feature6": "优先技术支持",
+      "feature7": "定制化服务"
+    }
+  },
+  "payment": {
+    "verifying": "正在验证支付",
+    "pleaseWait": "请稍候，我们正在验证您的支付...",
+    "success": {
+      "title": "支付成功！",
+      "message": "感谢您的购买。您的账户已升级。",
+      "startEditing": "开始编辑",
+      "viewPlans": "查看计划"
+    },
+    "failed": {
+      "title": "支付失败",
+      "message": "我们无法处理您的支付。请重试或联系客服。",
+      "tryAgain": "重试",
+      "backHome": "返回首页"
+    },
+    "details": "支付详情",
+    "orderId": "订单号",
+    "plan": "计划"
+  }
+}

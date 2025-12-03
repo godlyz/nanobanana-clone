@@ -8,7 +8,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
 import { Button } from "@/components/ui/button"
 import { Search, X, Loader2 } from "lucide-react"
 
@@ -33,7 +33,7 @@ export function ForumSearchBar({
 }: ForumSearchBarProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [query, setQuery] = useState(searchParams.get('q') || '')

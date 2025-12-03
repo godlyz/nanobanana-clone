@@ -1,0 +1,10 @@
+{
+  "title": "移动端对话编辑",
+  "description": "通过自然语言对话编辑您的图片",
+  "upload": "上传图片",
+  "uploadMockup": "点击或拖拽图片到此处",
+  "preview": "预览",
+  "chat": "对话",
+  "placeholder": "描述您想要的编辑效果...",
+  "startChat": "开始对话"
+}

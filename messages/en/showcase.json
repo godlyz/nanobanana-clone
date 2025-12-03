@@ -1,0 +1,26 @@
+{
+  "showcasePage": {
+    "badge": "Community Featured",
+    "title": "Showcase Gallery",
+    "subtitle": "Explore amazing image transformations created by our community using Nano Banana",
+    "tryNow": "Try Now",
+    "submitWork": "Submit Your Work",
+    "filter": {
+      "all": "All",
+      "portrait": "Portrait",
+      "landscape": "Landscape",
+      "product": "Product",
+      "creative": "Creative",
+      "anime": "Anime"
+    },
+    "tryThis": "Try This",
+    "loadMore": "Load More",
+    "noDescription": "No description",
+    "cta": {
+      "title": "Ready to Create Your Own?",
+      "description": "Join thousands of creators using Nano Banana to transform their images",
+      "button": "Start Creating"
+    },
+    "comingSoon": "Coming Soon"
+  }
+}

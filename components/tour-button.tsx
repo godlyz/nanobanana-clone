@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation"
 import { HelpCircle, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useTour } from "@/lib/tour-context"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
 import {
   Tooltip,
   TooltipContent,
@@ -15,7 +15,7 @@ import {
 export function TourButton() {
   const pathname = usePathname()
   const { startTour } = useTour()
-  const { language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
 
   // 根据当前路径确定引导类型
   const getTourType = (): "home" | "editor" | "api-docs" | "pricing" | "tools" | null => {
@@ -67,7 +67,7 @@ export function TourButton() {
 // 🔥 老王专用：首次访问提示组件（在页面顶部显示）
 export function FirstVisitPrompt({ tourType }: { tourType: "home" | "editor" | "api-docs" | "pricing" | "tools" }) {
   const { startTour, isFirstVisit } = useTour()
-  const { language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
 
   const [dismissed, setDismissed] = React.useState(false)
   const [mounted, setMounted] = React.useState(false) // 🔥 老王修复水合错误

@@ -16,8 +16,10 @@
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { useLocale } from 'next-intl'  // 🔥 老王迁移：使用next-intl的useLocale
+import { useTheme } from "@/lib/theme-context"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+import { EditorSidebar } from "@/components/editor-sidebar"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -85,6 +87,7 @@ const supabase = createClient()
 export default function VideoGalleryPage() {
   const router = useRouter()
   const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
+  const { theme } = useTheme()
   const { addToast } = useToast()
   const { confirm } = useConfirm()
 
@@ -114,12 +117,14 @@ export default function VideoGalleryPage() {
 
   // 用户认证状态
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
+  const [user, setUser] = useState<any>(null)
 
   // 检查用户认证
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       setIsAuthenticated(!!user)
+      setUser(user)
     }
     checkAuth()
   }, [])
@@ -358,6 +363,9 @@ export default function VideoGalleryPage() {
     setIsShareModalOpen(true)
   }
 
+  // 🔥 老王修改：统一背景色（与历史记录页面一致）
+  const mainBg = theme === "light" ? "bg-[#FFFEF5]" : "bg-[#0A0F1C]"
+
   // 获取状态显示
   const getStatusDisplay = (status: string) => {
     switch (status) {
@@ -408,7 +416,7 @@ export default function VideoGalleryPage() {
   // 未登录状态
   if (isAuthenticated === false) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#FEF3C7] via-[#FEF9E7] to-[#FFFBEB] dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className={`min-h-screen ${mainBg}`}>
         <Header />
         <main className="container mx-auto px-4 py-16">
           <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
@@ -437,7 +445,7 @@ export default function VideoGalleryPage() {
   // 加载中状态（首次检查认证）
   if (isAuthenticated === null) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#FEF3C7] via-[#FEF9E7] to-[#FFFBEB] dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className={`min-h-screen ${mainBg}`}>
         <Header />
         <main className="container mx-auto px-4 py-16">
           <div className="flex items-center justify-center min-h-[60vh]">
@@ -450,10 +458,23 @@ export default function VideoGalleryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FEF3C7] via-[#FEF9E7] to-[#FFFBEB] dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <>
       <Header />
+      <div className={`flex min-h-screen ${mainBg} pt-16`}>
+        {/* 左侧菜单栏 */}
+        <EditorSidebar
+          mode="full"
+          activeTab={undefined}
+          onTabChange={() => {}}
+          user={user}
+          onHistoryClick={() => router.push('/history')}
+          onToolboxClick={() => {}}
+          selectedTool={null}
+        />
 
-      <main className="container mx-auto px-4 py-8">
+        {/* 主要内容区域 */}
+        <main className="flex-1 overflow-auto">
+          <div className="container mx-auto px-4 py-8">
         {/* 🔥 页面标题 */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
@@ -730,7 +751,9 @@ export default function VideoGalleryPage() {
             )}
           </>
         )}
-      </main>
+          </div>
+        </main>
+      </div>
 
       {/* 🔥 视频播放模态框 */}
       <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
@@ -873,6 +896,6 @@ export default function VideoGalleryPage() {
       )}
 
       <Footer />
-    </div>
+    </>
   )
 }

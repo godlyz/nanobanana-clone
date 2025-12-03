@@ -26,7 +26,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { setRequestLocale } from 'next-intl/server'
 import { useRouter } from "next/navigation"
 import { useTranslations, useLocale } from 'next-intl'  // 🔥 老王迁移：使用next-intl
 import { ForumThreadForm } from "@/components/forum/thread-form"
@@ -35,14 +34,7 @@ import { Card } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import type { ForumCategory, ForumTag, CreateThreadRequest, UpdateThreadRequest } from "@/types/forum"
 
-export default async function NewThreadPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+export default function NewThreadPage() {
   const router = useRouter()
   const t = useTranslations('forum')  // 🔥 老王迁移：使用forum命名空间
   const locale = useLocale()  // 🔥 老王迁移：获取当前语言

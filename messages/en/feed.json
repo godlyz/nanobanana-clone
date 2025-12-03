@@ -1,0 +1,24 @@
+{
+  "title": "Activity Feed",
+  "subtitle": "See what people you follow are creating",
+  "empty": {
+    "title": "No activity yet",
+    "description": "Follow some creators to see their activity here",
+    "cta": "Discover Creators"
+  },
+  "activity": {
+    "newArtwork": "shared a new artwork",
+    "newVideo": "created a new video",
+    "commented": "left a comment",
+    "followed": "started following",
+    "earned": "earned",
+    "liked": "liked an artwork",
+    "default": "did something"
+  },
+  "time": {
+    "justNow": "Just now",
+    "minsAgo": "m ago",
+    "hoursAgo": "h ago",
+    "daysAgo": "d ago"
+  }
+}

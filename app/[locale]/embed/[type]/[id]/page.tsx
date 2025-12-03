@@ -11,21 +11,23 @@ import { Play, ExternalLink } from 'lucide-react'
 import type { Metadata } from 'next'
 
 interface EmbedPageProps {
-  params: {
+  params: Promise<{
+    locale: string
     type: 'image' | 'video'
     id: string
-  }
+  }>
 }
 
 export async function generateMetadata({ params }: EmbedPageProps): Promise<Metadata> {
-  // 🔥 老王修复：createClient返回Promise，必须await
+  // 🔥 老王修复：await params获取所有路由参数
+  const { type, id } = await params
   const supabase = await createClient()
-  const tableName = params.type === 'video' ? 'video_generation_history' : 'generation_history'
+  const tableName = type === 'video' ? 'video_generation_history' : 'generation_history'
 
   const { data: artwork } = await supabase
     .from(tableName)
     .select('prompt, image_url, video_url')
-    .eq('id', params.id)
+    .eq('id', id)
     .single()
 
   if (!artwork) {
@@ -43,17 +45,14 @@ export async function generateMetadata({ params }: EmbedPageProps): Promise<Meta
   }
 }
 
-export default async function EmbedPage({ params }: EmbedPageProps, {
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
+// 🔥 老王修复：Next.js 16合并params，包含locale + type + id
+export default async function EmbedPage({ params }: EmbedPageProps) {
+  const { locale, type, id } = await params
   setRequestLocale(locale)
 
   // 🔥 老王修复：createClient返回Promise，必须await
   const supabase = await createClient()
-  const tableName = params.type === 'video' ? 'video_generation_history' : 'generation_history'
+  const tableName = type === 'video' ? 'video_generation_history' : 'generation_history'
 
   // 获取作品数据
   const { data: artwork, error } = await supabase
@@ -70,7 +69,7 @@ export default async function EmbedPage({ params }: EmbedPageProps, {
         avatar_url
       )
     `)
-    .eq('id', params.id)
+    .eq('id', id)
     .single()
 
   if (error || !artwork) {
@@ -81,7 +80,7 @@ export default async function EmbedPage({ params }: EmbedPageProps, {
   const { data: privacyData } = await supabase
     .from(tableName)
     .select('privacy')
-    .eq('id', params.id)
+    .eq('id', id)
     .single()
 
   if (privacyData?.privacy !== 'public') {
@@ -95,14 +94,14 @@ export default async function EmbedPage({ params }: EmbedPageProps, {
     )
   }
 
-  const artworkUrl = params.type === 'video' ? artwork.video_url : artwork.image_url
-  const viewUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/artwork/${params.type}/${params.id}`
+  const artworkUrl = type === 'video' ? artwork.video_url : artwork.image_url
+  const viewUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/artwork/${type}/${id}`
 
   return (
     <div className="min-h-screen bg-black flex flex-col">
       {/* 作品展示区域 */}
       <div className="flex-1 flex items-center justify-center p-4">
-        {params.type === 'video' && artwork.video_url ? (
+        {type === 'video' && artwork.video_url ? (
           <video
             src={artwork.video_url}
             poster={artwork.image_url}

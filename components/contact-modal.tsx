@@ -6,7 +6,7 @@
  * 老王提醒: 这个弹窗支持一键复制联系方式，方便用户快速联系！
  */
 
-import { useLanguage } from "@/lib/language-context"
+import { useTranslations } from "next-intl"  // 🔥 老王迁移：从next-intl获取翻译
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -34,7 +34,7 @@ interface ContactModalProps {
 }
 
 export function ContactModal({ open, onOpenChange, type, contactInfo }: ContactModalProps) {
-  const { t } = useLanguage()
+  const t = useTranslations("common")  // 🔥 老王迁移：使用common命名空间
   const [copiedField, setCopiedField] = useState<string | null>(null)
 
   // 🔥 老王的复制功能：点击复制联系方式

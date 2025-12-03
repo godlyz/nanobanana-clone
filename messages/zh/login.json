@@ -1,0 +1,31 @@
+{
+  "title": "欢迎回来",
+  "subtitleWithEmail": "使用邮箱/用户名或社交账号登录您的账户",
+  "identifier": "邮箱或用户名",
+  "identifierPlaceholder": "请输入您的邮箱或用户名",
+  "password": "密码",
+  "passwordPlaceholder": "请输入您的密码",
+  "forgotPassword": "忘记密码?",
+  "graphicVerification": "验证",
+  "signin": "登录",
+  "signingIn": "登录中...",
+  "noaccount": "还没有账户?",
+  "signup": "注册",
+  "useGoogle": "使用 Google 继续",
+  "useGithub": "使用 GitHub 继续",
+  "redirecting": "跳转中...",
+  "orEmailLogin": "或使用邮箱继续",
+  "sessionSecurityHint": "您的会话将被安全存储和加密。我们绝不会与第三方分享您的登录信息。",
+  "success": {
+    "loggedIn": "登录成功！正在跳转..."
+  },
+  "error": {
+    "requiredFields": "请填写所有必填项",
+    "graphicVerification": "请完成验证",
+    "graphicVerificationFailed": "验证失败，请重试",
+    "loginFailed": "登录失败",
+    "loginFailedRetry": "登录失败，请重试",
+    "oauthFailed": "{provider} 登录失败",
+    "oauthUrlFailed": "获取授权URL失败"
+  }
+}

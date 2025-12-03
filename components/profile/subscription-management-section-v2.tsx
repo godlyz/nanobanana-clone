@@ -3,7 +3,8 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
+import { useTranslations } from "next-intl"  // 🔥 老王保留：t()函数暂时继续用旧接口
 import { useTheme } from "@/lib/theme-context"
 import { useRouter } from "next/navigation"
 import {
@@ -30,7 +31,8 @@ interface SubscriptionManagementSectionV2Props {
  * - 过期订阅：灰色卡片
  */
 export function SubscriptionManagementSectionV2({ subscriptions, loading }: SubscriptionManagementSectionV2Props) {
-  const { language, t } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
+  const t = useTranslations("profile")  // 🔥 老王修复：改用profile命名空间
   const { theme } = useTheme()
   const router = useRouter()
 
@@ -52,26 +54,26 @@ export function SubscriptionManagementSectionV2({ subscriptions, loading }: Subs
       case 'active':
         return (
           <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-            {t('profile.subscription.status.active')}
+            {t('subscription.status.active')}
           </Badge>
         )
       case 'frozen':
         return (
           <Badge variant="secondary" className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
             <Snowflake className="w-3 h-3 mr-1" />
-            {t('profile.subscription.status.frozen')}
+            {t('subscription.status.frozen')}
           </Badge>
         )
       case 'inactive':
         return (
           <Badge variant="secondary" className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">
-            {t('profile.subscription.status.inactive')}
+            {t('subscription.status.inactive')}
           </Badge>
         )
       case 'expired':
         return (
           <Badge variant="secondary" className="bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400">
-            {t('profile.subscription.status.expired')}
+            {t('subscription.status.expired')}
           </Badge>
         )
       default:
@@ -118,20 +120,20 @@ export function SubscriptionManagementSectionV2({ subscriptions, loading }: Subs
             </div>
             <div>
               <h3 className={`text-lg font-semibold ${textColor}`}>
-                {t('profile.subscription.title')}
+                {t('subscription.title')}
               </h3>
               <p className="text-sm text-muted-foreground">
-                {t('profile.subscription.desc')}
+                {t('subscription.desc')}
               </p>
             </div>
           </div>
 
           <div className="p-4 rounded-lg bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900/20 dark:to-gray-900/30 border border-gray-200 dark:border-gray-800">
             <h4 className={`text-lg font-bold ${textColor} mb-2`}>
-              {t('profile.subscription.freePlan')}
+              {t('subscription.freePlan')}
             </h4>
             <p className="text-sm text-muted-foreground">
-              {t('profile.subscription.upgradeDesc')}
+              {t('subscription.upgradeDesc')}
             </p>
           </div>
 
@@ -140,7 +142,7 @@ export function SubscriptionManagementSectionV2({ subscriptions, loading }: Subs
             onClick={() => router.push('/pricing')}
           >
             <TrendingUp className="w-4 h-4 mr-2" />
-            {t('profile.subscription.button.upgrade')}
+            {t('subscription.button.upgrade')}
           </Button>
         </div>
       </Card>
@@ -157,10 +159,10 @@ export function SubscriptionManagementSectionV2({ subscriptions, loading }: Subs
           </div>
           <div>
             <h3 className={`text-lg font-semibold ${textColor}`}>
-              {t('profile.subscription.title')}
+              {t('subscription.title')}
             </h3>
             <p className="text-sm text-muted-foreground">
-              {t('profile.subscription.count').replace('{count}', subscriptions.length.toString())}
+              {t('subscription.count', { count: subscriptions.length })}
             </p>
           </div>
         </div>
@@ -173,12 +175,12 @@ export function SubscriptionManagementSectionV2({ subscriptions, loading }: Subs
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <h4 className={`text-lg font-bold ${textColor}`}>
-                      {t(`profile.subscription.plan.${sub.plan}`) || sub.plan}
+                      {t(`subscription.plan.${sub.plan}`) || sub.plan}
                     </h4>
                     {getStatusBadge(sub.status)}
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {sub.billing_cycle === 'yearly' ? t('profile.subscription.billing.yearly') : t('profile.subscription.billing.monthly')}
+                    {sub.billing_cycle === 'yearly' ? t('subscription.billing.yearly') : t('subscription.billing.monthly')}
                   </p>
                 </div>
                 <div className="text-right">
@@ -194,14 +196,14 @@ export function SubscriptionManagementSectionV2({ subscriptions, loading }: Subs
                 <div>
                   <p className="text-xs text-muted-foreground mb-1">
                     <Calendar className="w-3 h-3 inline mr-1" />
-                    {t('profile.subscription.field.startDate')}
+                    {t('subscription.field.startDate')}
                   </p>
                   <p className={`font-medium ${textColor}`}>{formatDate(sub.startDate)}</p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground mb-1">
                     <Calendar className="w-3 h-3 inline mr-1" />
-                    {t('profile.subscription.field.expiryDate')}
+                    {t('subscription.field.expiryDate')}
                   </p>
                   <p className={`font-medium ${textColor}`}>{formatDate(sub.endDate)}</p>
                 </div>
@@ -221,7 +223,7 @@ export function SubscriptionManagementSectionV2({ subscriptions, loading }: Subs
                       'text-orange-600 dark:text-orange-400'
                     }`} />
                     <span className={`font-semibold ${textColor}`}>
-                      {t('profile.subscription.remaining.months').replace('{count}', sub.remainingMonths.toString())}
+                      {t('subscription.remaining.months', { count: sub.remainingMonths })}
                     </span>
 
                     {/* 🔥 冻结订阅额外信息 */}
@@ -229,12 +231,12 @@ export function SubscriptionManagementSectionV2({ subscriptions, loading }: Subs
                       <>
                         {sub.frozenCredits !== undefined && sub.frozenCredits > 0 && (
                           <span className={`font-semibold ${textColor}`}>
-                            ，{t('profile.subscription.frozen.credits')} {sub.frozenCredits}{t('profile.subscription.unit.credits')}
+                            ，{t('subscription.frozen.credits')} {sub.frozenCredits}{t('subscription.unit.credits')}
                           </span>
                         )}
                         {sub.frozenUntil && sub.remaining_days !== undefined && (
                           <span className={`font-semibold ${textColor}`}>
-                            ，{t('profile.subscription.frozen.remaining')} {sub.remaining_days}{t('profile.subscription.unit.days')}
+                            ，{t('subscription.frozen.remaining')} {sub.remaining_days}{t('subscription.unit.days')}
                           </span>
                         )}
                       </>
@@ -253,7 +255,7 @@ export function SubscriptionManagementSectionV2({ subscriptions, loading }: Subs
             onClick={() => router.push('/pricing')}
           >
             <TrendingUp className="w-4 h-4 mr-2" />
-            {t('profile.subscription.button.viewPlans')}
+            {t('subscription.button.viewPlans')}
           </Button>
         </div>
       </div>

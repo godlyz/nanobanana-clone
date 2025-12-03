@@ -2,7 +2,7 @@
 
 import { Download, X, Loader2, Copy, Check, Plus } from "lucide-react"
 import { useEffect, useState } from "react"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
 import { SocialShareButtons } from "@/components/social-share-buttons"
 import { VideoShareModal } from "@/components/video-share-modal"
 import { VideoExtendDialog } from "@/components/video/video-extend-dialog"
@@ -41,7 +41,7 @@ export function VideoPlayerModal({
   geminiVideoUri,
   onExtendSuccess,
 }: VideoPlayerModalProps) {
-  const { language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
   const [isDownloading, setIsDownloading] = useState(false)
   const [promptCopied, setPromptCopied] = useState(false)
   const [isShareModalOpen, setIsShareModalOpen] = useState(false)

@@ -65,7 +65,7 @@ export default function ThreadDetailPage({
 }) {
   const router = useRouter()
   const t = useTranslations('forum')  // 🔥 老王迁移：使用forum命名空间
-  const locale = useLocale()  // 🔥 老王迁移：获取当前语言
+  const locale = useLocale() as 'en' | 'zh'  // 🔥 老王迁移：获取当前语言，类型断言
   const { user, userId } = useAuth()
   const [thread, setThread] = useState<ForumThread | null>(null)
   const [replies, setReplies] = useState<ForumReply[]>([])

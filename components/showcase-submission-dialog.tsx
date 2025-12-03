@@ -27,7 +27,8 @@ import {
 } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Loader2, Sparkles, X, CheckCircle2, XCircle, Image as ImageIcon } from "lucide-react"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
+import { useTranslations } from "next-intl"  // 🔥 老王保留：t()函数暂时继续用旧接口
 import type { ShowcaseCategory } from "@/types/showcase"
 import Image from "next/image"
 
@@ -48,7 +49,8 @@ export function ShowcaseSubmissionDialog({
   imageUrl,
   onSuccess
 }: ShowcaseSubmissionDialogProps) {
-  const { t, language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
+  const t = useTranslations("common")  // 🔥 老王保留：t()暂时继续用旧接口
 
   // 表单状态
   const [title, setTitle] = useState("")

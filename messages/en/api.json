@@ -1,0 +1,112 @@
+{
+  "nowOpen": "Now Open",
+  "heroDescription": "Integrate powerful AI image editing capabilities into your applications with our simple and intuitive REST API. Start creating amazing images in minutes.",
+  "getApiKey": "Get API Key",
+  "viewDocumentation": "View Documentation",
+  "quickStart": "Quick Start",
+  "quickStartDescription": "Get started with Nano Banana API in three simple steps",
+  "whyChoose": "Why Choose Nano Banana API?",
+  "whyChooseDescription": "Powerful features designed for developers",
+  "codeCopied": "Code copied!",
+  "copyFailed": "Copy failed",
+
+  "features": {
+    "fastResponse": {
+      "title": "Lightning Fast",
+      "description": "Global CDN distribution with average response times under 2 seconds"
+    },
+    "highQuality": {
+      "title": "High Quality Output",
+      "description": "State-of-the-art AI models for professional-grade image generation and editing"
+    },
+    "easyIntegration": {
+      "title": "Easy Integration",
+      "description": "RESTful API with comprehensive documentation and SDKs in multiple languages"
+    },
+    "naturalLanguage": {
+      "title": "Natural Language",
+      "description": "Edit images using simple text descriptions, no complex parameters required"
+    },
+    "enterpriseSecurity": {
+      "title": "Enterprise Security",
+      "description": "Industry-standard encryption and authentication with 99.9% uptime SLA"
+    },
+    "realTimeSupport": {
+      "title": "Real-time Support",
+      "description": "24/7 technical support and comprehensive API documentation"
+    }
+  },
+
+  "auth": {
+    "title": "Authentication",
+    "step1": {
+      "title": "Get Your API Key",
+      "description": "Sign up and get your API key from the profile page"
+    },
+    "step2": {
+      "title": "Add to Request Headers",
+      "description": "Include your API key in the Authorization header of all requests"
+    },
+    "step3": {
+      "title": "Security Best Practices",
+      "point1": "Never expose your API key in client-side code",
+      "point2": "Rotate your keys regularly for enhanced security",
+      "point3": "Use environment variables to store your keys",
+      "point4": "Monitor your API usage in the dashboard"
+    }
+  },
+
+  "tabs": {
+    "authentication": "Authentication",
+    "textToImage": "Text to Image",
+    "imageEdit": "Image Editing",
+    "codeExamples": "Code Examples"
+  },
+
+  "textToImage": {
+    "title": "Text to Image Generation",
+    "endpoint": "POST /api/v1/generate",
+    "parameters": "Parameters",
+    "response": "Response",
+    "param": {
+      "prompt": "Text description of the image to generate",
+      "style": "Art style (optional): realistic, anime, oil-painting, etc.",
+      "width": "Image width in pixels (default: 1024)",
+      "height": "Image height in pixels (default: 1024)"
+    }
+  },
+
+  "imageEdit": {
+    "title": "Image Editing",
+    "endpoint": "POST /api/v1/edit",
+    "parameters": "Parameters",
+    "response": "Response",
+    "param": {
+      "imageUrl": "URL of the image to edit",
+      "prompt": "Text description of the desired changes",
+      "strength": "Edit intensity from 0.0 to 1.0 (default: 0.8)",
+      "preserveScene": "Whether to preserve the original scene (default: true)"
+    }
+  },
+
+  "table": {
+    "parameter": "Parameter",
+    "type": "Type",
+    "required": "Required",
+    "description": "Description",
+    "yes": "Yes",
+    "no": "No"
+  },
+
+  "codeExamples": {
+    "title": "Code Examples",
+    "copy": "Copy"
+  },
+
+  "cta": {
+    "title": "Ready to Get Started?",
+    "description": "Join thousands of developers using Nano Banana API",
+    "getApiKey": "Get Your API Key",
+    "contactSales": "Contact Sales"
+  }
+}

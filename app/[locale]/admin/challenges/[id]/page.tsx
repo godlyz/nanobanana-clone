@@ -7,7 +7,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { setRequestLocale } from 'next-intl/server'
 import { useRouter, useParams } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -75,14 +74,8 @@ const statusMap: Record<string, { label: string; color: string }> = {
   cancelled: { label: '已取消', color: 'bg-red-500' }
 }
 
-export default async function ChallengeDetailPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>
-}) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+// 🔥 老王修复：Client Component不能用async，移除Server Component参数
+export default function ChallengeDetailPage() {
   const router = useRouter()
   const params = useParams()
   const challengeId = params.id as string

@@ -4,14 +4,14 @@ import { useState, useEffect, useMemo, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Smartphone, Sparkles } from "lucide-react"
-import { useLanguage } from "@/lib/language-context"
+import { useTranslations } from 'next-intl' // 🔥 老王迁移：使用next-intl
 import { useTheme } from "@/lib/theme-context"
 import { createClient } from "@/lib/supabase/client"
-import Link from "next/link"
+import { Link } from "@/i18n/navigation" // 🔥 老王迁移：locale-aware导航
 import { MiniImageEditor } from "@/components/mini-image-editor"
 
 export function EditorSection() {
-  const { t } = useLanguage()
+  const t = useTranslations('landing') // 🔥 老王迁移：editor在landing命名空间
   const { theme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [hasPaidPlan, setHasPaidPlan] = useState<boolean>(false)

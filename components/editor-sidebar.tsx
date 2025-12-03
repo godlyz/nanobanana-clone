@@ -3,7 +3,7 @@
 import { useRouter, usePathname } from "next/navigation"
 import { useState, useEffect } from "react"
 import { useTheme } from "@/lib/theme-context"
-import { useLanguage } from "@/lib/language-context"
+import { useTranslations } from "next-intl"  // 🔥 老王保留：t()函数暂时继续用旧接口
 import { createClient } from "@/lib/supabase/client"
 import { User as SupabaseUser } from "@supabase/supabase-js"
 import {
@@ -58,7 +58,7 @@ export function EditorSidebar({
 }) {
   const pathname = usePathname()
   const { theme } = useTheme()
-  const { t } = useLanguage()
+  const t = useTranslations("common")
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
 

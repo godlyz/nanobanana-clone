@@ -3,7 +3,8 @@
 import { useState, useEffect, useMemo, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Upload, ImageIcon as ImageIconLucide, Loader2, Sparkles } from "lucide-react"
-import { useLanguage } from "@/lib/language-context"
+import { useLocale } from "next-intl"  // 🔥 老王迁移：使用next-intl的useLocale
+import { useTranslations } from "next-intl"  // 🔥 老王保留：t()函数暂时继续用旧接口
 import { useTheme } from "@/lib/theme-context"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
@@ -35,7 +36,8 @@ interface StyleTransferProps {
 }
 
 export function StyleTransfer({ user }: StyleTransferProps) {
-  const { t, language } = useLanguage()
+  const language = useLocale()  // 🔥 老王迁移：useLocale返回当前语言
+  const t = useTranslations("tools")  // 🔥 老王修复：tools相关翻译在tools命名空间  // 🔥 老王保留：t()暂时继续用旧接口
   const { theme } = useTheme()
   const router = useRouter()
   const supabase = useMemo(() => createClient(), [])

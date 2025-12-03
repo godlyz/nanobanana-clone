@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { useLanguage } from "@/lib/language-context"
+import { useTranslations } from "next-intl"  // 🔥 老王保留：t()函数暂时继续用旧接口
 import { useTheme } from "@/lib/theme-context"
 import { User as UserType } from "@supabase/supabase-js"
 import { createClient } from "@/lib/supabase/client"
@@ -96,7 +96,7 @@ interface ProfileInfoSectionProps {
 }
 
 export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionProps) {
-  const { t } = useLanguage()
+  const t = useTranslations("profile")  // 🔥 老王修复：profile相关翻译在profile命名空间
   const { theme } = useTheme()
   const [isEditing, setIsEditing] = useState(false)
   const [fullName, setFullName] = useState("")
@@ -132,7 +132,7 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
     return user.user_metadata?.full_name ||
            user.user_metadata?.name ||
            user.email?.split('@')[0] ||
-           t('profile.info.user.unnamed')
+           t("info.user.unnamed")
   }
 
   const updateAvatarPreview = useCallback((value: string) => {
@@ -191,7 +191,7 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
           })
 
         if (uploadError) {
-          setFeedback(t('profile.info.error.uploadFailed').replace('{error}', uploadError.message))
+          setFeedback(t("info.error.uploadFailed").replace('{error}', uploadError.message))
           setSaving(false)
           return
         }
@@ -213,7 +213,7 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
       })
 
       if (error) {
-        setFeedback(t('profile.info.error.saveFailed').replace('{error}', error.message))
+        setFeedback(t("info.error.saveFailed").replace('{error}', error.message))
         setSaving(false)
         return
       }
@@ -226,7 +226,7 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
       setIsEditing(false)
       router.refresh()
     } catch (error) {
-      setFeedback(error instanceof Error ? t('profile.info.error.saveFailed').replace('{error}', error.message) : t('profile.info.error.saveRetry'))
+      setFeedback(error instanceof Error ? t("info.error.saveFailed").replace('{error}', error.message) : t("info.error.saveRetry"))
       setSaving(false)
     }
   }
@@ -236,12 +236,12 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
     if (!file) return
 
     if (!file.type.startsWith('image/')) {
-      setAvatarError(t('profile.info.error.invalidImage'))
+      setAvatarError(t("info.error.invalidImage"))
       return
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      setAvatarError(t('profile.info.error.imageTooLarge'))
+      setAvatarError(t("info.error.imageTooLarge"))
       return
     }
 
@@ -253,7 +253,7 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
       setCroppedAreaPixels(null)
       setAvatarError(null)
     }
-    reader.onerror = () => setAvatarError(t('profile.info.error.readFailed'))
+    reader.onerror = () => setAvatarError(t("info.error.readFailed"))
     reader.readAsDataURL(file)
 
     // 允许重新选择相同文件
@@ -262,7 +262,7 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
 
   const handleApplyCrop = useCallback(async () => {
     if (!avatarSource || !croppedAreaPixels) {
-      setAvatarError(t('profile.info.error.adjustCrop'))
+      setAvatarError(t("info.error.adjustCrop"))
       return
     }
 
@@ -279,7 +279,7 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
       })
 
       if (compressed.size > MAX_AVATAR_SIZE) {
-        setAvatarError(t('profile.info.error.compressFailed'))
+        setAvatarError(t("info.error.compressFailed"))
         return
       }
 
@@ -289,7 +289,7 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
       setAvatarSource(null)
       setAvatarUrl('')
     } catch (error) {
-      setAvatarError(error instanceof Error ? error.message : t('profile.info.error.cropRetry'))
+      setAvatarError(error instanceof Error ? error.message : t("info.error.cropRetry"))
     }
   }, [avatarSource, croppedAreaPixels, updateAvatarPreview])
 
@@ -361,7 +361,7 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
                 <div className="flex flex-wrap items-center gap-3">
                   <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
                     <Shield className="w-3 h-3 mr-1" />
-                    {t('profile.info.status.normal')}
+                    {t("info.status.normal")}
                   </Badge>
                 </div>
               </div>
@@ -372,7 +372,7 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
                     <Mail className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">{t('profile.info.field.email')}</p>
+                    <p className="text-xs text-muted-foreground">{t("info.field.email")}</p>
                     <p className={`font-medium ${textColor}`}>{user.email}</p>
                   </div>
                 </div>
@@ -382,7 +382,7 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
                     <Calendar className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">{t('profile.info.field.registeredAt')}</p>
+                    <p className="text-xs text-muted-foreground">{t("info.field.registeredAt")}</p>
                     <p className={`font-medium ${textColor}`}>
                       {user.created_at ? formatDate(user.created_at) : '-'}
                     </p>
@@ -401,7 +401,7 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
                 }}
               >
                 <Edit className="w-4 h-4 mr-2" />
-                {t('profile.info.button.edit')}
+                {t("info.button.edit")}
               </Button>
             </div>
           </div>
@@ -416,8 +416,8 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
               <Shield className="w-5 h-5 text-red-600 dark:text-red-400" />
             </div>
             <div>
-              <h3 className={`text-lg font-semibold ${textColor}`}>{t('profile.info.title.accountSecurity')}</h3>
-              <p className="text-sm text-muted-foreground">{t('profile.info.desc.securitySettings')}</p>
+              <h3 className={`text-lg font-semibold ${textColor}`}>{t("info.title.accountSecurity")}</h3>
+              <p className="text-sm text-muted-foreground">{t("info.desc.securitySettings")}</p>
             </div>
           </div>
 
@@ -427,13 +427,13 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
               <div className="flex items-center gap-3">
                 <Calendar className="w-5 h-5 text-muted-foreground" />
                 <div>
-                  <p className={`font-medium ${textColor} text-sm`}>{t('profile.info.field.lastSignIn')}</p>
+                  <p className={`font-medium ${textColor} text-sm`}>{t("info.field.lastSignIn")}</p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {user.last_sign_in_at ? formatDate(user.last_sign_in_at) : t('profile.info.status.unknown')}
+                    {user.last_sign_in_at ? formatDate(user.last_sign_in_at) : t("info.status.unknown")}
                   </p>
                 </div>
               </div>
-              <Badge variant="outline" className="text-xs">{t('profile.info.status.active')}</Badge>
+              <Badge variant="outline" className="text-xs">{t("info.status.active")}</Badge>
             </div>
 
             {/* 登录IP */}
@@ -442,7 +442,7 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
                 <div className="flex items-center gap-3">
                   <MapPin className="w-5 h-5 text-muted-foreground" />
                   <div>
-                    <p className={`font-medium ${textColor} text-sm`}>{t('profile.info.field.loginIP')}</p>
+                    <p className={`font-medium ${textColor} text-sm`}>{t("info.field.loginIP")}</p>
                     <p className="text-xs text-muted-foreground mt-1">
                       {user.user_metadata.ip_address}
                     </p>
@@ -456,14 +456,14 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
               <div className="flex items-center gap-3">
                 <Lock className="w-5 h-5 text-muted-foreground" />
                 <div>
-                  <p className={`font-medium ${textColor} text-sm`}>{t('profile.info.field.password')}</p>
+                  <p className={`font-medium ${textColor} text-sm`}>{t("info.field.password")}</p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {t('profile.info.desc.passwordSecurity')}
+                    {t("info.desc.passwordSecurity")}
                   </p>
                 </div>
               </div>
               <Button variant="outline" size="sm" asChild>
-                <Link href="/change-password">{t('profile.info.button.changePassword')}</Link>
+                <Link href="/change-password">{t("info.button.changePassword")}</Link>
               </Button>
             </div>
           </div>
@@ -473,25 +473,25 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
       {/* 🔥 老王：统计信息卡片（使用真实数据） */}
       <Card className={`${cardBg} border shadow-lg`}>
         <div className="p-6">
-          <h3 className={`text-lg font-semibold ${textColor} mb-4`}>{t('profile.info.title.accountStats')}</h3>
+          <h3 className={`text-lg font-semibold ${textColor} mb-4`}>{t("info.title.accountStats")}</h3>
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center p-4 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/30">
               <div className={`text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1`}>
                 {stats?.totalImages?.toLocaleString() || '-'}
               </div>
-              <p className="text-xs text-muted-foreground">{t('profile.info.stats.imagesGenerated')}</p>
+              <p className="text-xs text-muted-foreground">{t("info.stats.imagesGenerated")}</p>
             </div>
             <div className="text-center p-4 rounded-lg bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-900/30">
               <div className={`text-2xl font-bold text-green-600 dark:text-green-400 mb-1`}>
                 {credits?.currentCredits?.toLocaleString() || '-'}
               </div>
-              <p className="text-xs text-muted-foreground">{t('profile.info.stats.creditsRemaining')}</p>
+              <p className="text-xs text-muted-foreground">{t("info.stats.creditsRemaining")}</p>
             </div>
             <div className="text-center p-4 rounded-lg bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-900/30">
               <div className={`text-2xl font-bold text-purple-600 dark:text-purple-400 mb-1`}>
                 {stats?.activeDays || '-'}
               </div>
-              <p className="text-xs text-muted-foreground">{t('profile.info.stats.activeDays')}</p>
+              <p className="text-xs text-muted-foreground">{t("info.stats.activeDays")}</p>
             </div>
           </div>
         </div>
@@ -500,36 +500,36 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
       <Dialog open={isEditing} onOpenChange={setIsEditing}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>{t('profile.info.dialog.title')}</DialogTitle>
-            <DialogDescription>{t('profile.info.dialog.desc')}</DialogDescription>
+            <DialogTitle>{t("info.dialog.title")}</DialogTitle>
+            <DialogDescription>{t("info.dialog.desc")}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="grid gap-2">
-              <Label htmlFor="profile-name">{t('profile.info.field.displayName')}</Label>
+              <Label htmlFor="profile-name">{t("info.field.displayName")}</Label>
               <Input
                 id="profile-name"
                 value={fullName}
                 onChange={(event) => setFullName(event.target.value)}
-                placeholder={t('profile.info.placeholder.displayName')}
+                placeholder={t("info.placeholder.displayName")}
                 maxLength={60}
               />
             </div>
             <div className="space-y-3">
-              <Label>{t('profile.info.field.avatar')}</Label>
+              <Label>{t("info.field.avatar")}</Label>
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 <div className="relative w-20 h-20 rounded-full overflow-hidden border border-dashed border-muted-foreground/40">
                   {avatarPreview ? (
                     <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${avatarPreview})` }} />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">
-                      {t('profile.info.placeholder.noAvatar')}
+                      {t("info.placeholder.noAvatar")}
                     </div>
                   )}
                 </div>
                 <div className="flex-1 space-y-2">
                   <div className="flex flex-wrap items-center gap-2">
                     <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
-                      {t('profile.info.button.selectImage')}
+                      {t("info.button.selectImage")}
                     </Button>
                     {avatarPreview && avatarPreview.startsWith('blob:') && (
                       <Button
@@ -537,7 +537,7 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
                         variant="ghost"
                         onClick={handleRecropFromPreview}
                       >
-                        {t('profile.info.button.recrop')}
+                        {t("info.button.recrop")}
                       </Button>
                     )}
                     {avatarPreview && (
@@ -546,12 +546,12 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
                         variant="ghost"
                         onClick={handleClearAvatar}
                       >
-                        {t('profile.info.button.clear')}
+                        {t("info.button.clear")}
                       </Button>
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {t('profile.info.avatar.hint')}
+                    {t("info.avatar.hint")}
                   </p>
                   <input
                     ref={fileInputRef}
@@ -589,7 +589,7 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
                     />
                   </div>
                   <div className="flex items-center gap-3">
-                    <Label className="text-xs">{t('profile.info.field.zoom')}</Label>
+                    <Label className="text-xs">{t("info.field.zoom")}</Label>
                     <input
                       type="range"
                       min={1}
@@ -601,10 +601,10 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <Button type="button" onClick={handleApplyCrop}>
-                      {t('profile.info.button.applyCrop')}
+                      {t("info.button.applyCrop")}
                     </Button>
                     <Button type="button" variant="outline" onClick={handleCancelCrop}>
-                      {t('profile.info.button.cancelCrop')}
+                      {t("info.button.cancelCrop")}
                     </Button>
                   </div>
                 </div>
@@ -613,7 +613,7 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
               {avatarError && <p className="text-xs text-red-500">{avatarError}</p>}
 
               <div className="grid gap-2">
-                <Label htmlFor="profile-avatar">{t('profile.info.field.avatarLink')}</Label>
+                <Label htmlFor="profile-avatar">{t("info.field.avatarLink")}</Label>
                 <Input
                   id="profile-avatar"
                   value={avatarUrl}
@@ -623,22 +623,22 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
               </div>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="profile-location">{t('profile.info.field.location')}</Label>
+              <Label htmlFor="profile-location">{t("info.field.location")}</Label>
               <Input
                 id="profile-location"
                 value={location}
                 onChange={(event) => setLocation(event.target.value)}
-                placeholder={t('profile.info.placeholder.location')}
+                placeholder={t("info.placeholder.location")}
                 maxLength={60}
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="profile-bio">{t('profile.info.field.bio')}</Label>
+              <Label htmlFor="profile-bio">{t("info.field.bio")}</Label>
               <Textarea
                 id="profile-bio"
                 value={bio}
                 onChange={(event) => setBio(event.target.value)}
-                placeholder={t('profile.info.placeholder.bio')}
+                placeholder={t("info.placeholder.bio")}
                 rows={4}
               />
             </div>
@@ -653,14 +653,14 @@ export function ProfileInfoSection({ user, credits, stats }: ProfileInfoSectionP
               onClick={() => setIsEditing(false)}
               disabled={saving}
             >
-              {t('profile.info.button.cancel')}
+              {t("info.button.cancel")}
             </Button>
             <Button
               type="button"
               onClick={handleSaveProfile}
               disabled={saving}
             >
-              {saving ? t('profile.info.button.saving') : t('profile.info.button.save')}
+              {saving ? t("info.button.saving") : t("info.button.save")}
             </Button>
           </DialogFooter>
         </DialogContent>

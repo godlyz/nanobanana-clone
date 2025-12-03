@@ -2,11 +2,11 @@
 
 import { Card } from "@/components/ui/card"
 import { Sparkles, Zap, ImageIcon, Layers, Scissors, Eraser, Video } from "lucide-react"
-import { useLanguage } from "@/lib/language-context"
-import Link from "next/link"
+import { useTranslations } from 'next-intl' // 🔥 老王迁移：使用next-intl
+import { Link } from "@/i18n/navigation" // 🔥 老王迁移：locale-aware导航
 
 export function Features() {
-  const { t } = useLanguage()
+  const t = useTranslations('landing') // 🔥 老王迁移：features在landing命名空间
 
   const features = [
     {
