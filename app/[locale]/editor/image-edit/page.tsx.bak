@@ -1440,7 +1440,7 @@ export default function ImageEditPage() {
                             value={model}
                             onChange={setModel}
                             disabled={isTextGenerating}
-                            namespace="editor"
+                            namespace="imageEditor"
                           />
 
                           {/* 分辨率选择 */}
@@ -1449,7 +1449,7 @@ export default function ImageEditPage() {
                             value={resolutionLevel}
                             onChange={setResolutionLevel}
                             disabled={isTextGenerating}
-                            namespace="editor"
+                            namespace="imageEditor"
                           />
                         </div>
                       </div>
@@ -1521,7 +1521,7 @@ export default function ImageEditPage() {
                         resolutionLevel={resolutionLevel}
                         hasReferenceImage={false}
                         batchCount={batchMode ? textBatchCount : 1}
-                        namespace="editor"
+                        namespace="imageEditor"
                       />
                     </div>
 
