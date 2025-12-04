@@ -20,7 +20,67 @@
     "creditHint": "1 credit per image",
     "imageCountSuffix": "({count} images)",
     "download": "Download",
-    "useAsReference": "Use as Reference"
+    "downloadImage": "Download Image",
+    "useAsReference": "Use as Reference",
+    "pageTitle": "Text + Image Generation",
+    "pageDescription": "Generate beautiful images with text overlays",
+    "imageTextWeaving": "Image-Text Weaving",
+    "enterPromptFirst": "Please enter prompt first",
+    "generating": "Generating...",
+    "generationFailed": "Generation failed, please try again",
+    "networkError": "Network error, please try again later",
+    "noResult": "No result generated",
+    "outputGallery": "Output Gallery",
+    "parameterSettings": "Parameter Settings",
+    "quickStart": "Quick Start",
+    "selectTemplate": "Select Template",
+    "placeholder": "Describe the image content you want to generate...",
+    "describeContent": "Describe Content",
+    "describeContentDetail": "Describe in detail the image and text content you want to generate",
+    "generateContent": "Generate Content",
+    "generatedImage": "Generated Image",
+    "generatedText": "Generated Text",
+    "copyText": "Copy Text",
+    "copied": "Copied!",
+    "aspectRatioLabel": "Aspect Ratio",
+    "template": {
+      "recipe": {
+        "name": "Recipe Card",
+        "category": "Lifestyle",
+        "description": "Perfect for food sharing and recipe creation",
+        "prompt": "Food recipe card with appetizing dishes, ingredients and step-by-step instructions"
+      },
+      "tutorial": {
+        "name": "Tutorial Steps",
+        "category": "Education",
+        "description": "Perfect for teaching demos and step-by-step guides",
+        "prompt": "Tutorial step diagram with clear labels and easy to understand"
+      },
+      "marketing": {
+        "name": "Marketing Material",
+        "category": "Business",
+        "description": "Perfect for product promotion and advertising design",
+        "prompt": "Marketing advertisement with clear product display and engaging copy"
+      },
+      "story": {
+        "name": "Story Illustration",
+        "category": "Creative",
+        "description": "Perfect for story illustrations and children's picture books",
+        "prompt": "Story scene illustration with warm visuals and narrative text"
+      },
+      "poster": {
+        "name": "Poster Design",
+        "category": "Marketing",
+        "description": "Perfect for promotional posters and event marketing",
+        "prompt": "Professional poster design with eye-catching title and strong visual impact"
+      },
+      "manual": {
+        "name": "Manual Guide",
+        "category": "Documentation",
+        "description": "Perfect for product instructions and user guides",
+        "prompt": "Product user manual combining images and text with clear steps"
+      }
+    }
   },
   "videoGeneration": {
     "badge": "Powered by Google Veo 3.1",
@@ -205,10 +265,27 @@
     "tryNow": "Try Now"
   },
   "styleTransfer": {
-    "referenceImage": "Reference Image",
-    "styleImage": "Style Image",
-    "generatedResult": "Generated Result",
-    "description": "Transform image style while preserving the original composition"
+    "title": "Style Transfer",
+    "description": "Transform your images into different artistic styles while maintaining core composition",
+    "selectStyle": "Select Style",
+    "uploadReference": "Upload Reference Image",
+    "clickToUpload": "Click to Upload",
+    "supportedFormats": "Supports PNG, JPG, WEBP (Max 50MB)",
+    "remove": "Remove",
+    "generating": "Generating...",
+    "generateNow": "Generate Now",
+    "outputGallery": "Output Gallery",
+    "noImagesYet": "No generated images yet",
+    "enterImageName": "Enter image name (optional)",
+    "uploadImageFirst": "Please upload a reference image first",
+    "selectStyleFirst": "Please select a style first",
+    "generationFailed": "Generation failed, please try again",
+    "noImageGenerated": "No image generated",
+    "saveSuccess": "Image saved successfully!",
+    "saveFailed": "Failed to save image",
+    "generationSuccess": "Generation successful! Consumed {credits} credits",
+    "costsCredits": "Costs 2 credits",
+    "useAsReference": "Use as Reference"
   },
   "naturalLanguage": {
     "howItWorks": "How It Works",
@@ -225,6 +302,9 @@
   "characterConsistency": "Character Consistency",
   "scenePreservation": {
     "scenePreservationPrompt": "Scene Preservation",
+    "subjectLabel": "Subject Description",
+    "subjectPlaceholder": "E.g.: person, car, building, etc...",
+    "subjectHint": "Enter description of the main subject to remove from the image",
     "generationFailed": "Generation failed",
     "noImageGenerated": "Failed to generate image",
     "generationFailedRetry": "Generation failed, please try again later",
@@ -337,19 +417,107 @@
     }
   },
   "smartPrompt": {
-    "description": "AI-powered prompt optimization for better generation quality",
+    "title": "Smart Prompt Optimization",
+    "subtitle": "Let AI understand your creativity and generate professional-grade prompts",
+    "aiDriven": "AI Driven",
+    "smartOptimization": "Smart Optimization",
     "fetchConfigFailed": "Failed to fetch LLM config",
     "loginRequired": "Please log in first to use this feature",
     "sessionExpired": "Session expired, please log in again",
     "optimizationFailed": "Optimization failed",
     "networkError": "Network error, please try again later",
-    "aiDriven": "AI Driven",
-    "smartOptimization": "Smart Optimization",
     "quickModelDesc": "Using {model}, quick response",
     "detailedModelDesc": "Using {model}, deep analysis",
     "detailedModeHint": "💡 Detailed mode uses {model} reasoning model, providing deeper analysis and multiple alternative solutions",
     "translateToEnglish": "Translate to English",
-    "translateToEnglishDesc": "When enabled, optimization results output English prompts (suitable for international AI models)"
+    "translateToEnglishDesc": "When enabled, optimization results output English prompts (suitable for international AI models)",
+    "input": {
+      "title": "Enter Your Prompt",
+      "label": "Original Prompt",
+      "placeholder": "Describe the image you want to generate...",
+      "level": "Optimization Level",
+      "category": "Image Category"
+    },
+    "level": {
+      "quick": "Quick Optimization",
+      "detailed": "Detailed Optimization"
+    },
+    "category": {
+      "general": "General",
+      "portrait": "Portrait",
+      "landscape": "Landscape",
+      "object": "Object",
+      "abstract": "Abstract",
+      "scene": "Scene"
+    },
+    "preferences": {
+      "title": "Preference Settings",
+      "style": "Style Preference",
+      "lighting": "Lighting Preference",
+      "composition": "Composition Preference"
+    },
+    "style": {
+      "any": "Any",
+      "realistic": "Realistic",
+      "cartoon": "Cartoon",
+      "oil": "Oil Painting",
+      "watercolor": "Watercolor",
+      "scifi": "Sci-Fi",
+      "vintage": "Vintage",
+      "minimalist": "Minimalist"
+    },
+    "lighting": {
+      "any": "Any",
+      "natural": "Natural Light",
+      "golden": "Golden Hour",
+      "dramatic": "Dramatic Lighting",
+      "soft": "Soft Light",
+      "backlight": "Backlight",
+      "night": "Night Scene"
+    },
+    "composition": {
+      "any": "Any",
+      "ruleThirds": "Rule of Thirds",
+      "center": "Center Composition",
+      "diagonal": "Diagonal",
+      "overhead": "Overhead View",
+      "closeup": "Close-up",
+      "wide": "Wide Angle"
+    },
+    "noPreference": "No Preference",
+    "optimize": "Optimize Prompt",
+    "optimizing": "Optimizing...",
+    "error": {
+      "emptyPrompt": "Please enter a prompt"
+    },
+    "alert": {
+      "copied": "Copied to clipboard!"
+    },
+    "placeholder": {
+      "title": "Enter title...",
+      "description": "Describe the effect you want..."
+    },
+    "result": {
+      "title": "Optimization Result",
+      "optimizedPrompt": "Optimized Prompt",
+      "useOptimized": "Use Optimized Prompt",
+      "analysis": "Analysis Result",
+      "overallScore": "Overall Score",
+      "clarity": "Clarity",
+      "specificity": "Specificity",
+      "creativity": "Creativity",
+      "completeness": "Completeness",
+      "improvements": "Improvement Suggestions",
+      "costEstimate": "Estimated Cost"
+    },
+    "features": {
+      "ai": "AI Smart Analysis",
+      "aiDesc": "Deeply understand your creative intent",
+      "learning": "Continuous Learning",
+      "learningDesc": "Constantly optimize based on excellent cases",
+      "personalization": "Personalized Suggestions",
+      "personalizationDesc": "Customize optimization plans based on your preferences"
+    }
   },
   "promptOptimizer": {
     "button": "Optimize Prompt",

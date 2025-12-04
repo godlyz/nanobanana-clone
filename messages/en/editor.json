@@ -211,7 +211,11 @@
         "personalization": "Personalization",
         "personalizationDesc": "Provides customized suggestions based on your style preferences"
       }
-    }
+    },
+    "model": "Model",
+    "resolutionLevel": "Resolution",
+    "willConsume": "Will consume",
+    "credits": "credits"
   },
   "chatEdit": {
     "title": "Smart Conversational Edit",

@@ -8,6 +8,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -50,30 +51,31 @@ interface Challenge {
   }>
 }
 
-// 状态映射
-const statusMap: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  upcoming: {
-    label: '即将开始',
-    color: 'bg-blue-500',
-    icon: <Clock className="w-4 h-4" />
-  },
-  active: {
-    label: '进行中',
-    color: 'bg-green-500',
-    icon: <Trophy className="w-4 h-4" />
-  },
-  voting: {
-    label: '投票中',
-    color: 'bg-purple-500',
-    icon: <Users className="w-4 h-4" />
-  }
-}
-
 export default function ChallengesPage() {
   const router = useRouter()
   const pathname = usePathname()
+  const t = useTranslations('challenges')
   // 从路径中提取locale (例如: /en/challenges -> en)
   const locale = pathname.split('/')[1]
+
+  // 状态映射
+  const statusMap: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
+    upcoming: {
+      label: t('status.upcoming'),
+      color: 'bg-blue-500',
+      icon: <Clock className="w-4 h-4" />
+    },
+    active: {
+      label: t('status.active'),
+      color: 'bg-green-500',
+      icon: <Trophy className="w-4 h-4" />
+    },
+    voting: {
+      label: t('status.voting'),
+      color: 'bg-purple-500',
+      icon: <Users className="w-4 h-4" />
+    }
+  }
 
   const [challenges, setChallenges] = useState<Challenge[]>([])
   const [loading, setLoading] = useState(true)
@@ -91,8 +93,8 @@ export default function ChallengesPage() {
       const mockChallenges: Challenge[] = [
         {
           id: '1',
-          title: '圣诞主题创意挑战',
-          description: '创作圣诞主题的作品，获得丰厚奖励！展示你的创意，赢取积分和荣誉！',
+          title: t('mockData.christmas.title'),
+          description: t('mockData.christmas.description'),
           theme: 'christmas',
           status: 'active',
           start_date: '2025-11-20T00:00:00Z',
@@ -104,15 +106,15 @@ export default function ChallengesPage() {
           max_submissions_per_user: 3,
           required_artwork_type: 'both',
           prizes: [
-            { rank: 1, reward_type: 'credits', reward_value: '1000', description: '一等奖' },
-            { rank: 2, reward_type: 'credits', reward_value: '500', description: '二等奖' },
-            { rank: 3, reward_type: 'credits', reward_value: '300', description: '三等奖' }
+            { rank: 1, reward_type: 'credits', reward_value: '1000', description: t('mockData.prizes.first') },
+            { rank: 2, reward_type: 'credits', reward_value: '500', description: t('mockData.prizes.second') },
+            { rank: 3, reward_type: 'credits', reward_value: '300', description: t('mockData.prizes.third') }
           ]
         },
         {
           id: '2',
-          title: '新年创意挑战',
-          description: '新年新气象，用你的创意迎接2026！',
+          title: t('mockData.newYear.title'),
+          description: t('mockData.newYear.description'),
           theme: 'new_year',
           status: 'upcoming',
           start_date: '2025-12-28T00:00:00Z',
@@ -124,15 +126,15 @@ export default function ChallengesPage() {
           max_submissions_per_user: 5,
           required_artwork_type: 'both',
           prizes: [
-            { rank: 1, reward_type: 'credits', reward_value: '2000', description: '一等奖' },
-            { rank: 2, reward_type: 'credits', reward_value: '1000', description: '二等奖' },
-            { rank: 3, reward_type: 'credits', reward_value: '500', description: '三等奖' }
+            { rank: 1, reward_type: 'credits', reward_value: '2000', description: t('mockData.prizes.first') },
+            { rank: 2, reward_type: 'credits', reward_value: '1000', description: t('mockData.prizes.second') },
+            { rank: 3, reward_type: 'credits', reward_value: '500', description: t('mockData.prizes.third') }
           ]
         },
         {
           id: '3',
-          title: '冬日风景摄影挑战',
-          description: '捕捉冬日的美丽瞬间，分享你眼中的冬天！',
+          title: t('mockData.winter.title'),
+          description: t('mockData.winter.description'),
           theme: 'winter',
           status: 'voting',
           start_date: '2025-11-01T00:00:00Z',
@@ -144,9 +146,9 @@ export default function ChallengesPage() {
           max_submissions_per_user: 3,
           required_artwork_type: 'image',
           prizes: [
-            { rank: 1, reward_type: 'credits', reward_value: '1500', description: '一等奖' },
-            { rank: 2, reward_type: 'credits', reward_value: '800', description: '二等奖' },
-            { rank: 3, reward_type: 'credits', reward_value: '400', description: '三等奖' }
+            { rank: 1, reward_type: 'credits', reward_value: '1500', description: t('mockData.prizes.first') },
+            { rank: 2, reward_type: 'credits', reward_value: '800', description: t('mockData.prizes.second') },
+            { rank: 3, reward_type: 'credits', reward_value: '400', description: t('mockData.prizes.third') }
           ]
         }
       ]
@@ -156,8 +158,8 @@ export default function ChallengesPage() {
 
       setChallenges(mockChallenges)
     } catch (err) {
-      console.error('获取挑战列表失败:', err)
-      setError(err instanceof Error ? err.message : '未知错误')
+      console.error('Failed to fetch challenges:', err)
+      setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setLoading(false)
     }
@@ -195,7 +197,7 @@ export default function ChallengesPage() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-gray-400 animate-spin mx-auto mb-4" />
-          <p className="text-gray-500">加载挑战列表中...</p>
+          <p className="text-gray-500">{t('loading')}</p>
         </div>
       </div>
     )
@@ -206,10 +208,10 @@ export default function ChallengesPage() {
       <div className="container mx-auto px-4 py-12">
         <div className="text-center">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">加载失败</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">{t('loadFailed')}</h3>
           <p className="text-gray-500 mb-4">{error}</p>
           <Button onClick={fetchChallenges}>
-            重试
+            {t('retry')}
           </Button>
         </div>
       </div>
@@ -224,23 +226,23 @@ export default function ChallengesPage() {
       <div className="mb-8">
         <div className="flex items-center space-x-3 mb-2">
           <Trophy className="w-8 h-8 text-blue-500" />
-          <h1 className="text-3xl font-bold text-gray-900">创意挑战</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{t('pageTitle')}</h1>
         </div>
         <p className="text-gray-600">
-          参加创意挑战，展示你的才华，赢取丰厚奖励！
+          {t('pageDescription')}
         </p>
       </div>
 
       {/* 状态过滤器 */}
       <div className="flex items-center space-x-2 mb-6">
         <Filter className="w-5 h-5 text-gray-500" />
-        <span className="text-sm font-medium text-gray-700">筛选:</span>
+        <span className="text-sm font-medium text-gray-700">{t('filter')}:</span>
         <Button
           variant={statusFilter === 'all' ? 'default' : 'outline'}
           size="sm"
           onClick={() => setStatusFilter('all')}
         >
-          全部 ({challenges.length})
+          {t('all')} ({challenges.length})
         </Button>
         {Object.entries(statusMap).map(([status, { label }]) => {
           const count = challenges.filter(c => c.status === status).length
@@ -266,7 +268,7 @@ export default function ChallengesPage() {
               <CardContent className="p-12 text-center">
                 <Trophy className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-500">
-                  {statusFilter === 'all' ? '暂无挑战' : `暂无${statusMap[statusFilter]?.label}的挑战`}
+                  {statusFilter === 'all' ? t('noData') : t('noDataWithFilter', { status: statusMap[statusFilter]?.label })}
                 </p>
               </CardContent>
             </Card>
@@ -313,8 +315,8 @@ export default function ChallengesPage() {
                       <Calendar className="w-4 h-4" />
                       <span>
                         {challenge.status === 'voting'
-                          ? `投票截止: ${formatDate(challenge.voting_end_date)}`
-                          : `截止: ${formatDate(challenge.end_date)}`
+                          ? `${t('card.votingDeadline')}: ${formatDate(challenge.voting_end_date)}`
+                          : `${t('card.deadline')}: ${formatDate(challenge.end_date)}`
                         }
                       </span>
                     </div>
@@ -323,7 +325,7 @@ export default function ChallengesPage() {
                     {remainingDays > 0 && (
                       <div className="flex items-center space-x-2 text-sm text-orange-600">
                         <Clock className="w-4 h-4" />
-                        <span>还剩 {remainingDays} 天</span>
+                        <span>{t('card.remainingDays', { days: remainingDays })}</span>
                       </div>
                     )}
 
@@ -331,8 +333,8 @@ export default function ChallengesPage() {
                     <div className="flex items-center space-x-2 text-sm text-gray-600">
                       <Users className="w-4 h-4" />
                       <span>
-                        {challenge.submission_count} 件作品
-                        {challenge.status === 'voting' && ` · ${challenge.vote_count} 票`}
+                        {t('card.submissions', { count: challenge.submission_count })}
+                        {challenge.status === 'voting' && ` · ${t('card.votes', { count: challenge.vote_count })}`}
                       </span>
                     </div>
 
@@ -340,20 +342,20 @@ export default function ChallengesPage() {
                     <div className="flex items-center space-x-2 text-sm text-gray-600">
                       <Gift className="w-4 h-4" />
                       <span>
-                        {challenge.prizes.length} 个奖项 · 最高 {challenge.prizes[0]?.reward_value} 积分
+                        {t('card.prizeInfo', { count: challenge.prizes.length, value: challenge.prizes[0]?.reward_value })}
                       </span>
                     </div>
 
                     {/* 操作按钮 */}
                     <div className="pt-3 border-t border-gray-200">
                       <Button
-                        onClick={() => router.push(`/challenges/${challenge.id}`)}
+                        onClick={() => router.push(`/${locale}/challenges/${challenge.id}`)}
                         className="w-full flex items-center justify-center space-x-2"
                       >
                         <span>
-                          {challenge.status === 'upcoming' && '查看详情'}
-                          {challenge.status === 'active' && '立即参加'}
-                          {challenge.status === 'voting' && '参与投票'}
+                          {challenge.status === 'upcoming' && t('actions.viewDetails')}
+                          {challenge.status === 'active' && t('actions.join')}
+                          {challenge.status === 'voting' && t('actions.vote')}
                         </span>
                         <ArrowRight className="w-4 h-4" />
                       </Button>
@@ -370,7 +372,7 @@ export default function ChallengesPage() {
       {filteredChallenges.length > 0 && (
         <div className="mt-8 text-center">
           <p className="text-sm text-gray-500">
-            共 {filteredChallenges.length} 个挑战
+            {t('totalChallenges', { count: filteredChallenges.length })}
             {statusFilter !== 'all' && ` · ${statusMap[statusFilter]?.label}`}
           </p>
         </div>

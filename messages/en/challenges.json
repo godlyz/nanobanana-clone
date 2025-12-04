@@ -1,0 +1,53 @@
+{
+  "challenges": {
+    "pageTitle": "Creative Challenges",
+    "pageDescription": "Join creative challenges, showcase your talent, and win amazing rewards!",
+    "loading": "Loading challenges...",
+    "loadFailed": "Failed to load",
+    "retry": "Retry",
+    "filter": "Filter",
+    "all": "All",
+    "noData": "No challenges yet",
+    "noDataWithFilter": "No {status} challenges",
+    "totalChallenges": "{count} challenges in total",
+    "status": {
+      "upcoming": "Upcoming",
+      "active": "Active",
+      "voting": "Voting"
+    },
+    "card": {
+      "deadline": "Deadline",
+      "votingDeadline": "Voting Deadline",
+      "remainingDays": "{days} days left",
+      "submissions": "{count} submissions",
+      "votes": "{count} votes",
+      "prizes": "{count} prizes",
+      "maxPrize": "Up to {value} credits",
+      "prizeInfo": "{count} prizes · Up to {value} credits"
+    },
+    "actions": {
+      "viewDetails": "View Details",
+      "join": "Join Now",
+      "vote": "Vote Now"
+    },
+    "mockData": {
+      "christmas": {
+        "title": "Christmas Creative Challenge",
+        "description": "Create Christmas-themed artworks and win amazing rewards! Show your creativity and earn credits and honors!"
+      },
+      "newYear": {
+        "title": "New Year Creative Challenge",
+        "description": "New year, new beginnings! Welcome 2026 with your creativity!"
+      },
+      "winter": {
+        "title": "Winter Landscape Photography Challenge",
+        "description": "Capture the beauty of winter and share your perspective of the season!"
+      },
+      "prizes": {
+        "first": "First Prize",
+        "second": "Second Prize",
+        "third": "Third Prize"
+      }
+    }
+  }
+}

@@ -21,7 +21,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
   // 🔥 老王迁移：添加feed命名空间
   // 🔥 老王迁移：添加settings, login, history, scenePreserve, videoGeneration, multiImage, bgRemover命名空间
   // 🔥 老王修复：添加changePassword, forgotPassword, mobileChat, register命名空间
-  const [common, landing, pricing, editor, showcase, auth, profile, tools, video, api, admin, forum, library, feed, settings, login, history, scenePreserve, videoGeneration, multiImage, bgRemover, changePassword, forgotPassword, mobileChat, register] = await Promise.all([
+  // 🔥 老王修复：添加challenges命名空间
+  const [common, landing, pricing, editor, showcase, auth, profile, tools, video, api, admin, forum, library, feed, settings, login, history, scenePreserve, videoGeneration, multiImage, bgRemover, changePassword, forgotPassword, mobileChat, register, challenges] = await Promise.all([
     import(`@/messages/${locale}/common.json`).then(m => m.default),
     import(`@/messages/${locale}/landing.json`).then(m => m.default),
     import(`@/messages/${locale}/pricing.json`).then(m => m.default),
@@ -47,6 +48,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     import(`@/messages/${locale}/forgotPassword.json`).then(m => m.default),
     import(`@/messages/${locale}/mobileChat.json`).then(m => m.default),
     import(`@/messages/${locale}/register.json`).then(m => m.default),
+    import(`@/messages/${locale}/challenges.json`).then(m => m.default),
   ])
 
   return {
@@ -78,6 +80,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       forgotPassword,  // 🔥 老王修复：添加forgotPassword命名空间
       mobileChat,  // 🔥 老王修复：添加mobileChat命名空间
       ...register,  // 🔥 老王修复：添加register命名空间（register.json根键是register，需要展开）
+      ...challenges,  // 🔥 老王修复：添加challenges命名空间（challenges.json根键是challenges，需要展开）
     },
     // 时区配置
     timeZone: 'Asia/Shanghai',

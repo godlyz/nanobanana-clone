@@ -1,0 +1,53 @@
+{
+  "challenges": {
+    "pageTitle": "创意挑战",
+    "pageDescription": "参加创意挑战，展示你的才华，赢取丰厚奖励！",
+    "loading": "加载挑战列表中...",
+    "loadFailed": "加载失败",
+    "retry": "重试",
+    "filter": "筛选",
+    "all": "全部",
+    "noData": "暂无挑战",
+    "noDataWithFilter": "暂无{status}的挑战",
+    "totalChallenges": "共 {count} 个挑战",
+    "status": {
+      "upcoming": "即将开始",
+      "active": "进行中",
+      "voting": "投票中"
+    },
+    "card": {
+      "deadline": "截止",
+      "votingDeadline": "投票截止",
+      "remainingDays": "还剩 {days} 天",
+      "submissions": "{count} 件作品",
+      "votes": "{count} 票",
+      "prizes": "{count} 个奖项",
+      "maxPrize": "最高 {value} 积分",
+      "prizeInfo": "{count} 个奖项 · 最高 {value} 积分"
+    },
+    "actions": {
+      "viewDetails": "查看详情",
+      "join": "立即参加",
+      "vote": "参与投票"
+    },
+    "mockData": {
+      "christmas": {
+        "title": "圣诞主题创意挑战",
+        "description": "创作圣诞主题的作品，获得丰厚奖励！展示你的创意，赢取积分和荣誉！"
+      },
+      "newYear": {
+        "title": "新年创意挑战",
+        "description": "新年新气象，用你的创意迎接2026！"
+      },
+      "winter": {
+        "title": "冬日风景摄影挑战",
+        "description": "捕捉冬日的美丽瞬间，分享你眼中的冬天！"
+      },
+      "prizes": {
+        "first": "一等奖",
+        "second": "二等奖",
+        "third": "三等奖"
+      }
+    }
+  }
+}
