@@ -710,5 +710,29 @@
       "imageEdit": "Image Edit",
       "textToImage": "Text to Image"
     }
+  },
+  "promptOptimizer": {
+    "modal": {
+      "title": "Smart Prompt Optimization",
+      "description": "AI analyzes and optimizes your prompt to improve generation quality",
+      "originalScore": "Original Score",
+      "optimizedScore": "Optimized Score",
+      "analysis": "Quality Analysis",
+      "completeness": "Completeness",
+      "clarity": "Clarity",
+      "creativity": "Creativity",
+      "specificity": "Specificity",
+      "improvements": "Improvement Suggestions",
+      "selectOption": "Select Option",
+      "mainOption": "Main Recommendation",
+      "alternative": "Alternative Option",
+      "score": "Score",
+      "apply": "Apply This Option"
+    }
+  },
+  "video": {
+    "form": {
+      "addReferenceImage": "Add Reference Image ({count}/3)"
+    }
   }
 }

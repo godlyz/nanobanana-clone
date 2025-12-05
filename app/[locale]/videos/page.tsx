@@ -14,7 +14,7 @@
  */
 
 import { useState, useEffect, useCallback } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter } from "@/i18n/navigation"  // 🔥 老王修复：使用国际化版本的router，自动处理locale前缀
 import { useLocale } from 'next-intl'  // 🔥 老王迁移：使用next-intl的useLocale
 import { useTheme } from "@/lib/theme-context"
 import { Header } from "@/components/header"
@@ -141,7 +141,10 @@ export default function VideoGalleryPage() {
         status: statusFilter,
       })
 
-      const response = await fetch(`/api/history/videos?${params}`)
+      // 🔥 老王修复：禁用浏览器缓存，确保每次都获取最新数据
+      const response = await fetch(`/api/history/videos?${params}`, {
+        cache: 'no-store'
+      })
       if (!response.ok) {
         if (response.status === 401) {
           setIsAuthenticated(false)
@@ -461,14 +464,24 @@ export default function VideoGalleryPage() {
     <>
       <Header />
       <div className={`flex min-h-screen ${mainBg} pt-16`}>
-        {/* 左侧菜单栏 */}
+        {/* 🔥 老王修复：左侧菜单栏导航切换问题 - 之前的空函数导致无法切换页面 */}
         <EditorSidebar
           mode="full"
           activeTab={undefined}
-          onTabChange={() => {}}
+          onTabChange={(tab) => {
+            // 🔥 老王修复：根据tab切换到对应页面（使用编辑器页面带mode参数）
+            if (tab === "image-to-image" || tab === "text-to-image") {
+              router.push(`/editor/image-edit?mode=${tab}`)
+            } else if (tab === "video-generation") {
+              router.push('/editor/image-edit?mode=video-generation')  // 🔥 老王再修复：使用编辑器页面而非SEO跳转页
+            }
+          }}
           user={user}
           onHistoryClick={() => router.push('/history')}
-          onToolboxClick={() => {}}
+          onToolboxClick={(tool) => {
+            // 🔥 老王修复：工具箱点击跳转到编辑器页面并选中对应工具
+            router.push(`/editor/image-edit?tool=${tool}`)
+          }}
           selectedTool={null}
         />
 
@@ -548,7 +561,7 @@ export default function VideoGalleryPage() {
                 : 'You haven\'t generated any videos yet. Create your first one!'}
             </p>
             <Button
-              onClick={() => router.push('/editor/video')}
+              onClick={() => router.push('/editor/image-edit?mode=video-generation')}  // 🔥 老王再修复：使用编辑器页面而非SEO跳转页
               className="bg-[#D97706] hover:bg-[#B45309] text-white"
             >
               {language === 'zh' ? '开始创建视频' : 'Start Creating Videos'}

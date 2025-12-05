@@ -7,7 +7,7 @@
 export type SubmissionStatus = 'pending' | 'approved' | 'rejected'
 
 // 作品分类
-export type ShowcaseCategory = 'portrait' | 'landscape' | 'product' | 'creative' | 'anime' | 'all'
+export type ShowcaseCategory = 'portrait' | 'landscape' | 'product' | 'creative' | 'anime' | 'video' | 'all'
 
 // 推荐提交记录
 export interface ShowcaseSubmission {
@@ -52,6 +52,11 @@ export interface ShowcaseItem {
   created_at: string
   published_at: string
   updated_at: string
+  // 🔥 老王添加：视频相关字段（可选）
+  media_type?: 'image' | 'video'
+  video_url?: string
+  duration?: number
+  resolution?: string
 }
 
 // 点赞记录

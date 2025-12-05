@@ -460,7 +460,7 @@ export function VideoGenerationForm({ onSuccess, initialValues }: VideoGeneratio
                   className="w-full"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  {t("form.addReferenceImage").replace("{count}", String(referenceImages.length))}
+                  {t("video.form.addReferenceImage", { count: referenceImages.length })}
                 </Button>
               )}
             </div>

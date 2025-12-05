@@ -112,10 +112,10 @@ export async function POST(request: NextRequest) {
       }, { status: 401 })
     }
 
-    // 检查showcase是否存在
+    // 检查showcase是否存在（同时获取creator_id和milestone_100_rewarded字段）
     const { data: showcase, error: showcaseError } = await supabase
       .from('showcase')
-      .select('id, likes_count')
+      .select('id, likes_count, creator_id, milestone_100_rewarded')
       .eq('id', showcase_id)
       .single()
 
@@ -155,10 +155,11 @@ export async function POST(request: NextRequest) {
       }
 
       // 🔥 更新showcase表的点赞数（使用原子操作）
+      const newLikesCount = (showcase.likes_count || 0) + 1
       const { error: updateError } = await supabase
         .from('showcase')
         .update({
-          likes_count: (showcase.likes_count || 0) + 1
+          likes_count: newLikesCount
         })
         .eq('id', showcase_id)
 
@@ -168,13 +169,81 @@ export async function POST(request: NextRequest) {
         // 实际生产环境可能需要回滚或使用数据库触发器
       }
 
+      // 🔥 老王新增：达到100点赞时返还100积分给创作者
+      let milestoneRewardGranted = false
+      if (newLikesCount >= 100 && !showcase.milestone_100_rewarded && showcase.creator_id) {
+        try {
+          console.log(`🎉 Showcase ${showcase_id} 达到100点赞！开始返还积分给创作者 ${showcase.creator_id}`)
+
+          // 1. 先获取创作者当前的可用积分
+          const { data: currentCreditsData, error: creditsQueryError } = await supabase
+            .rpc('get_user_available_credits', { target_user_id: showcase.creator_id })
+
+          const currentCredits = creditsQueryError ? 0 : (currentCreditsData || 0)
+
+          // 2. 设置奖励积分30天有效
+          const expiresAt = new Date()
+          expiresAt.setDate(expiresAt.getDate() + 30)
+
+          // 3. 插入积分交易记录（和CreditService.addCredits一样的逻辑）
+          const { error: insertError } = await supabase
+            .from('credit_transactions')
+            .insert({
+              user_id: showcase.creator_id,
+              transaction_type: 'milestone_reward',
+              amount: 100,
+              remaining_credits: currentCredits + 100,
+              remaining_amount: 100,
+              expires_at: expiresAt.toISOString(),
+              related_entity_id: showcase_id,
+              related_entity_type: 'showcase',
+              description: `100 likes milestone reward - 100 credits / 作品点赞达到100奖励 - 100积分 (showcase_id: ${showcase_id})`,
+            })
+
+          if (insertError) {
+            console.error('❌ 插入积分交易记录失败:', insertError)
+          } else {
+            // 4. 更新 user_credits 表
+            const { error: upsertError } = await supabase
+              .from('user_credits')
+              .upsert(
+                {
+                  user_id: showcase.creator_id,
+                  total_credits: currentCredits + 100,
+                },
+                { onConflict: 'user_id' }
+              )
+
+            if (upsertError) {
+              console.error('❌ 更新用户积分总额失败:', upsertError)
+            }
+
+            // 5. 标记已发放奖励
+            const { error: markError } = await supabase
+              .from('showcase')
+              .update({ milestone_100_rewarded: true })
+              .eq('id', showcase_id)
+
+            if (markError) {
+              console.error('❌ 标记奖励状态失败:', markError)
+            } else {
+              milestoneRewardGranted = true
+              console.log(`✅ 创作者 ${showcase.creator_id} 获得100积分奖励！`)
+            }
+          }
+        } catch (rewardError) {
+          console.error('❌ 处理100点赞奖励失败:', rewardError)
+        }
+      }
+
       console.log(`✅ 用户 ${user.id} 点赞了 showcase ${showcase_id}`)
 
       return NextResponse.json({
         success: true,
-        message: '点赞成功',
-        likes_count: (showcase.likes_count || 0) + 1,
-        is_liked: true
+        message: milestoneRewardGranted ? '点赞成功！作者已获得100积分奖励！' : '点赞成功',
+        likes_count: newLikesCount,
+        is_liked: true,
+        milestone_reward_granted: milestoneRewardGranted
       })
 
     } else if (action === 'unlike') {

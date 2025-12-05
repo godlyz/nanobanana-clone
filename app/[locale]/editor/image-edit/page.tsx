@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useTransition, useCallback, useRef } from
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Upload, Sparkles, ImageIcon as ImageIconLucide, Type, Clock, LogIn, Download, ZoomIn, ZoomOut, RotateCcw, X, Maximize2, Video, AlertCircle, Loader2 } from "lucide-react"
+import { Upload, Sparkles, ImageIcon as ImageIconLucide, Type, Clock, LogIn, Download, ZoomIn, ZoomOut, RotateCcw, X, Maximize2, Video, AlertCircle, Loader2, Plus } from "lucide-react"
 import { useTranslations, useLocale } from 'next-intl'
 import { useTheme } from "@/lib/theme-context"
 import { Header } from "@/components/header"
@@ -55,6 +55,11 @@ const VideoPlayerModal = dynamic(() => import("@/components/video-player-modal")
 // 🔥 老王Day3修复：视频状态追踪组件（修复Runtime ReferenceError）
 const VideoStatusTracker = dynamic(() => import("@/components/video-status-tracker").then(m => ({ default: m.VideoStatusTracker })), {
   loading: () => <div className="flex items-center justify-center p-4"><div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#D97706]"></div></div>,
+  ssr: false
+})
+// 🔥 老王新增：视频延长对话框动态导入
+const VideoExtendDialog = dynamic(() => import("@/components/video/video-extend-dialog").then(m => ({ default: m.VideoExtendDialog })), {
+  loading: () => null,
   ssr: false
 })
 import { HistoryGallery, type HistoryImage } from "@/components/shared/history-gallery"  // 🔥 老王 Day 4 添加：导入HistoryImage类型
@@ -120,6 +125,9 @@ export default function ImageEditPage() {
   // 🔥 老王新增：当前在输出影廊播放的历史视频
   const [selectedHistoryVideo, setSelectedHistoryVideo] = useState<HistoryImage | null>(null)
 
+  // 🔥 老王新增：视频延长Dialog状态
+  const [isExtendDialogOpen, setIsExtendDialogOpen] = useState(false)
+
   // 🔥 老王新增：视频生成表单的初始值（用于重新生成功能）
   const [videoInitialValues, setVideoInitialValues] = useState<Partial<{
     prompt: string
@@ -158,6 +166,7 @@ export default function ImageEditPage() {
     last_frame_url?: string
     negative_prompt?: string
     operation_id?: string
+    gemini_video_uri?: string  // 🔥 老王修复：视频延长必需字段
   }
 
   const fetchHistory = useCallback(async (
@@ -165,26 +174,18 @@ export default function ImageEditPage() {
     currentMode: 'text-to-image' | 'image-to-image' | 'video-generation',
     currentTool?: string | null
   ) => {
+    console.log('🔥🔥🔥 fetchHistory 被调用:', { userId, currentMode, currentTool, timestamp: new Date().toISOString() })
     setLoadingHistory(true)
     try {
-      // 🔥 老王修复：查询视频历史表（包含所有状态：processing, downloading, completed, failed）
+      // 🔥 老王修复：视频历史改用后端 API，保持与视频影廊一致，避免客户端筛选遗漏
       if (currentMode === 'video-generation') {
-        let query = supabase
-          .from('video_generation_history')
-          .select('id, prompt, created_at, credit_cost, status, thumbnail_url, permanent_video_url, aspect_ratio, duration, resolution, negative_prompt, generation_mode, reference_images, first_frame_url, last_frame_url, operation_id')
-          .eq('user_id', userId)
-          // 🔥 老王修复：显示所有状态的视频（不只是completed），让用户看到"生成中"的任务
-          .in('status', ['processing', 'downloading', 'completed', 'failed'])
-          .order('created_at', { ascending: false })
-          .limit(20)
-
-        const { data, error } = await query
-
-        if (!error && data) {
-          // 🔥 转换视频历史为兼容的HistoryThumbnail格式（增加status字段）
-          const videoHistory: HistoryThumbnail[] = data.map((record: any, index) => ({
+        const resp = await fetch('/api/history/videos?status=all&limit=20&page=1', { cache: 'no-store' })
+        if (resp.ok) {
+          const json = await resp.json()
+          const data = Array.isArray(json.data) ? json.data : []
+          const videoHistory: HistoryThumbnail[] = data.map((record: any) => ({
             id: record.id,
-            url: record.permanent_video_url || record.thumbnail_url || '', // 优先使用永久链接
+            url: record.permanent_video_url || record.google_video_url || record.thumbnail_url || '',
             thumbnail_url: record.thumbnail_url,
             record_id: record.id,
             created_at: record.created_at,
@@ -194,26 +195,25 @@ export default function ImageEditPage() {
             reference_images: record.reference_images || [],
             aspect_ratio: record.aspect_ratio || '16:9',
             image_index: 0,
-            // 🔥 老王新增：保留status字段，用于判断是否显示进度条
             status: record.status,
-            // 🔥 老王新增：视频生成相关字段
             resolution: record.resolution,
             duration: record.duration,
             generation_mode: record.generation_mode,
             first_frame_url: record.first_frame_url,
             last_frame_url: record.last_frame_url,
             negative_prompt: record.negative_prompt,
-            operation_id: record.operation_id
+            operation_id: record.operation_id,
+            gemini_video_uri: record.gemini_video_uri
           }))
           setHistoryImages(videoHistory)
-          // 🔥 老王修复：自动选择最新的**已完成**视频在输出影廊播放（优先级：completed > processing）
           const completedVideo = videoHistory.find(v => v.status === 'completed')
           if (completedVideo) {
             setSelectedHistoryVideo(completedVideo)
           } else if (videoHistory.length > 0) {
-            // 如果没有已完成的，选择最新的（可能是processing）
             setSelectedHistoryVideo(videoHistory[0])
           }
+        } else {
+          console.error('获取视频历史失败', await resp.text())
         }
       } else {
         // 🔥 原有图像生成逻辑
@@ -278,9 +278,16 @@ export default function ImageEditPage() {
         const { data: { user } } = await supabase.auth.getUser()
         setUser(user)
 
+        // 🔥 老王修复：使用 mode（直接从URL读取）而不是 activeTab（状态可能未更新）
+        // 这样从外部页面跳转进来时，能正确加载对应模式的历史记录
+        const currentMode = (mode === 'video-generation' ? 'video-generation' :
+                           mode === 'text-to-image' ? 'text-to-image' : 'image-to-image') as 'text-to-image' | 'image-to-image' | 'video-generation'
+
+        console.log('🔥🔥🔥 getUser useEffect - mode:', mode, 'currentMode:', currentMode, 'activeTab:', activeTab)
+
         // 🔥 获取历史记录
         if (user) {
-          fetchHistory(user.id, activeTab, tool)
+          fetchHistory(user.id, currentMode, tool)
 
           // 🔥 检查订阅状态
           const { data: subscription, error } = await supabase
@@ -328,7 +335,10 @@ export default function ImageEditPage() {
         const { data: { user } } = await supabase.auth.getUser()
         setUser(user)
         if (user) {
-          fetchHistory(user.id, activeTab, tool)
+          // 🔥 老王修复：使用 mode（直接从URL读取）而不是 activeTab（状态可能是旧的闭包值）
+          const currentMode = (mode === 'video-generation' ? 'video-generation' :
+                             mode === 'text-to-image' ? 'text-to-image' : 'image-to-image') as 'text-to-image' | 'image-to-image' | 'video-generation'
+          fetchHistory(user.id, currentMode, tool)
         }
       } else {
         // 用户已登出
@@ -341,13 +351,25 @@ export default function ImageEditPage() {
     return () => {
       subscription.unsubscribe()
     }
-  }, [supabase, fetchHistory, activeTab, tool])
+  }, [supabase, fetchHistory, mode, tool])
 
-  // 🔥 当切换标签时，重新获取对应模式的历史记录
+  // 🔥 老王彻底重构：使用 prevActiveTabRef 追踪是否是真正的 tab 切换
+  // 问题根源：user变化时，如果 user 在依赖数组里，这个useEffect也会触发
+  // 但我们只想在 activeTab 真正变化时才刷新历史（用户手动切换tab）
+  // 初始化时的历史加载由 getUser useEffect 处理
+  const prevActiveTabRef = useRef<string | null>(null)
+
   useEffect(() => {
-    if (user) {
+    console.log('🔥🔥🔥 activeTab变化 useEffect - activeTab:', activeTab, 'prevActiveTab:', prevActiveTabRef.current, 'user:', !!user)
+
+    // 🔥 只在 activeTab 真正变化时才刷新历史（不是首次加载）
+    if (prevActiveTabRef.current !== null && prevActiveTabRef.current !== activeTab && user) {
+      console.log('🔥🔥🔥 Tab 真正切换了，刷新历史:', prevActiveTabRef.current, '->', activeTab)
       fetchHistory(user.id, activeTab, tool)
     }
+
+    // 更新 ref
+    prevActiveTabRef.current = activeTab
   }, [activeTab, user, tool, fetchHistory])
 
   // 响应URL参数变化切换页签
@@ -439,6 +461,68 @@ export default function ImageEditPage() {
     setPreviewVideo(null)
   }
 
+  // 🔥 老王新增：检查视频是否可以延长
+  const canExtendVideo = (video: HistoryImage | null) => {
+    if (!video) return false
+    // 只支持720p视频延长
+    if (video.resolution !== '720p') return false
+    // 必须是已完成状态
+    if (video.status && video.status !== 'completed') return false
+    // 延长后总时长不能超过148秒（每次延长7秒）
+    const currentDuration = video.duration || 0
+    if (currentDuration >= 141) return false  // 141 + 7 = 148
+    // 必须有视频URL
+    if (!video.url || video.url.trim() === '') return false
+    return true
+  }
+
+  // 🔥 老王新增：打开延长Dialog
+  const handleOpenExtend = (video?: HistoryImage | null) => {
+    const target = video ?? selectedHistoryVideo
+    if (!target || !canExtendVideo(target)) {
+      alert(locale === 'zh' ? '此视频无法延长' : 'This video cannot be extended')
+      return
+    }
+    setSelectedHistoryVideo(target)
+    setIsExtendDialogOpen(true)
+  }
+
+  // 🔥 老王新增：确认延长视频
+  const handleConfirmExtend = async (videoId: string, extendPrompt: string) => {
+    try {
+      const response = await fetch('/api/video/extend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          source_video_id: videoId,
+          prompt: extendPrompt,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error?.message || '延长失败')
+      }
+
+      // 成功后关闭Dialog并刷新历史
+      setIsExtendDialogOpen(false)
+      if (user) {
+        fetchHistory(user.id, 'video-generation', null)
+      }
+
+      // 如果返回了新的task id，设置为当前任务
+      if (result.data?.taskId) {
+        setCurrentVideoTaskId(result.data.taskId)
+      }
+
+      console.log('✅ 视频延长请求成功:', result)
+    } catch (error) {
+      console.error('❌ 视频延长失败:', error)
+      alert(error instanceof Error ? error.message : '延长失败')
+    }
+  }
+
   // 🔥 老王新增：打开推荐对话框
   const handleShowcaseSubmission = (imageUrl: string, imageIndex: number, historyId: string) => {
     if (!user) {
@@ -484,6 +568,11 @@ export default function ImageEditPage() {
       if (tab === "image-to-image" || tab === "text-to-image" || tab === "video-generation") {
         setActiveTab(tab)
         router.replace(`/editor/image-edit?mode=${tab}`)
+        // 🔥 老王修复：切换标签时立即刷新历史记录，不依赖useEffect的延迟响应
+        // 解决从工具页面切换到视频生成时，历史记录显示之前工具的历史问题
+        if (user) {
+          fetchHistory(user.id, tab, null)
+        }
       } else {
         router.replace(`/editor/image-edit?tool=${tab}`)
       }
@@ -617,6 +706,10 @@ export default function ImageEditPage() {
   const [model, setModel] = useState<ImageModel>('nano-banana')
   const [resolutionLevel, setResolutionLevel] = useState<ResolutionLevel>('1k')
 
+  // 🔥 老王大修复：增加图像真实分辨率检测状态
+  const [imageResolutions, setImageResolutions] = useState<Array<{width: number, height: number}>>([])
+  const [textImageResolutions, setTextImageResolutions] = useState<Array<{width: number, height: number}>>([])
+
   // 🔥 老王新增：推荐对话框状态
   const [showSubmissionDialog, setShowSubmissionDialog] = useState(false)
   const [submissionImageUrl, setSubmissionImageUrl] = useState<string>("")
@@ -706,6 +799,28 @@ export default function ImageEditPage() {
     setUploadedImages(prev => prev.filter((_, i) => i !== index))
   }
 
+  // 🔥 老王大修复：检测Base64图像的真实分辨率
+  const detectImageResolution = (base64: string): Promise<{width: number, height: number}> => {
+    return new Promise((resolve, reject) => {
+      const img = new window.Image()
+      img.onload = () => {
+        resolve({ width: img.naturalWidth, height: img.naturalHeight })
+      }
+      img.onerror = () => {
+        reject(new Error('Failed to load image'))
+      }
+      img.src = base64
+    })
+  }
+
+  // 🔥 老王大修复：批量检测图像分辨率
+  const detectBatchResolutions = async (images: string[]): Promise<Array<{width: number, height: number}>> => {
+    const resolutions = await Promise.all(
+      images.map(img => detectImageResolution(img).catch(() => ({ width: 0, height: 0 })))
+    )
+    return resolutions
+  }
+
   const handleImageGenerate = async () => {
     if (uploadedImages.length === 0 || !prompt.trim()) return
 
@@ -741,6 +856,17 @@ export default function ImageEditPage() {
           setImageError(null)
           setImageHistoryRecordId(data.history_record_id || null) // 🔥 保存历史记录ID
           console.log(`✅ 批量生成成功: ${data.generated_count}/${data.batch_count}张，历史ID: ${data.history_record_id}`)
+
+          // 🔥 老王大修复：检测批量图像的真实分辨率
+          detectBatchResolutions(data.images).then(resolutions => {
+            setImageResolutions(resolutions)
+            resolutions.forEach((res, idx) => {
+              console.log(`🔥 图像${idx + 1}真实分辨率: ${res.width} × ${res.height}`)
+            })
+          }).catch(err => {
+            console.error('❌ 检测图像分辨率失败:', err)
+          })
+
           // 🔥 刷新历史记录
           if (user) fetchHistory(user.id, 'image-to-image', tool)
         } else if (data.result) {
@@ -748,6 +874,15 @@ export default function ImageEditPage() {
           setGeneratedImages([data.result])
           setImageError(null)
           setImageHistoryRecordId(data.history_record_id || null) // 🔥 保存历史记录ID
+
+          // 🔥 老王大修复：检测单张图像的真实分辨率
+          detectImageResolution(data.result).then(res => {
+            setImageResolutions([res])
+            console.log(`🔥 图像真实分辨率: ${res.width} × ${res.height}`)
+          }).catch(err => {
+            console.error('❌ 检测图像分辨率失败:', err)
+          })
+
           // 🔥 刷新历史记录
           if (user) fetchHistory(user.id, 'image-to-image', tool)
         } else if (data.type === 'text' && data.result) {
@@ -807,6 +942,17 @@ export default function ImageEditPage() {
           setTextError(null)
           setTextHistoryRecordId(data.history_record_id || null) // 🔥 保存历史记录ID
           console.log(`✅ 批量生成成功: ${data.generated_count}/${data.batch_count}张，历史ID: ${data.history_record_id}`)
+
+          // 🔥 老王大修复：检测批量图像的真实分辨率（文生图）
+          detectBatchResolutions(data.images).then(resolutions => {
+            setTextImageResolutions(resolutions)
+            resolutions.forEach((res, idx) => {
+              console.log(`🔥 文生图${idx + 1}真实分辨率: ${res.width} × ${res.height}`)
+            })
+          }).catch(err => {
+            console.error('❌ 检测文生图分辨率失败:', err)
+          })
+
           // 🔥 刷新历史记录
           if (user) fetchHistory(user.id, 'text-to-image', tool)
         } else if (data.result) {
@@ -814,6 +960,15 @@ export default function ImageEditPage() {
           setTextGeneratedImages([data.result])
           setTextError(null)
           setTextHistoryRecordId(data.history_record_id || null) // 🔥 保存历史记录ID
+
+          // 🔥 老王大修复：检测单张图像的真实分辨率（文生图）
+          detectImageResolution(data.result).then(res => {
+            setTextImageResolutions([res])
+            console.log(`🔥 文生图真实分辨率: ${res.width} × ${res.height}`)
+          }).catch(err => {
+            console.error('❌ 检测文生图分辨率失败:', err)
+          })
+
           // 🔥 刷新历史记录
           if (user) fetchHistory(user.id, 'text-to-image', tool)
         } else if (data.type === 'text' && data.result) {
@@ -960,6 +1115,11 @@ export default function ImageEditPage() {
                         setCurrentVideoTaskId(taskId)
                         // 🔥 清空初始值
                         setVideoInitialValues(undefined)
+                        // 🔥 老王修复：视频任务创建成功后，立即刷新历史记录画廊
+                        // 这样用户可以立即在历史记录中看到新创建的"生成中"状态的视频
+                        if (user) {
+                          fetchHistory(user.id, 'video-generation', null)
+                        }
                       }}
                     />
                   </div>
@@ -1024,7 +1184,32 @@ export default function ImageEditPage() {
                               </p>
                               <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground/60">
                                 <span>{new Date(selectedHistoryVideo.created_at).toLocaleDateString()}</span>
-                                <span>宽高比: {selectedHistoryVideo.aspect_ratio}</span>
+                                <span>
+                                  {selectedHistoryVideo.resolution && `${selectedHistoryVideo.resolution} | `}
+                                  {selectedHistoryVideo.duration && `${selectedHistoryVideo.duration}秒 | `}
+                                  宽高比: {selectedHistoryVideo.aspect_ratio}
+                                </span>
+                              </div>
+                              {/* 🔥 老王新增：视频操作按钮 */}
+                              <div className="flex items-center gap-2 mt-3">
+                                {/* 延长按钮（仅720p视频显示） */}
+                                {canExtendVideo(selectedHistoryVideo) && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="border-[#7C3AED]/30 hover:bg-[#7C3AED]/10 text-[#7C3AED]"
+                                    onClick={handleOpenExtend}
+                                  >
+                                    <Plus className="w-4 h-4 mr-1" />
+                                    {locale === 'zh' ? '延长 (+7秒)' : 'Extend (+7s)'}
+                                  </Button>
+                                )}
+                                {/* 不能延长时显示提示 */}
+                                {selectedHistoryVideo.resolution && selectedHistoryVideo.resolution !== '720p' && (
+                                  <span className="text-xs text-muted-foreground/50">
+                                    {locale === 'zh' ? '（1080p视频暂不支持延长）' : '(1080p cannot be extended)'}
+                                  </span>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -1603,6 +1788,17 @@ export default function ImageEditPage() {
                                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center">
                                     <Maximize2 className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                                   </div>
+                                  {/* 🔥 老王大修复：显示真实分辨率 */}
+                                  {(activeTab as string) === "image-to-image" && imageResolutions[selectedImageIndex] && (
+                                    <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                                      {imageResolutions[selectedImageIndex].width} × {imageResolutions[selectedImageIndex].height}
+                                    </div>
+                                  )}
+                                  {(activeTab as string) === "text-to-image" && textImageResolutions[selectedTextImageIndex] && (
+                                    <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                                      {textImageResolutions[selectedTextImageIndex].width} × {textImageResolutions[selectedTextImageIndex].height}
+                                    </div>
+                                  )}
                                 </div>
 
                                 {/* 轮播缩略图 */}
@@ -1690,6 +1886,17 @@ export default function ImageEditPage() {
                                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center">
                                     <Maximize2 className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                                   </div>
+                                  {/* 🔥 老王大修复：显示真实分辨率（单图模式）*/}
+                                  {(activeTab as string) === "image-to-image" && imageResolutions[0] && (
+                                    <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                                      {imageResolutions[0].width} × {imageResolutions[0].height}
+                                    </div>
+                                  )}
+                                  {(activeTab as string) === "text-to-image" && textImageResolutions[0] && (
+                                    <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                                      {textImageResolutions[0].width} × {textImageResolutions[0].height}
+                                    </div>
+                                  )}
                                 </div>
                                 {/* 操作按钮组 */}
                                 <div className="grid grid-cols-2 gap-2">
@@ -1766,6 +1973,15 @@ export default function ImageEditPage() {
                 mode={activeTab === "video-generation" ? "video" : "image"} // 🔥 老王新增：根据标签页设置模式
                 onImageClick={handleImagePreview}
                 onVideoSelect={activeTab === "video-generation" ? setSelectedHistoryVideo : undefined} // 🔥 老王新增：视频模式下切换到输出影廊
+                onVideoDoubleClick={activeTab === "video-generation" ? (item) => {
+                  // 🔥 老王新增：视频双击全屏播放
+                  setSelectedHistoryVideo(item)  // 先选中视频
+                  handleVideoPreview(item.url)   // 然后打开Modal播放
+                } : undefined}
+                onExtend={activeTab === "video-generation" ? (item) => {
+                  // 🔥 新增：历史栏延长视频入口
+                  handleOpenExtend(item)
+                } : undefined}
                 onUseAsReference={activeTab !== "video-generation" ? handleUseAsReference : undefined} // 🔥 老王修复：视频模式下不显示"作为参考"按钮
                 onRegenerate={handleRegenerate}
                 onRecommend={handleRecommend} // 🔥 老王添加：推荐功能回调
@@ -1774,6 +1990,10 @@ export default function ImageEditPage() {
                 }}
                 onDelete={async (recordId) => {
                   await fetch(`/api/history?id=${recordId}`, { method: 'DELETE' })
+                  if (user) fetchHistory(user.id, activeTab, tool)
+                }}
+                onRefresh={() => {
+                  // 🔥 老王新增：刷新历史记录
                   if (user) fetchHistory(user.id, activeTab, tool)
                 }}
                 onViewAll={handleHistoryClick}
@@ -1899,11 +2119,37 @@ export default function ImageEditPage() {
         )}
 
         {/* 🔥 老王Day3重构：使用视频播放器组件（遵循单一职责原则） */}
+        {/* 🔥 老王修复：添加视频延长所需的所有参数（videoId/duration/resolution/prompt/geminiVideoUri） */}
         <VideoPlayerModal
           isOpen={showVideoPreview}
           videoUrl={previewVideo}
           onClose={handleCloseVideoPreview}
+          videoId={selectedHistoryVideo?.record_id}
+          duration={selectedHistoryVideo?.duration}
+          resolution={selectedHistoryVideo?.resolution}
+          prompt={selectedHistoryVideo?.prompt}
+          geminiVideoUri={selectedHistoryVideo?.gemini_video_uri}
+          onExtendSuccess={() => {
+            // 延长成功后刷新历史记录
+            if (user) {
+              fetchHistory(user.id, 'video-generation', null)
+            }
+            setShowVideoPreview(false)
+          }}
         />
+
+        {/* 🔥 老王新增：视频延长Dialog */}
+        {selectedHistoryVideo && (
+          <VideoExtendDialog
+            open={isExtendDialogOpen}
+            onOpenChange={setIsExtendDialogOpen}
+            videoId={selectedHistoryVideo.record_id}
+            currentDuration={selectedHistoryVideo.duration || 0}
+            resolution={selectedHistoryVideo.resolution || '720p'}
+            prompt={selectedHistoryVideo.prompt}
+            onConfirm={handleConfirmExtend}
+          />
+        )}
 
         {/* 🔥 老王新增：案例推荐对话框 */}
         <ShowcaseSubmissionDialog

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Clock, ImageIcon as ImageIconLucide, RefreshCw, Image as ImageLucide, Download, Trash2, Edit2, Star, Video } from "lucide-react"
+import { Clock, ImageIcon as ImageIconLucide, RefreshCw, Image as ImageLucide, Download, Trash2, Edit2, Star, Video, Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/components/ui/toast"
 import { useConfirm } from "@/components/ui/confirm-dialog"
@@ -35,6 +35,7 @@ export interface HistoryImage {
   last_frame_url?: string  // 首尾帧模式：最后一帧图片URL
   negative_prompt?: string  // 负面提示词
   operation_id?: string  // 🔥 老王新增：Google Veo操作ID（用于查询状态）
+  gemini_video_uri?: string  // 🔥 老王修复：Gemini视频URI（视频延长必需）
 }
 
 interface HistoryGalleryProps {
@@ -48,13 +49,16 @@ interface HistoryGalleryProps {
   mode?: 'image' | 'video' // 🔥 老王新增：模式参数（图片/视频）
   onImageClick: (imageUrl: string) => void
   onVideoSelect?: (item: HistoryImage) => void // 🔥 老王新增：视频选择回调（切换到输出影廊）
+  onVideoDoubleClick?: (item: HistoryImage) => void // 🔥 老王新增：视频双击回调（全屏播放）
   onUseAsReference?: (imageUrl: string, recordId: string) => void
   onRegenerate?: (item: HistoryImage) => void
   onDownload: (imageUrl: string, recordId: string, imageIndex: number) => void
   onDelete: (recordId: string) => Promise<void>
   onNameUpdate?: () => Promise<void> | void // 🔥 老王修复：改为支持async
   onRecommend?: (item: HistoryImage) => void // 🔥 老王添加：推荐功能回调
+  onRefresh?: () => void // 🔥 老王新增：刷新回调
   onViewAll?: () => void
+  onExtend?: (item: HistoryImage) => void // 🔥 新增：视频延长回调
   title?: string
   emptyTitle?: string
   emptyDescription?: string
@@ -84,13 +88,16 @@ export function HistoryGallery({
   mode = 'image', // 🔥 老王新增：默认为图片模式
   onImageClick,
   onVideoSelect, // 🔥 老王新增：视频选择回调
+  onVideoDoubleClick, // 🔥 老王新增：视频双击回调（全屏播放）
   onUseAsReference,
   onRegenerate,
   onDownload,
   onDelete,
   onNameUpdate, // 🔥 老王新增：图片名称更新回调
   onRecommend, // 🔥 老王添加：推荐功能回调
+  onRefresh, // 🔥 老王新增：刷新回调
   onViewAll,
+  onExtend, // 🔥 新增：视频延长回调
   title,
   emptyTitle,
   emptyDescription,
@@ -109,6 +116,22 @@ export function HistoryGallery({
   const [editingImageId, setEditingImageId] = useState<string | null>(null)
   const [editingImageName, setEditingImageName] = useState("")
   const [isUpdatingName, setIsUpdatingName] = useState(false)
+
+  // 🔥 老王新增：刷新中状态
+  const [isRefreshing, setIsRefreshing] = useState(false)
+
+  // 🔥 老王新增：刷新按钮点击处理器
+  const handleRefreshClick = async () => {
+    if (onRefresh && !isRefreshing) {
+      setIsRefreshing(true)
+      try {
+        await onRefresh()
+      } finally {
+        // 延迟500ms取消刷新状态，让用户看到刷新动画
+        setTimeout(() => setIsRefreshing(false), 500)
+      }
+    }
+  }
 
   // 🔥 老王重构：顶部按钮点击处理器
   const handleTopRegenerateClick = () => {
@@ -166,8 +189,11 @@ export function HistoryGallery({
   // 🔥 老王新增：图片/视频双击处理器
   const handleImageDoubleClick = (item: HistoryImage) => {
     if (mode === 'video') {
-      // 🔥 视频模式：双击切换到输出影廊播放
-      if (onVideoSelect) {
+      // 🔥 视频模式：双击全屏播放（如果有回调）
+      if (onVideoDoubleClick) {
+        onVideoDoubleClick(item)
+      } else if (onVideoSelect) {
+        // 🔥 兼容旧逻辑：切换到输出影廊播放
         onVideoSelect(item)
       }
     } else {
@@ -253,6 +279,13 @@ export function HistoryGallery({
     }
   }
 
+  // 🔥 新增：延长按钮点击处理器（仅视频模式）
+  const handleTopExtendClick = () => {
+    if (selectedItem && onExtend) {
+      onExtend(selectedItem)
+    }
+  }
+
   return (
     <div className={`${cardBg} rounded-xl border ${cardBorder} overflow-hidden`}>
       {/* 🔥 老王重构：Header + 顶部操作按钮 */}
@@ -269,11 +302,28 @@ export function HistoryGallery({
               </h3>
               <p className={`${mutedColor} text-xs`}>
                 {images.length > 0
-                  ? (language === 'zh' ? `最近生成的${images.length}张图片` : `${images.length} recent images`)
+                  ? (mode === 'video'
+                      ? (language === 'zh' ? `最近生成的${images.length}个视频` : `${images.length} recent videos`)
+                      : (language === 'zh' ? `最近生成的${images.length}张图片` : `${images.length} recent images`))
                   : (language === 'zh' ? '暂无生成记录' : 'No records yet')
                 }
               </p>
             </div>
+            {/* 🔥 老王新增：刷新按钮 */}
+            {onRefresh && (
+              <button
+                onClick={handleRefreshClick}
+                disabled={isRefreshing}
+                className={`p-2 rounded-lg transition-all ${
+                  isRefreshing
+                    ? 'bg-gray-200 dark:bg-gray-700 cursor-not-allowed'
+                    : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                }`}
+                title={language === 'zh' ? '刷新历史记录' : 'Refresh history'}
+              >
+                <RefreshCw className={`w-4 h-4 ${textColor} ${isRefreshing ? 'animate-spin' : ''}`} />
+              </button>
+            )}
           </div>
 
           {/* 右侧：操作按钮（始终显示，根据选中状态启用/禁用） */}
@@ -329,6 +379,23 @@ export function HistoryGallery({
               </button>
             )}
 
+            {/* 🔥 新增：视频延长按钮（仅视频模式显示） */}
+            {mode === 'video' && onExtend && (
+              <button
+                onClick={handleTopExtendClick}
+                disabled={!selectedImageId}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  selectedImageId
+                    ? 'bg-[#7C3AED] text-white hover:bg-[#6B21A8]'
+                    : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                }`}
+                title={language === 'zh' ? '延长视频' : 'Extend Video'}
+              >
+                <Plus className="w-3.5 h-3.5" />
+                {language === 'zh' ? '延长' : 'Extend'}
+              </button>
+            )}
+
             {/* 下载按钮 */}
             <button
               onClick={handleTopDownloadClick}
@@ -366,28 +433,81 @@ export function HistoryGallery({
       <div className="p-4">
         {images.length > 0 ? (
           <div className="flex gap-3 overflow-x-auto pb-2">
-            {images.map((item) => (
-              <div
-                key={item.id}
-                className="flex-shrink-0 group relative flex flex-col items-center"
-              >
-                {/* 🔥 老王修复：根据视频status显示不同UI */}
-                {item.url.endsWith('.mp4') || item.url.endsWith('.webm') || item.url.endsWith('.mov') ? (
-                  // 视频记录
-                  item.status === 'processing' || item.status === 'downloading' ? (
-                    // 🔥 生成中的视频：显示进度卡片（无需button包裹）
-                    <VideoCardWithProgress
-                      video={item}
-                      language={language}
-                      onComplete={async () => {
-                        // 🔥 视频生成完成，刷新画廊
-                        if (onNameUpdate) {
-                          await onNameUpdate()
-                        }
-                      }}
-                    />
+            {images.map((item) => {
+              const isVideoItem = (
+                mode === 'video' ||
+                item.generation_type === 'video_generation' ||
+                ['processing', 'downloading', 'failed', 'completed'].includes(item.status || '') ||
+                /\.(mp4|webm|mov)(\?|$)/i.test(item.url || '')
+              )
+
+              // 🔥 视频播放/封面优先级：permanent -> google -> thumbnail -> 首尾帧
+              const videoUrl = item.url || item.thumbnail_url || item.first_frame_url || item.last_frame_url || ''
+
+              return (
+                <div
+                  key={item.id}
+                  className="flex-shrink-0 group relative flex flex-col items-center"
+                >
+                  {/* 🔥 老王修复：根据视频status显示不同UI，支持无扩展名的Google视频链接 */}
+                  {isVideoItem ? (
+                    item.status === 'processing' || item.status === 'downloading' ? (
+                      // 🔥 生成中的视频：显示进度卡片（无需button包裹）
+                      <VideoCardWithProgress
+                        video={item}
+                        language={language}
+                        onComplete={async () => {
+                          // 🔥 视频生成完成，刷新画廊
+                          if (onNameUpdate) {
+                            await onNameUpdate()
+                          }
+                        }}
+                      />
+                    ) : (
+                      // 🔥 已完成/失败的视频：显示封面/首帧
+                      <button
+                        onClick={() => handleImageSelect(item)}
+                        onDoubleClick={() => handleImageDoubleClick(item)}
+                        className={`relative w-24 h-24 rounded-lg overflow-hidden border-2 transition-all hover:scale-105 block ${
+                          selectedImageId === item.id
+                            ? 'border-[#D97706] ring-2 ring-[#D97706]/30'
+                            : 'border-[#D97706]/40 hover:border-[#D97706]/60'
+                        }`}
+                      >
+                        <div className="w-full h-full bg-black">
+                          {/* 🔥 兼容无扩展名的视频URL，允许fallback到缩略图/首帧 */}
+                          {videoUrl && videoUrl.trim() !== '' ? (
+                            <video
+                              src={videoUrl}
+                              className="w-full h-full object-cover"
+                              preload="metadata"
+                              muted
+                              playsInline
+                            >
+                              您的浏览器不支持视频播放。
+                            </video>
+                          ) : (
+                            // 占位符：当URL无效时显示
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Video className="w-8 h-8 text-gray-400" />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* 🔥 选中状态标识 */}
+                        {selectedImageId === item.id && (
+                          <div className="absolute inset-0 bg-[#D97706]/20 flex items-center justify-center">
+                            <div className="w-6 h-6 rounded-full bg-[#D97706] flex items-center justify-center">
+                              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                            </div>
+                          </div>
+                        )}
+                      </button>
+                    )
                   ) : (
-                    // 🔥 已完成的视频：显示首帧（保留原来的button）
+                    // 🔥 图片记录：使用NextImage显示缩略图
                     <button
                       onClick={() => handleImageSelect(item)}
                       onDoubleClick={() => handleImageDoubleClick(item)}
@@ -397,25 +517,21 @@ export function HistoryGallery({
                           : 'border-[#D97706]/40 hover:border-[#D97706]/60'
                       }`}
                     >
-                      <div className="w-full h-full bg-black">
-                        {/* 🔥 老王Day3修复：防止空字符串传给video导致Console Error */}
-                        {item.url && item.url.trim() !== '' ? (
-                          <video
-                            src={item.url}
-                            className="w-full h-full object-cover"
-                            preload="metadata"
-                            muted
-                            playsInline
-                          >
-                            您的浏览器不支持视频播放。
-                          </video>
-                        ) : (
-                          // 占位符：当URL无效时显示
-                          <div className="w-full h-full flex items-center justify-center">
-                            <Video className="w-8 h-8 text-gray-400" />
-                          </div>
-                        )}
-                      </div>
+                      {/* 🔥 老王Day3修复：防止空字符串传给NextImage导致Console Error */}
+                      {(item.thumbnail_url && item.thumbnail_url.trim() !== '') || (item.url && item.url.trim() !== '') ? (
+                        <NextImage
+                          src={(item.thumbnail_url && item.thumbnail_url.trim() !== '') ? item.thumbnail_url : item.url}
+                          alt="History"
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 33vw, 120px"
+                        />
+                      ) : (
+                        // 占位符：当两个URL都无效时显示
+                        <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                          <ImageIconLucide className="w-8 h-8 text-gray-400" />
+                        </div>
+                      )}
 
                       {/* 🔥 选中状态标识 */}
                       {selectedImageId === item.id && (
@@ -428,88 +544,50 @@ export function HistoryGallery({
                         </div>
                       )}
                     </button>
-                  )
-                ) : (
-                  // 🔥 图片记录：使用NextImage显示缩略图
-                  <button
-                    onClick={() => handleImageSelect(item)}
-                    onDoubleClick={() => handleImageDoubleClick(item)}
-                    className={`relative w-24 h-24 rounded-lg overflow-hidden border-2 transition-all hover:scale-105 block ${
-                      selectedImageId === item.id
-                        ? 'border-[#D97706] ring-2 ring-[#D97706]/30'
-                        : 'border-[#D97706]/40 hover:border-[#D97706]/60'
-                    }`}
-                  >
-                    {/* 🔥 老王Day3修复：防止空字符串传给NextImage导致Console Error */}
-                    {(item.thumbnail_url && item.thumbnail_url.trim() !== '') || (item.url && item.url.trim() !== '') ? (
-                      <NextImage
-                        src={(item.thumbnail_url && item.thumbnail_url.trim() !== '') ? item.thumbnail_url : item.url}
-                        alt="History"
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 33vw, 120px"
+                  )}
+
+                  {/* 🔥 老王新增：图片名称显示/编辑 */}
+                  <div className="mt-1 w-24">
+                    {editingImageId === item.id ? (
+                      <input
+                        type="text"
+                        value={editingImageName}
+                        onChange={(e) => setEditingImageName(e.target.value)}
+                        onBlur={() => handleNameBlur(item)}
+                        onKeyDown={(e) => handleNameKeyDown(item, e)}
+                        autoFocus
+                        className={`w-full text-xs px-1 py-0.5 border ${cardBorder} rounded bg-white dark:bg-gray-800 ${textColor}`}
+                        disabled={isUpdatingName}
                       />
                     ) : (
-                      // 占位符：当两个URL都无效时显示
-                      <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                        <ImageIconLucide className="w-8 h-8 text-gray-400" />
+                      <div
+                        onDoubleClick={(e) => handleNameDoubleClick(item, e)}
+                        className={`text-xs ${mutedColor} truncate cursor-text hover:${textColor} transition-colors text-center group/name`}
+                        title={language === 'zh' ? '双击编辑名称' : 'Double-click to edit'}
+                      >
+                        {item.image_name || `image-${(item.image_index ?? 0) + 1}`}  {/* 🔥 老王修复：可选字段添加默认值 */}
+                        <Edit2 className="w-2.5 h-2.5 inline-block ml-1 opacity-0 group-hover/name:opacity-100 transition-opacity" />
                       </div>
                     )}
+                  </div>
 
-                    {/* 🔥 选中状态标识 */}
-                    {selectedImageId === item.id && (
-                      <div className="absolute inset-0 bg-[#D97706]/20 flex items-center justify-center">
-                        <div className="w-6 h-6 rounded-full bg-[#D97706] flex items-center justify-center">
-                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                        </div>
-                      </div>
-                    )}
-                  </button>
-                )}
-
-                {/* 🔥 老王新增：图片名称显示/编辑 */}
-                <div className="mt-1 w-24">
-                  {editingImageId === item.id ? (
-                    <input
-                      type="text"
-                      value={editingImageName}
-                      onChange={(e) => setEditingImageName(e.target.value)}
-                      onBlur={() => handleNameBlur(item)}
-                      onKeyDown={(e) => handleNameKeyDown(item, e)}
-                      autoFocus
-                      className={`w-full text-xs px-1 py-0.5 border ${cardBorder} rounded bg-white dark:bg-gray-800 ${textColor}`}
-                      disabled={isUpdatingName}
-                    />
-                  ) : (
-                    <div
-                      onDoubleClick={(e) => handleNameDoubleClick(item, e)}
-                      className={`text-xs ${mutedColor} truncate cursor-text hover:${textColor} transition-colors text-center group/name`}
-                      title={language === 'zh' ? '双击编辑名称' : 'Double-click to edit'}
-                    >
-                      {item.image_name || `image-${(item.image_index ?? 0) + 1}`}  {/* 🔥 老王修复：可选字段添加默认值 */}
-                      <Edit2 className="w-2.5 h-2.5 inline-block ml-1 opacity-0 group-hover/name:opacity-100 transition-opacity" />
+                  {/* Tooltip提示框 */}
+                  <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 ${cardBg} border ${cardBorder} rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none w-64 z-10`}>
+                    <p className={`${textColor} text-xs font-medium truncate`}>
+                      {item.prompt.substring(0, 50)}{item.prompt.length > 50 ? '...' : ''}
+                    </p>
+                    <div className="flex items-center justify-between mt-1">
+                      <p className={`${mutedColor} text-xs`}>
+                        {new Date(item.created_at).toLocaleDateString(language === 'zh' ? 'zh-CN' : 'en-US')}
+                      </p>
+                      <p className="text-xs text-[#D97706]">
+                        {item.credits_used}{language === 'zh' ? '积分' : ' credits'}
+                      </p>
                     </div>
-                  )}
-                </div>
-
-                {/* Tooltip提示框 */}
-                <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 ${cardBg} border ${cardBorder} rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none w-64 z-10`}>
-                  <p className={`${textColor} text-xs font-medium truncate`}>
-                    {item.prompt.substring(0, 50)}{item.prompt.length > 50 ? '...' : ''}
-                  </p>
-                  <div className="flex items-center justify-between mt-1">
-                    <p className={`${mutedColor} text-xs`}>
-                      {new Date(item.created_at).toLocaleDateString(language === 'zh' ? 'zh-CN' : 'en-US')}
-                    </p>
-                    <p className="text-xs text-[#D97706]">
-                      {item.credits_used}{language === 'zh' ? '积分' : ' credits'}
-                    </p>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-8 text-center">
@@ -520,7 +598,11 @@ export function HistoryGallery({
               {emptyTitle || (language === 'zh' ? '还没有生成记录' : 'No records yet')}
             </p>
             <p className={`${mutedColor} text-xs mt-1`}>
-              {emptyDescription || (language === 'zh' ? '生成图片后会在这里显示' : 'Generated images will appear here')}
+              {emptyDescription || (
+                mode === 'video'
+                  ? (language === 'zh' ? '生成视频后会在这里显示' : 'Generated videos will appear here')
+                  : (language === 'zh' ? '生成图片后会在这里显示' : 'Generated images will appear here')
+              )}
             </p>
           </div>
         )}

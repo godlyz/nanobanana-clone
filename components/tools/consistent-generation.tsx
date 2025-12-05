@@ -113,19 +113,26 @@ export function ConsistentGeneration({ user }: ConsistentGenerationProps) {
     }
   }, [supabase, t, user])
 
-  // 加载历史记录
+  // 🔥 老王优化：直接使用Supabase客户端查询，避免API调用的额外开销
   const loadHistory = useCallback(async () => {
     if (!user) return
     setLoadingHistory(true)
     try {
-      const response = await fetch('/api/history?tool_type=consistent-generation&limit=10')
-      const data = await response.json()
-      if (data.data) {
-        setHistoryRecords(data.data)
+      // 🔥 直接查询数据库，比API调用更快
+      const { data, error } = await supabase
+        .from('generation_history')
+        .select('id, generated_images, thumbnail_images, created_at, prompt, credits_used, generation_type, reference_images, aspect_ratio, tool_type, image_names')
+        .eq('user_id', user.id)
+        .eq('tool_type', 'consistent-generation')
+        .order('created_at', { ascending: false })
+        .limit(10)
+
+      if (!error && data) {
+        setHistoryRecords(data)
 
         // 转换数据格式为 HistoryGallery 需要的格式
         const images: any[] = []
-        data.data.forEach((record: any) => {
+        data.forEach((record: any) => {
           if (record.generated_images && Array.isArray(record.generated_images)) {
             // 🔥 老王新增：获取图片名称数组和缩略图数组
             const imageNames = record.image_names || []
@@ -153,29 +160,36 @@ export function ConsistentGeneration({ user }: ConsistentGenerationProps) {
     } finally {
       setLoadingHistory(false)
     }
-  }, [user])
+  }, [user, supabase])
 
-  // 🔥 老王新增：加载背景移除和场景保留的历史记录
+  // 🔥 老王优化：直接使用Supabase客户端查询加载背景移除和场景保留的历史记录
   const loadToolHistory = useCallback(async () => {
     if (!user) return
 
     try {
-      // 同时加载两个工具的历史记录
-      const [bgResponse, sceneResponse] = await Promise.all([
-        fetch('/api/history?tool_type=background-remover&limit=20'),
-        fetch('/api/history?tool_type=scene-preservation&limit=20')
-      ])
-
-      const [bgData, sceneData] = await Promise.all([
-        bgResponse.json(),
-        sceneResponse.json()
+      // 🔥 直接查询数据库，同时加载两个工具的历史记录
+      const [bgResult, sceneResult] = await Promise.all([
+        supabase
+          .from('generation_history')
+          .select('id, generated_images, thumbnail_images, created_at, prompt, credits_used, tool_type, image_names')
+          .eq('user_id', user.id)
+          .eq('tool_type', 'background-remover')
+          .order('created_at', { ascending: false })
+          .limit(20),
+        supabase
+          .from('generation_history')
+          .select('id, generated_images, thumbnail_images, created_at, prompt, credits_used, tool_type, image_names')
+          .eq('user_id', user.id)
+          .eq('tool_type', 'scene-preservation')
+          .order('created_at', { ascending: false })
+          .limit(20)
       ])
 
       const allImages: any[] = []
 
       // 处理背景移除的历史记录
-      if (bgData.data) {
-        bgData.data.forEach((record: any) => {
+      if (!bgResult.error && bgResult.data) {
+        bgResult.data.forEach((record: any) => {
           if (record.generated_images && Array.isArray(record.generated_images)) {
             // 🔥 老王新增：获取图片名称数组和缩略图数组
             const imageNames = record.image_names || []
@@ -199,8 +213,8 @@ export function ConsistentGeneration({ user }: ConsistentGenerationProps) {
       }
 
       // 处理场景保留的历史记录
-      if (sceneData.data) {
-        sceneData.data.forEach((record: any) => {
+      if (!sceneResult.error && sceneResult.data) {
+        sceneResult.data.forEach((record: any) => {
           if (record.generated_images && Array.isArray(record.generated_images)) {
             // 🔥 老王新增：获取图片名称数组和缩略图数组
             const imageNames = record.image_names || []
@@ -230,7 +244,7 @@ export function ConsistentGeneration({ user }: ConsistentGenerationProps) {
     } catch (err) {
       console.error('Failed to load tool history:', err)
     }
-  }, [user])
+  }, [user, supabase, t])
 
   useEffect(() => {
     if (user) {
@@ -802,6 +816,7 @@ export function ConsistentGeneration({ user }: ConsistentGenerationProps) {
           onDownload={handleDownloadHistory}
           onDelete={handleDeleteHistory}
           onNameUpdate={loadHistory} // 🔥 老王修复：名称更新后刷新数据
+          onRefresh={loadHistory} // 🔥 老王新增：刷新按钮
           useAsReferenceText={t("consistentGeneration.useAsReference")}
         />
       )}

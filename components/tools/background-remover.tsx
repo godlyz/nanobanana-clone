@@ -68,33 +68,33 @@ export function BackgroundRemover({ user }: BackgroundRemoverProps) {
   const inputBg = theme === "light" ? "bg-white" : "bg-[#1E293B]"
   const inputBorder = theme === "light" ? "border-[#E2E8F0]" : "border-[#374151]"
 
-  // 🔥 老王重构：加载历史记录并转换为画廊格式
+  // 🔥 老王优化：直接使用Supabase客户端查询，避免API调用的额外开销
   const loadHistory = useCallback(async () => {
     if (!user) return
     setLoadingHistory(true)
     try {
-      const response = await fetch('/api/history?tool_type=background-remover&limit=10')
-      const data = await response.json()
+      // 🔥 直接查询数据库，比API调用更快
+      const { data, error } = await supabase
+        .from('generation_history')
+        .select('id, generated_images, thumbnail_images, created_at, prompt, credits_used, generation_type, reference_images, aspect_ratio, tool_type, image_names')
+        .eq('user_id', user.id)
+        .eq('tool_type', 'background-remover')
+        .order('created_at', { ascending: false })
+        .limit(10)
 
-      // 🔥 老王DEBUG：查看API返回的原始数据
-      console.log('🔍 [DEBUG] API返回的原始数据:', data.data)
-
-      if (data.data) {
-        setHistoryRecords(data.data)
+      if (!error && data) {
+        setHistoryRecords(data)
 
         // 转换数据格式为 HistoryGallery 需要的格式
         const images: any[] = []
-        data.data.forEach((record: any) => {
-          // 🔥 老王DEBUG：查看每条记录的image_names
-          console.log(`🔍 [DEBUG] Record ID=${record.id}, image_names=`, record.image_names)
-
+        data.forEach((record: any) => {
           if (record.generated_images && Array.isArray(record.generated_images)) {
             // 🔥 老王新增：获取图片名称数组和缩略图数组
             const imageNames = record.image_names || []
             const thumbnails = Array.isArray(record.thumbnail_images) ? record.thumbnail_images : []
 
             record.generated_images.forEach((url: string, index: number) => {
-              const imageItem = {
+              images.push({
                 id: `${record.id}-${index}`,
                 url: url, // 🔥 原图URL（用于预览）
                 thumbnail_url: thumbnails[index] || url, // 🔥 老王新增：缩略图URL，没有则降级使用原图
@@ -104,16 +104,10 @@ export function BackgroundRemover({ user }: BackgroundRemoverProps) {
                 record_id: record.id,
                 image_index: index,
                 image_name: imageNames[index] || null // 🔥 老王新增：添加图片名称
-              }
-              // 🔥 老王DEBUG：查看转换后的图片对象
-              console.log(`🔍 [DEBUG] 转换后的图片对象:`, imageItem)
-              images.push(imageItem)
+              })
             })
           }
         })
-
-        // 🔥 老王DEBUG：查看最终的historyImages数组
-        console.log('🔍 [DEBUG] 最终的historyImages:', images)
         setHistoryImages(images)
       }
     } catch (err) {
@@ -121,7 +115,7 @@ export function BackgroundRemover({ user }: BackgroundRemoverProps) {
     } finally {
       setLoadingHistory(false)
     }
-  }, [user])
+  }, [user, supabase])
 
   // 组件挂载时加载历史记录
   useEffect(() => {
@@ -541,6 +535,7 @@ export function BackgroundRemover({ user }: BackgroundRemoverProps) {
         onDownload={handleDownloadHistory}
         onDelete={handleDeleteHistory}
         onNameUpdate={loadHistory} // 🔥 老王修复：名称更新后刷新数据
+        onRefresh={loadHistory} // 🔥 老王新增：刷新按钮
         useAsReferenceText={language === 'zh' ? '作为参考' : 'Use as Ref'}
       />
     )}

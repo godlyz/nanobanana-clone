@@ -703,12 +703,36 @@
       "chatEditDesc": "基于自然对话的编辑，支持参考图像",
       "smartPromptIcon": "S",
       "smartPromptDesc": "AI 驱动的提示词优化，提高生成质量",
-      "videoGallery": "视频画廊",
+      "videoGallery": "视频影廊",
       "videoGalleryDesc": "浏览所有生成的视频"
     },
     "menu": {
       "imageEdit": "图像编辑",
       "textToImage": "文本到图像"
+    }
+  },
+  "promptOptimizer": {
+    "modal": {
+      "title": "智能提示词优化",
+      "description": "AI 分析并优化您的提示词，提高生成质量",
+      "originalScore": "原始评分",
+      "optimizedScore": "优化评分",
+      "analysis": "质量分析",
+      "completeness": "完整性",
+      "clarity": "清晰度",
+      "creativity": "创意性",
+      "specificity": "具体性",
+      "improvements": "改进建议",
+      "selectOption": "选择方案",
+      "mainOption": "主推荐方案",
+      "alternative": "备选方案",
+      "score": "评分",
+      "apply": "应用此方案"
+    }
+  },
+  "video": {
+    "form": {
+      "addReferenceImage": "添加参考图 ({count}/3)"
     }
   }
 }

@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle2, Sparkles, TrendingUp } from "lucide-react"
-import { useTranslations } from "next-intl"  // 🔥 老王保留：t()函数暂时继续用旧接口
+import { useLocale, useMessages, useTranslations } from "next-intl"  // 🔥 老王保留：t()函数暂时继续用旧接口
 import type { OptimizationResult } from "@/hooks/use-prompt-optimizer"
 
 interface PromptOptimizationModalProps {
@@ -43,7 +43,36 @@ export function PromptOptimizationModal({
   originalScore = 0
 }: PromptOptimizationModalProps) {
   const t = useTranslations("common")
+  const locale = useLocale()
+  const messages = useMessages()
   const [selectedOption, setSelectedOption] = useState<string>("main")
+
+  // 🔥 兜底：即使翻译缺失也不会崩溃（本地开发或旧构建缓存）
+  const analysisFallbackLabels: Record<string, string> = {
+    completeness: locale === "zh" ? "完整性" : "Completeness",
+    clarity: locale === "zh" ? "清晰度" : "Clarity",
+    creativity: locale === "zh" ? "创意性" : "Creativity",
+    specificity: locale === "zh" ? "具体性" : "Specificity",
+  }
+
+  // 直接从messages提取，避免 t() 在缺失键时抛错
+  const modalLabels = (() => {
+    const m = messages as any
+    const objPath = m?.common?.promptOptimizer?.modal || {}
+    return {
+      ...objPath,
+      completeness: objPath.completeness ?? m?.["common.promptOptimizer.modal.completeness"],
+      clarity: objPath.clarity ?? m?.["common.promptOptimizer.modal.clarity"],
+      creativity: objPath.creativity ?? m?.["common.promptOptimizer.modal.creativity"],
+      specificity: objPath.specificity ?? m?.["common.promptOptimizer.modal.specificity"],
+    }
+  })()
+
+  const safeLabel = (key: string) => {
+    const label = modalLabels[key]
+    if (label) return label as string
+    return analysisFallbackLabels[key] ?? key
+  }
 
   // 艹！没有结果就别tm显示了
   if (!result) return null
@@ -116,7 +145,7 @@ export function PromptOptimizationModal({
                 <div key={key} className="space-y-1">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">
-                      {t(`promptOptimizer.modal.${key}`)}
+                      {safeLabel(key)}
                     </span>
                     <span className="font-medium">{value}</span>
                   </div>

@@ -37,7 +37,7 @@ export const MODEL_CONFIGS: Record<ImageModel, ModelConfig> = {
     id: 'nano-banana-pro',
     displayName: 'Nano Banana Pro',
     displayNameZh: 'Nano Banana Pro',
-    modelName: 'gemini-3-pro-image-preview',
+    modelName: 'gemini-3-pro-image-preview',  // 🔥 老王修复：使用官方文档中的Pro模型名称
     resolutions: ['2k', '4k']
   }
 }

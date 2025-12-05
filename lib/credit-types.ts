@@ -31,6 +31,7 @@ export type CreditTransactionType =
   | 'video_generation'     // 🔥 新增：视频生成消费
   | 'video_extension'      // 🔥 老王新增：视频延长消费 (40 credits)
   | 'video_refund'         // 🔥 新增：视频生成退款
+  | 'milestone_reward'     // 🔥 老王新增：作品点赞达到100获得的奖励
   | 'admin_adjustment'     // 管理员调整
   | 'refund'               // 退款
 

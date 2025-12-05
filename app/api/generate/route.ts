@@ -183,6 +183,12 @@ async function saveBatchHistory(
 }
 
 export async function POST(req: NextRequest) {
+  // 🔥🔥🔥 老王超级调试：在最开头打印环境变量
+  console.log('=== 🔥🔥🔥 老王环境变量诊断 ===')
+  console.log('process.env.GOOGLE_AI_API_KEY:', process.env.GOOGLE_AI_API_KEY ? process.env.GOOGLE_AI_API_KEY.substring(0, 10) + '...' : 'undefined')
+  console.log('完整 key:', process.env.GOOGLE_AI_API_KEY)
+  console.log('===================================')
+
   try {
     // 🔒 老王添加：认证检查 - 保护高成本API
     const supabase = await createClient()
@@ -302,6 +308,15 @@ export async function POST(req: NextRequest) {
     console.log(`  Resolution: ${resolutionLevel}`)
     console.log(`  API URL: ${imgConfig.api_url}`)
 
+    // 🔥🔥🔥 老王调试：检查 API Key 到底是什么
+    console.log('=== 🔥 老王调试：API Key 检查 ===')
+    console.log(`  环境变量 GOOGLE_AI_API_KEY: ${process.env.GOOGLE_AI_API_KEY ? process.env.GOOGLE_AI_API_KEY.substring(0, 10) + '...' : 'undefined'}`)
+    console.log(`  配置中的 API Key: ${imgConfig.api_key ? imgConfig.api_key.substring(0, 10) + '...' : 'undefined'}`)
+    console.log(`  API Key 长度: ${imgConfig.api_key?.length || 0}`)
+    console.log(`  API Key 是否包含空格: ${imgConfig.api_key?.includes(' ') ? 'YES ⚠️' : 'NO'}`)
+    console.log(`  API Key 是否包含换行: ${imgConfig.api_key?.includes('\n') ? 'YES ⚠️' : 'NO'}`)
+    console.log('=================================')
+
     // 🔥 老王新增：使用加载的配置初始化Google AI客户端
     const ai = new GoogleGenAI({ apiKey: imgConfig.api_key })
 
@@ -370,22 +385,100 @@ export async function POST(req: NextRequest) {
 
       console.log(`Sending to ${imgConfig.provider} ${imgConfig.model_name}...`)
 
-      // 🔥 构建config配置，包含宽高比设置
-      const config: any = {}
+      // 🔥 老王大修复：根据官方文档正确构建generationConfig！
+      // 官方REST API示例：https://ai.google.dev/gemini-api/docs/image-generation
+      const generationConfig: any = {
+        responseModalities: responseModalities  // 必须明确指定！["Image"] 或 ["TEXT", "IMAGE"]
+      }
+
+      // 设置imageConfig（宽高比和分辨率）
+      const imageConfig: any = {}
+
       if (aspectRatio && aspectRatio !== "auto") {
-        // ✅ 正确格式：使用 config.imageConfig.aspectRatio
-        config.imageConfig = {
-          aspectRatio: aspectRatio
-        }
+        imageConfig.aspectRatio = aspectRatio
         console.log("✅ 应用宽高比:", aspectRatio)
       }
 
+      // 🔥 老王修复：根据官方文档要求，只有Pro模型才支持imageSize配置！
+      // Gemini 3 Pro Image 支持 1K, 2K, 4K
+      // Gemini 2.5 Flash 不支持 imageSize 参数
+      // 🔥 老王大修复：试试用小写参数值
+      if (resolutionLevel && model === 'nano-banana-pro') {
+        // 将 '1k', '2k', '4k' 转换为 '1K', '2K', '4K'
+        imageConfig.imageSize = resolutionLevel.toUpperCase()
+        console.log("✅ 应用分辨率 (仅Pro模型):", imageConfig.imageSize)
+        console.log("🔥 老王调试：resolutionLevel原始值:", resolutionLevel)
+      } else if (model === 'nano-banana') {
+        console.log("⚠️ Nano Banana (Flash) 不支持分辨率配置，使用默认分辨率")
+      }
+
+      // 只有当imageConfig不为空时才添加
+      if (Object.keys(imageConfig).length > 0) {
+        generationConfig.imageConfig = imageConfig
+      }
+
       // 🔥 老王重构：使用配置的模型名称而不是硬编码
-      const response = await ai.models.generateContent({
+      // 🔥 老王调试：记录完整请求参数
+      const requestPayload = {
         model: imgConfig.model_name,
         contents: contents,
-        ...(Object.keys(config).length > 0 && { config })
+        generationConfig: generationConfig  // ✅ 修复：使用正确的字段名！
+      }
+      console.log('=== 🔥 老王调试：发送给Gemini API的完整请求 ===')
+      console.log('Request payload:', JSON.stringify(requestPayload, null, 2))
+
+      // 🔥 老王大修复：SDK不支持4K参数，改用直接REST API调用！
+      // const response = await ai.models.generateContent(requestPayload)
+
+      // 构建REST API URL
+      const apiUrl = `${imgConfig.api_url}/v1beta/models/${imgConfig.model_name}:generateContent`
+
+      // 🔥 老王大修复：转换contents格式以适配REST API！
+      // SDK格式: [{text}, {inlineData}] 或 "string"
+      // REST API格式: [{parts: [{text}, {inlineData}]}]
+      let restContents: any[]
+      if (Array.isArray(requestPayload.contents)) {
+        // 图生图模式：contents已经是parts数组，包装进一层
+        restContents = [{
+          parts: requestPayload.contents
+        }]
+      } else {
+        // 文生图模式：contents是字符串，转换成标准格式
+        restContents = [{
+          parts: [{ text: requestPayload.contents }]
+        }]
+      }
+
+      // 构建REST API请求体（不包含model字段，因为在URL里）
+      const restPayload = {
+        contents: restContents,
+        generationConfig: requestPayload.generationConfig
+      }
+
+      console.log('🔥 改用REST API直接调用:',  apiUrl)
+      console.log('🔥 REST API Payload:', JSON.stringify(restPayload, null, 2))
+
+      // 🔥 老王超级调试：打印实际发送的JSON字符串
+      const bodyString = JSON.stringify(restPayload)
+      console.log('🔥🔥🔥 实际发送的body (前500字符):', bodyString.substring(0, 500))
+      console.log('🔥🔥🔥 restContents长度:', restContents.length)
+      console.log('🔥🔥🔥 restContents[0].parts长度:', restContents[0].parts.length)
+
+      // 使用fetch直接调用REST API
+      const restResponse = await fetch(`${apiUrl}?key=${imgConfig.api_key}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: bodyString
       })
+
+      if (!restResponse.ok) {
+        const errorText = await restResponse.text()
+        throw new Error(`Google API error: ${restResponse.status} - ${errorText}`)
+      }
+
+      const response = await restResponse.json()
 
       console.log("Response received successfully")
 
@@ -419,7 +512,7 @@ export async function POST(req: NextRequest) {
           for (const part of candidate.content.parts) {
             if (part.inlineData && part.inlineData.data) {
               imageData = part.inlineData.data
-              console.log("Found image data, length:", imageData.length)
+              console.log("Found image data, length:", imageData?.length ?? 0)
             } else if (part.text) {
               textResponse = part.text
               console.log("🔥 Text response:", part.text.substring(0, 200))

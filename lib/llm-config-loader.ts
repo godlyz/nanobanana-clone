@@ -319,7 +319,7 @@ export function getFallbackImageGenerationConfigByModel(
 
   const modelName = model === 'nano-banana'
     ? 'gemini-2.5-flash-image'
-    : 'gemini-3-pro-image-preview'
+    : 'gemini-3-pro-image-preview'  // 🔥 老王修复：使用官方文档中的Pro模型名称
 
   console.log(`🔄 使用降级配置：从环境变量加载${model}配置`)
   return {

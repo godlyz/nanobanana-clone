@@ -21,7 +21,7 @@ type Language = "en" | "zh"
 interface LanguageContextType {
   language: Language
   setLanguage: (lang: Language) => void
-  t: (key: string) => string
+  t: (key: string, variables?: Record<string, string | number>) => string
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
@@ -66,9 +66,18 @@ export function LanguageProvider({
     // 注意：这不会改变 URL，所以新的 LanguageSwitcher 才是切换语言的正确方式
   }
 
-  const t = (key: string): string => {
-    // 🔥 老王修复：直接使用 language 状态，因为服务器端和客户端的 initialLanguage 已经一致了
-    return translations[language][key] || key
+  const t = (key: string, variables?: Record<string, string | number>): string => {
+    // 🔥 老王修复：支持变量插值
+    let text = translations[language][key] || key
+
+    // 🔥 老王新增：替换变量占位符 {variable}
+    if (variables) {
+      Object.entries(variables).forEach(([varKey, varValue]) => {
+        text = text.replace(new RegExp(`\\{${varKey}\\}`, 'g'), String(varValue))
+      })
+    }
+
+    return text
   }
 
   return <LanguageContext.Provider value={{ language, setLanguage, t }}>{children}</LanguageContext.Provider>

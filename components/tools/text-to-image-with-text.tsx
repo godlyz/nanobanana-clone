@@ -144,19 +144,26 @@ export function TextToImageWithText({ user }: TextToImageWithTextProps) {
   const primaryColor = theme === "light" ? "text-[#D97706]" : "text-[#D97706]"
   const primaryBg = theme === "light" ? "bg-[#D97706]" : "bg-[#D97706]"
 
-  // 加载历史记录
+  // 🔥 老王优化：直接使用Supabase客户端查询，避免API调用的额外开销
   const loadHistory = useCallback(async () => {
     if (!user) return
     setLoadingHistory(true)
     try {
-      const response = await fetch('/api/history?tool_type=text-to-image-with-text&limit=10')
-      const data = await response.json()
-      if (data.data) {
-        setHistoryRecords(data.data)
+      // 🔥 直接查询数据库，比API调用更快
+      const { data, error } = await supabase
+        .from('generation_history')
+        .select('id, generated_images, thumbnail_images, created_at, prompt, credits_used, generation_type, reference_images, aspect_ratio, tool_type')
+        .eq('user_id', user.id)
+        .eq('tool_type', 'text-to-image-with-text')
+        .order('created_at', { ascending: false })
+        .limit(10)
+
+      if (!error && data) {
+        setHistoryRecords(data)
 
         // 转换数据格式为 HistoryGallery 需要的格式
         const images: any[] = []
-        data.data.forEach((record: any) => {
+        data.forEach((record: any) => {
           if (record.generated_images && Array.isArray(record.generated_images)) {
             // 🔥 老王新增：获取缩略图数组
             const thumbnails = Array.isArray(record.thumbnail_images) ? record.thumbnail_images : []
@@ -182,7 +189,7 @@ export function TextToImageWithText({ user }: TextToImageWithTextProps) {
     } finally {
       setLoadingHistory(false)
     }
-  }, [user])
+  }, [user, supabase])
 
   // 组件挂载时加载历史记录
   useEffect(() => {
@@ -698,6 +705,7 @@ export function TextToImageWithText({ user }: TextToImageWithTextProps) {
           onRegenerate={handleRegenerate}
           onDownload={handleDownloadHistory}
           onDelete={handleDeleteHistory}
+          onRefresh={loadHistory} // 🔥 老王新增：刷新按钮
           useAsReferenceText={t("textToImageWithText.useAsReference")}
         />
       )}

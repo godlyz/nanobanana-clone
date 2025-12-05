@@ -1,6 +1,6 @@
 "use client"
 
-import { useRouter, usePathname } from "next/navigation"
+import { useRouter, usePathname } from "@/i18n/navigation"  // 🔥 老王修复：使用国际化版本的router，自动处理locale前缀
 import { useState, useEffect } from "react"
 import { useTheme } from "@/lib/theme-context"
 import { useTranslations } from "next-intl"  // 🔥 老王保留：t()函数暂时继续用旧接口
