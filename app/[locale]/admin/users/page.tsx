@@ -8,8 +8,7 @@
 
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { setRequestLocale } from 'next-intl/server'
+import { useState, useEffect, useCallback, use } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -138,13 +137,13 @@ const authProviderConfig: Record<string, { name: string; icon: React.ReactNode; 
   }
 }
 
-export default async function UserManagement({
+export default function UserManagement({
   params,
 }: {
   params: Promise<{ locale: string }>
 }) {
-  const { locale } = await params
-  setRequestLocale(locale)
+  // 🔥 老王修复：使用 use() 解包 params
+  const { locale } = use(params)
 
   // Tab状态
   const [activeTab, setActiveTab] = useState('admins')

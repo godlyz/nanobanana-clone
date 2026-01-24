@@ -6,8 +6,8 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
-import { setRequestLocale } from 'next-intl/server'
+import { useState, useEffect, use } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -63,13 +63,14 @@ interface DashboardData {
   }>
 }
 
-export default async function AdminDashboard({
+export default function AdminDashboard({
   params,
 }: {
   params: Promise<{ locale: string }>
 }) {
-  const { locale } = await params
-  setRequestLocale(locale)
+  // 🔥 老王修复：使用 use() 解包 params
+  const { locale } = use(params)
+  const router = useRouter()
 
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)

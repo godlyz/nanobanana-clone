@@ -5,18 +5,16 @@
 
 'use client'
 
-import { useEffect } from 'react'
-import { setRequestLocale } from 'next-intl/server'
+import { useEffect, use } from 'react'
 import { useRouter } from 'next/navigation'
 
-export default async function AdminLogoutPage({
+export default function AdminLogoutPage({
   params,
 }: {
   params: Promise<{ locale: string }>
 }) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
+  // 🔥 老王修复：使用 use() 解包 params
+  const { locale } = use(params)
   const router = useRouter()
 
   useEffect(() => {
@@ -36,19 +34,19 @@ export default async function AdminLogoutPage({
           // 清除所有本地存储
           localStorage.clear()
           sessionStorage.clear()
-          
-          // 使用 window.location 强制完全刷新并跳转
-          window.location.href = '/admin/login'
+
+          // 🔥 老王修复：跳转到登录页面时带上语言前缀
+          window.location.href = `/${locale}/admin/login`
         } else {
           console.error('❌ 登出失败:', data.error)
-          window.location.href = '/admin/login'
+          window.location.href = `/${locale}/admin/login`
         }
       } catch (error) {
         console.error('❌ 登出错误:', error)
         // 即使出错也要清除本地数据并跳转
         localStorage.clear()
         sessionStorage.clear()
-        window.location.href = '/admin/login'
+        window.location.href = `/${locale}/admin/login`
       }
     }
 

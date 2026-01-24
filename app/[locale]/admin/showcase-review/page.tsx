@@ -6,8 +6,7 @@
 
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { setRequestLocale } from 'next-intl/server'
+import { useState, useEffect, useCallback, use } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -61,13 +60,13 @@ interface ShowcaseSubmission {
   creator_name?: string
 }
 
-export default async function ShowcaseReviewPage({
+export default function ShowcaseReviewPage({
   params,
 }: {
   params: Promise<{ locale: string }>
 }) {
-  const { locale } = await params
-  setRequestLocale(locale)
+    // 🔥 老王修复：使用 use() 解包 params
+  const { locale } = use(params)
 
   const router = useRouter()
   const [submissions, setSubmissions] = useState<ShowcaseSubmission[]>([])

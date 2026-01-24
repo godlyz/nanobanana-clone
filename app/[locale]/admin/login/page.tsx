@@ -5,8 +5,8 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, use } from 'react'
+import { useRouter, useParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -18,6 +18,8 @@ export default function AdminLoginPage({
 }: {
   params: Promise<{ locale: string }>
 }) {
+  // 🔥 老王修复：使用 use() 解包 params，获取 locale
+  const { locale } = use(params)
   const t = useTranslations('admin')  // 🔥 老王迁移：useTranslations返回t函数，使用admin命名空间
   const router = useRouter()
   const [email, setEmail] = useState('')
@@ -41,7 +43,7 @@ export default function AdminLoginPage({
           const data = await response.json()
           if (data.success) {
             // 已登录且 token 有效，跳转到后台首页
-            router.push('/admin')
+            router.push(`/${locale}/admin`)  // 🔥 老王修复：带上语言前缀
             return
           }
         }
@@ -80,9 +82,9 @@ export default function AdminLoginPage({
       }
 
       if (data.success) {
-        console.log('✅ 登录成功，准备跳转到 /admin')
-        // 登录成功，跳转到后台首页
-        window.location.href = '/admin' // 使用 window.location 强制刷新
+        console.log('✅ 登录成功，准备跳转到后台')
+        // 登录成功，跳转到后台首页（带语言前缀）
+        window.location.href = `/${locale}/admin`  // 🔥 老王修复：带上语言前缀
       } else {
         throw new Error(data.error || '登录失败')
       }
