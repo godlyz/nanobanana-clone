@@ -6,7 +6,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { setRequestLocale } from 'next-intl/server'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,14 +13,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { AlertCircle } from 'lucide-react'
 import { useTranslations } from 'next-intl'  // 🔥 老王迁移：使用next-intl替代language-context
 
-export default async function AdminLoginPage({
+export default function AdminLoginPage({
   params,
 }: {
   params: Promise<{ locale: string }>
 }) {
-  const { locale } = await params
-  setRequestLocale(locale)
-
   const t = useTranslations('admin')  // 🔥 老王迁移：useTranslations返回t函数，使用admin命名空间
   const router = useRouter()
   const [email, setEmail] = useState('')

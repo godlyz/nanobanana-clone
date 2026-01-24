@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       .from('admin_users')
       .select('*')
       .eq('email', email.toLowerCase())
-      .eq('status', 'active')
+      .eq('is_active', true)  // 🔥 老王修复：字段名是 is_active，不是 status
       .single()
 
     if (adminCheckError || !adminUser) {

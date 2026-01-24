@@ -331,7 +331,7 @@ export default function ProfilePage() {
                             </h3>
                             <div className="space-y-2 max-h-48 overflow-y-auto">
                               {credits.allExpiry.items.map((item, index) => (
-                                <div key={item.date ?? `permanent-${index}`} className="flex items-center justify-between px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-md text-xs">
+                                <div key={`${item.date ?? 'permanent'}-${index}`} className="flex items-center justify-between px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-md text-xs">
                                   <span className="text-muted-foreground flex items-center gap-1">
                                     <Calendar className="w-3 h-3" />
                                     {item.date ? formatDateOnly(item.date) : t("credits.permanent")}
